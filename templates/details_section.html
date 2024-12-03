@@ -1,0 +1,23 @@
+{% from "components/accordion/macro.html" import tnaAccordion %}
+{% set body_content %}
+<dl class="tna-dl">
+  {% for key, value in data.items() %}
+  <dt>{{ key }}</dt>
+  <dd>{{ value }}</dd>
+  {% endfor %}
+</dl>
+{% endset %}
+
+
+{{ tnaAccordion({
+  'itemHeadingLevel': 1,
+  'items': [
+    {
+      'title': title,
+      'body': body_content|safe,
+      'open': open|default(false)
+
+    },
+  ],
+  'group': "group-1"
+}) }}

@@ -1,0 +1,10 @@
+<h1 class="tna-heading-m">Search results</h1>
+<dl class="tna-dl">
+  {% for key, value in data.items() %}
+  <dt><a href="signatures/{{ key }}">{{ key }}</a></dt>
+  <dd>{{ value }}</dd>
+  {% endfor %}
+  {% if data|length == 0 %}
+    <p class="tna-large-paragraph">No results found</p>
+  {% endif %}
+</dl>

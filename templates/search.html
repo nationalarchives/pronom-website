@@ -1,0 +1,12 @@
+{% from "components/search-field/macro.html" import tnaSearchField %}
+<div class="tna-column tna-column tna-column--full tna-!--padding-vertical-s">
+  <form action="/results" method="get">
+      {{ tnaSearchField({
+        'label': "Search Pronom",
+        'headingLevel': 1,
+        'headingSize': "l",
+        'id': "search",
+        'name': "q"
+      }) }}
+  </form>
+</div>

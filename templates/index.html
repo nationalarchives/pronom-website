@@ -1,0 +1,56 @@
+{% from "components/breadcrumbs/macro.html" import tnaBreadcrumbs %}
+{% from "components/hero/macro.html" import tnaHero %}
+
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.css"
+          integrity="sha256-WVAh+/5fHHcNqyOWkvwD52cXAg/ATlYdsNke+YvVbwQ=" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        TNAFrontend.initAll()
+      });
+    </script>
+    <link rel="icon" href="https://www.nationalarchives.gov.uk/favicon.ico">
+    <title>PRONOM</title>
+  </head>
+  <body>
+    <div class="tna-accent-blue">
+      <div class="tna-background-accent">
+        <div class="tna-container">
+          <div class="tna-column tna-column--full tna-!--padding-top-s">
+            {{ tnaBreadcrumbs({
+              'items': [
+                {
+                  'text': "Home",
+                  'href': "/"
+                },
+                {
+                  'text': "Search",
+                  'href': "/search"
+                }
+              ]
+            }) }}
+          </div>
+        </div>
+      </div>
+      <main class="tna-main" id="main-content">
+        <div class="tna-background-accent">
+          <div class="tna-container tna-section">
+            <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+              <hgroup class="tna-hgroup-xl">
+                <h1 class="tna-hgroup__title">PRONOM</h1>
+              </hgroup>
+              <h2 class="tna-large-paragraph">The technical registry</h2>
+            </div>
+          </div>
+        </div>
+        <div class="tna-section tna-container">
+          <div class="tna-column tna-column--width-2-3">
+            {{ content|safe }}
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
