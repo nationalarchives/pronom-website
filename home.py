@@ -8,6 +8,3 @@ def lambda_handler(event, _):
         return index_template.render(content=home_template.render())
 
     return handler(event, create_body)
-
-
-print(lambda_handler({}, None))
