@@ -26,7 +26,7 @@ jobs:
       - run: |
           pip install boto3
           pip install -r requirements.txt
-          mkdir -p site
+          mkdir -p site/fmt site/x-fmt
           python .github/scripts/generate_pages.py "$PWD/signature-files"
           cd site
           aws s3 sync . s3://tna-pronom-signatures-spike
