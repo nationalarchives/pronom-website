@@ -28,3 +28,11 @@ jobs:
           mkdir -p site
           cd site
           aws s3 sync . s3://tna-pronom-signatures-spike
+          python .github/scripts/generate_index_file.py "$PWD/signature-files"
+          mkdir -p package
+          pip install -r requirements.txt --target=package
+          cd package 
+          zip -r ../function.zip .
+          cd ..
+          zip function.zip templates/index.html templates/search_results.html results.py
+          aws lambda update-function-code --zip-file fileb://function.zip --function-name pronom-results

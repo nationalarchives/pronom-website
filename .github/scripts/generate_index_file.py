@@ -7,41 +7,30 @@ path = sys.argv[1]
 
 
 def get_json_files(prefix):
-    return [f'{prefix}/{j}' for j in os.listdir(f"{path}/{prefix}")]
+    return [f'{prefix}/{j}' for j in os.listdir(f"{path}/signatures/{prefix}")]
 
 
 json_files = get_json_files('fmt') + get_json_files('x-fmt')
 
 
 def insert_into_indexes(path_value: str, field_name: str, field_value: str):
-    """
-    Connects to the SQLite database and inserts values into the 'indexes' table.
-
-    :param path_value: Value to insert into the 'path' column.
-    :param field_name: The name
-    :param field_value: Value to insert into the 'field' column.
-    """
+    conn = sqlite3.connect("indexes")
     try:
-        # Connect to the SQLite database
-        conn = sqlite3.connect("/indexes")
         cursor = conn.cursor()
-
-        # Insert values into the table
+        cursor.execute("DROP TABLE IF EXISTS indexes")
+        cursor.execute("CREATE TABLE IF NOT EXISTS indexes (path, name, field)")
         cursor.execute("INSERT INTO indexes (path, name, field) VALUES (?, ?, ?)",
                        (path_value, field_name, field_value))
 
-        # Commit the transaction and close the connection
         conn.commit()
-        print(f"Inserted: path='{path_value}', field='{field_value}'")
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
     finally:
-        if conn:
-            conn.close()
+        conn.close()
 
 
 for file_path in json_files:
-    with open(f'{path}/{file_path}', 'r') as file:
+    with open(f'{path}/signatures/{file_path}', 'r') as file:
         data_values = []
         data = json.load(file)
         format_name = data['formatName']
