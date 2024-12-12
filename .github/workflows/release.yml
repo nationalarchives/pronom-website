@@ -24,6 +24,8 @@ jobs:
           aws-region: eu-west-2
           role-session-name: DeployPRONOM
       - run: |
+          pip install boto3
+          pip install -r requirements.txt
           python .github/scripts/generate_pages.py "$PWD/signature-files"
           mkdir -p site
           cd site
