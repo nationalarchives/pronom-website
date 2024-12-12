@@ -1,5 +1,11 @@
-from utils import *
+from jinja2 import Environment, ChoiceLoader, PackageLoader, FileSystemLoader, select_autoescape
 import sqlite3
+import re
+
+env = Environment(
+    loader=ChoiceLoader([FileSystemLoader("./templates"), PackageLoader("tna_frontend_jinja"), ]),
+    autoescape=select_autoescape()
+)
 
 
 def search(search_string):
@@ -12,14 +18,31 @@ def search(search_string):
 
 
 def lambda_handler(event, _):
-    def create_body(_):
-        query_params = event.get("queryStringParameters", {})
-        search_term = query_params.get("q") if query_params else None
-        rows = search(search_term)
-        data = {row[0][:-5]: row[1] for row in rows}
-        index_template = env.get_template("index.html")
-        search_results = env.get_template("search_results.html")
-        content = search_results.render(data=data)
-        return index_template.render(content=content)
+    query_params = event.get("queryStringParameters", {})
+    search_term = query_params.get("q") if query_params else None
+    if re.search(r'^(x-)?fmt\/\d{1,5}$', search_term) is not None:
+        return {
+            "statusCode": 302,
+            "headers": {'Location': f'{search_term}.html'}
+        }
+    rows = search(search_term)
+    data = {f'{row[0]}': row[1] for row in rows}
+    index_template = env.get_template("index.html")
+    search_results = env.get_template("search_results.html")
+    content = search_results.render(data=data)
+    body = index_template.render(content=content)
 
-    return handler(event, create_body)
+    try:
+        return {
+            "statusCode": 200,
+            "body": body,
+            "headers": {"Content-Type": "text/html"}
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": f"An error occurred: {str(e)}",
+            "headers": {
+                "Content-Type": "text/html"
+            }
+        }

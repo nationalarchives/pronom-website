@@ -1,11 +1,15 @@
 {% from "components/accordion/macro.html" import tnaAccordion %}
 {% set body_content %}
-<dl class="tna-dl">
-  {% for key, value in data.items() %}
-  <dt>{{ key }}</dt>
-  <dd>{{ value }}</dd>
-  {% endfor %}
-</dl>
+
+{% for result in results %}
+  <dl class="tna-dl">
+    {% for key, value in result.items() %}
+    <dt>{{ key }}</dt>
+    <dd>{{ value }}</dd>
+    {% endfor %}
+  </dl>
+{% endfor %}
+
 {% endset %}
 
 

@@ -1,0 +1,28 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: nationalarchives/pronom-signature-files
+          path: 'signature-files'
+      - name: Configure AWS credentials for Lambda
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/SandboxGithubActionsDeployPronomWebsite
+          aws-region: eu-west-2
+          role-session-name: DeployPRONOM
+      - run: |
+          python .github/scripts/generate_pages.py "$PWD/signature-files"
+          mkdir -p site
+          cd site
+          aws s3 sync . s3://tna-pronom-signatures-spike
