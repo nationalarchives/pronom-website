@@ -26,8 +26,8 @@ jobs:
       - run: |
           pip install boto3
           pip install -r requirements.txt
-          python .github/scripts/generate_pages.py "$PWD/signature-files"
           mkdir -p site
+          python .github/scripts/generate_pages.py "$PWD/signature-files"
           cd site
           aws s3 sync . s3://tna-pronom-signatures-spike
           python .github/scripts/generate_index_file.py "$PWD/signature-files"
@@ -36,5 +36,5 @@ jobs:
           cd package 
           zip -r ../function.zip .
           cd ..
-          zip function.zip templates/index.html templates/search_results.html results.py
+          zip function.zip templates/index.html templates/search_results.html results.py indexes
           aws lambda update-function-code --zip-file fileb://function.zip --function-name pronom-results
