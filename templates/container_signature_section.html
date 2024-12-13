@@ -1,0 +1,86 @@
+{% for container in data['containerSignatures'] %}
+  <ol class="tna-ol tna-ol--plain">
+    <li>
+      <p>{{ container.description }}</p>
+      <p>{{ container.containerType }}</p>
+      {% for file in container['files'] %}
+        <div class="tna-details">
+        <details class="tna-details__details">
+          <summary class="tna-details__summary">Files</summary>
+          <div class="tna-details__content">
+            <ol class="tna-ol tna-ol--plain">
+              <li>
+                <div class="tna-details">
+                  <p><b>Path</b>{{ file['path'] }}</p>
+                  {% if 'byteSequences' in file %}
+                    {% for byte_sequence in file['byteSequences'] %}
+                      <div class="tna-details">
+                      <details class="tna-details__details">
+                        <summary class="tna-details__summary">Byte sequences</summary>
+                        <p><b>Reference</b>{{ byte_sequence['reference'] }}</p>
+                        <div class="tna-details__content">
+                          {% if 'subSequences' in byte_sequence %}
+                            {% for sub_sequence in byte_sequence['subSequences'] %}
+                              <div class="tna-details">
+                                <details class="tna-details__details">
+                              <summary class="tna-details__summary">Sub sequences</summary>
+                              <div class="tna-details__content">
+                                <ol class="tna-ol tna-ol--dashed">
+                                  <li><b>Min Frag Length:</b> {{ sub_sequence['minFragLength'] }}</li>
+                                  <li><b>Position:</b> {{ sub_sequence['position'] }}</li>
+                                  <li><b>Sub sequence min offset:</b> {{ sub_sequence['subSeqMinOffset'] }}</li>
+                                  <li><b>Sub sequence max offset:</b> {{ sub_sequence['subSeqMaxOffset'] }}</li>
+                                  <li><b>Sequence:</b> {{ sub_sequence['sequence'] }}</li>
+                                  {% if 'leftFragment' in sub_sequence %}
+                                    <li>
+                                      <div class="tna-details">
+                                        <details class="tna-details__details">
+                                          <summary class="tna-details__summary">Left fragment</summary>
+                                          <div class="tna-details__content">
+                                            <ol class="tna-ol tna-ol--dashed">
+                                              <li><b>Max offset:</b> {{ sub_sequence['leftFragment']['maxOffset'] }}</li>
+                                              <li><b>Min offset:</b> {{ sub_sequence['leftFragment']['minOffset'] }}</li>
+                                              <li><b>Position:</b> {{ sub_sequence['leftFragment']['position'] }}</li>
+                                            </ol>
+                                          </div>
+                                        </details>
+                                      </div>
+                                    </li>
+                                  {% endif %}
+                                  {% if 'rightFragment' in sub_sequence %}
+                                    <li>
+                                      <div class="tna-details">
+                                        <details class="tna-details__details">
+                                          <summary class="tna-details__summary">Right fragment</summary>
+                                          <div class="tna-details__content">
+                                            <ol class="tna-ol tna-ol--dashed">
+                                              <li><b>Max offset:</b> {{ sub_sequence['rightFragment']['maxOffset'] }}</li>
+                                              <li><b>Min offset:</b> {{ sub_sequence['rightFragment']['minOffset'] }}</li>
+                                              <li><b>Position:</b> {{ sub_sequence['rightFragment']['position'] }}</li>
+                                            </ol>
+                                          </div>
+                                        </details>
+                                      </div>
+                                    </li>
+                                  {% endif %}
+                                </ol>
+                              </div>
+                            </details>
+                          </div>
+                            {% endfor %}
+                          {% endif %}
+                        </div>
+                      </details>
+                    </div>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              </li>
+            </ol>
+          </div>
+        </details>
+      </div>
+      {% endfor %}
+    </li>
+  </ol>
+{% endfor %}

@@ -1,5 +1,19 @@
+{% from "components/accordion/macro.html" import tnaAccordion %}
 <div class="tna-column tna-column--full tna-!--padding-vertical-s">
   <h1 class="tna-heading-m">{{ name }}</h1>
   {{ summary|safe }}
   {{ signatures|safe }}
+  {{ tnaAccordion({
+    'itemHeadingLevel': 1,
+    'items': [
+      {
+        'title': 'Container signatures',
+        'body': containers|safe,
+        'open': false
+
+      },
+    ],
+    'group': "group-1"
+  }) }}
+
 </div>

@@ -62,8 +62,10 @@ def create_detail(json_path):
         signatures = get_signatures(data)
         summary_section = env.get_template("details_section.html").render(title="Summary", results=[summary], open=True)
         signatures_section = env.get_template("details_section.html").render(title="Signatures", results=signatures)
+        container_template = env.get_template("container_signature_section.html")
+        container_content = container_template.render(data=data)
         content = details_template.render(name=summary['Name'], summary=summary_section,
-                                          signatures=signatures_section)
+                                          signatures=signatures_section, containers=container_content)
         return index_template.render(content=content)
 
 
@@ -127,3 +129,5 @@ def run():
 
 
 run()
+
+
