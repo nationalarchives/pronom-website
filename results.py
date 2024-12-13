@@ -8,6 +8,14 @@ env = Environment(
 )
 
 
+def puid_exists(puid):
+    conn = sqlite3.connect("indexes")
+    cursor = conn.cursor()
+    cursor.execute("SELECT path from indexes where path = ?", (puid,))
+    rows = cursor.fetchall()
+    return len(rows) > 0
+
+
 def search(search_string):
     conn = sqlite3.connect('indexes')
     cur = conn.cursor()
@@ -20,7 +28,7 @@ def search(search_string):
 def lambda_handler(event, _):
     query_params = event.get("queryStringParameters", {})
     search_term = query_params.get("q") if query_params else None
-    if re.search(r'^(x-)?fmt\/\d{1,5}$', search_term) is not None:
+    if re.search(r'^(x-)?fmt\/\d{1,5}$', search_term) is not None and puid_exists(search_term):
         return {
             "statusCode": 302,
             "headers": {'Location': f'{search_term}.html'}

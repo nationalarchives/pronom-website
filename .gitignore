@@ -2,3 +2,4 @@ package
 .idea
 .venv
 site/
+indexes
