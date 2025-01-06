@@ -30,7 +30,7 @@ jobs:
           mkdir -p site/fmt site/x-fmt
           python .github/scripts/generate_pages.py "$PWD/signature-files"
           cd site
-          aws s3 sync --quiet . s3://tna-pronom-signatures-spike
+          aws s3 sync --quiet --content-type text/html . s3://tna-pronom-signatures-spike
           cd ..
           python .github/scripts/generate_index_file.py "$PWD/signature-files"
           mkdir -p package

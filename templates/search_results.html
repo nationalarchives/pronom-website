@@ -1,7 +1,7 @@
 <h1 class="tna-heading-m">Search results</h1>
 <dl class="tna-dl">
   {% for key, value in data.items() %}
-    <dt><a href="{{ key }}.html">{{ key }}</a></dt>
+    <dt><a href="{{ key }}">{{ key }}</a></dt>
     <dd>{{ value }}</dd>
   {% endfor %}
   {% if data|length == 0 %}

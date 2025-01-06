@@ -31,7 +31,7 @@ def lambda_handler(event, _):
     if re.search(r'^(x-)?fmt\/\d{1,5}$', search_term) is not None and puid_exists(search_term):
         return {
             "statusCode": 302,
-            "headers": {'Location': f'{search_term}.html'}
+            "headers": {'Location': search_term}
         }
     rows = search(search_term)
     data = {f'{row[0]}': row[1] for row in rows}

@@ -112,19 +112,19 @@ def create_file_list():
 
 
 def run():
-    with open('site/signature_list.html', 'w') as signature_list:
+    with open('site/signature_list', 'w') as signature_list:
         signature_list.write(create_file_list())
 
-    with open('site/home.html', 'w') as home:
+    with open('site/home', 'w') as home:
         home.write(create_home())
 
-    with open('site/search.html', 'w') as search:
+    with open('site/search', 'w') as search:
         search.write(create_search())
 
     for sub_dir in ['fmt', 'x-fmt']:
         sig_files = os.listdir(f'{path}/signatures/{sub_dir}')
         for file in sig_files:
-            with open(f'site/{sub_dir}/{file.split(".")[0]}.html', 'w') as output:
+            with open(f'site/{sub_dir}/{file.split(".")[0]}', 'w') as output:
                 output.write(create_detail(f'{path}/signatures/{sub_dir}/{file}'))
 
 
