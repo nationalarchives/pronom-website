@@ -1,4 +1,4 @@
-name: Test
+name: Release
 
 on:
   workflow_dispatch:
@@ -41,7 +41,7 @@ jobs:
           zip function.zip templates/index.html templates/search_results.html results.py indexes
           aws lambda update-function-code --zip-file fileb://function.zip --function-name pronom-results
           LATEST_SIGNATURE_FILE=$(aws s3 ls s3://tna-pronom-signatures-spike/signatures/ | sort -t'V' -k2,2n | tail -1 | awk '{split($0,a," "); print a[4]}')
-          aws lambda update-function-configuration --environment Variables={DOWNLOAD_URL=https://d3hk4y84s0zka0.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE}
+          aws lambda update-function-configuration --function-name pronom-soap --environment Variables={DOWNLOAD_URL=https://d3hk4y84s0zka0.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE}
           python .github/scripts/generate_version_file.py $LATEST_SIGNATURE_FILE
           zip function-soap.zip soap.py version
           aws lambda update-function-code --zip-file fileb://function-soap.zip --function-name pronom-soap
