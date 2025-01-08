@@ -7,14 +7,22 @@
     <dt>{{ key }}</dt>
     <dd>{{ value }}</dd>
     {% endfor %}
+    {% if developedBy is defined and developedBy is not none %}
+      <dt>Developed by</dt>
+      <dd><a href="/actor/{{ developedBy['actorId'] }}">{{ developedBy['name'] }}</a></dd>
+    {% endif %}
+    {% if supportedBy is defined and supportedBy is not none %}
+      <dt>Supported by</dt>
+      <dd><a href="/actor/{{ supportedBy['actorId'] }}">{{ supportedBy['name'] }}</a></dd>
+    {% endif %}
   </dl>
 {% endfor %}
-
 {% endset %}
 
 
 {{ tnaAccordion({
   'itemHeadingLevel': 1,
+  'id': id,
   'items': [
     {
       'title': title,

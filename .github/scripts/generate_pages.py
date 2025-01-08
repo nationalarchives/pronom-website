@@ -18,15 +18,16 @@ def get_summary(data):
     identifiers = ', '.join(
         [f"{identifier['identifierType']}: {identifier['identifierText']}" for identifier in data['identifiers']]
     )
+    def str_for_attr(attr): return data[attr] if attr in data and data[attr] is not None else ''
     return {
-        'Name': data['formatName'],
-        'Version': data['version'] if 'version' in data else '',
+        'Name': str_for_attr('formatName'),
+        'Version': str_for_attr('version'),
         'Identifiers': identifiers,
-        'Family': data['formatFamilies'] if 'formatFamilies' in data else '',
-        'Disclosure': data['formatDisclosure'] if 'formatDisclosure' in data else '',
-        'Description': data['formatDescription'] if 'formatDescription' in data else '',
-        'Source': data['provenanceCompoundName'] if 'provenanceCompoundName' in data else '',
-        'Note': data['formatNote'] if 'formatNote' in data else ''
+        'Family': str_for_attr('formatFamilies'),
+        'Disclosure': str_for_attr('formatDisclosure'),
+        'Description': str_for_attr('formatDescription'),
+        'Source': str_for_attr('provenanceCompoundName'),
+        'Note': str_for_attr('formatNote')
     }
 
 
@@ -53,20 +54,41 @@ def read_json_from_s3(file_key):
     return json_data
 
 
-def create_detail(json_path):
-    with open(json_path, 'r') as sig_json:
-        data = json.load(sig_json)
-        index_template = env.get_template("index.html")
-        details_template = env.get_template("details.html")
-        summary = get_summary(data)
-        signatures = get_signatures(data)
-        summary_section = env.get_template("details_section.html").render(title="Summary", results=[summary], open=True)
-        signatures_section = env.get_template("details_section.html").render(title="Signatures", results=signatures)
-        container_template = env.get_template("container_signature_section.html")
-        container_content = container_template.render(data=data)
-        content = details_template.render(name=summary['Name'], summary=summary_section,
-                                          signatures=signatures_section, containers=container_content)
-        return index_template.render(content=content)
+def create_detail(json_data):
+    index_template = env.get_template("index.html")
+    details_template = env.get_template("details.html")
+    summary = get_summary(json_data)
+    signatures = get_signatures(json_data)
+    summary_args = {
+        "id": "summary",
+        "title": "Summary",
+        "results": [summary],
+        "open": True,
+        "developedBy": json_data['developedBy'] if 'developedBy' in json_data else None,
+        "supportedBy": json_data['supportedBy'] if 'supportedBy' in json_data else None,
+    }
+    signatures_args = {"title": "Signatures", "results": signatures, "id": "signatures"}
+    summary_section = env.get_template("details_section.html").render(**summary_args)
+    signatures_section = env.get_template("details_section.html").render(**signatures_args)
+    container_template = env.get_template("container_signature_section.html")
+    container_content = container_template.render(data=json_data)
+    content = details_template.render(name=summary['Name'], summary=summary_section,
+                                      signatures=signatures_section, containers=container_content)
+    return index_template.render(content=content)
+
+
+def create_actor(data):
+    def format_date(): return datetime.strptime(data['sourceDate'], "%Y-%m-%d").strftime("%d %b %Y")
+
+    return {
+        'Address': data['address'] if 'version' in data else '',
+        'Country': data['country'] if 'country' in data else '',
+        'Support Website': data['supportWebsite'] if 'supportWebsite' in data else '',
+        'Company Website': data['companyWebsite'] if 'companyWebsite' in data else '',
+        'Contact': data['contact'] if 'contact' in data else '',
+        'Source': data['source'] if 'source' in data else '',
+        'Source Date': format_date() if 'sourceDate' in data else ''
+    }
 
 
 def create_home():
@@ -121,13 +143,25 @@ def run():
     with open('site/search', 'w') as search:
         search.write(create_search())
 
+    actors = {}
     for sub_dir in ['fmt', 'x-fmt']:
         sig_files = os.listdir(f'{path}/signatures/{sub_dir}')
         for file in sig_files:
-            with open(f'site/{sub_dir}/{file.split(".")[0]}', 'w') as output:
-                output.write(create_detail(f'{path}/signatures/{sub_dir}/{file}'))
+            json_path = f'{path}/signatures/{sub_dir}/{file}'
+            with open(f'site/{sub_dir}/{file.split(".")[0]}', 'w') as output, open(json_path, 'r') as sig_json:
+                json_data = json.load(sig_json)
+                output.write(create_detail(json_data))
+                if 'developedBy' in json_data:
+                    actors[json_data['developedBy']['actorId']] = json_data['developedBy']
+                if 'supportedBy' in json_data:
+                    actors[json_data['supportedBy']['actorId']] = json_data['supportedBy']
+
+    index_template = env.get_template("index.html")
+    for actor_json in actors.values():
+        with open(f'site/actor/{actor_json['actorId']}', 'w') as actor_page:
+            actor_details_template = env.get_template("actor_details.html")
+            actor_details = actor_details_template.render(results=create_actor(actor_json), name=actor_json['name'])
+            actor_page.write(index_template.render(content=actor_details))
 
 
 run()
-
-

@@ -1,0 +1,9 @@
+{% from "components/accordion/macro.html" import tnaAccordion %}
+<h2 class="tna-heading-m">{{ name }}</h2>
+<dl class="tna-dl">
+    {% for key, value in results.items() %}
+    <dt>{{ key }}</dt>
+    <dd>{{ value }}</dd>
+    {% endfor %}
+
+  </dl>
