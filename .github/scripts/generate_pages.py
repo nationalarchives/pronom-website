@@ -195,7 +195,8 @@ def run():
             edit_page.write(index_template.render(content=create_edit_page(puid, json_data, actor_select)))
 
     for actor_json in actors.values():
-        with open(f'site/actor/{actor_json['actorId']}', 'w') as actor_page:
+        actor_id = actor_json['actorId']
+        with open(f'site/actor/{actor_id}', 'w') as actor_page:
             actor_details_template = env.get_template("actor_details.html")
             actor_details = actor_details_template.render(results=create_actor(actor_json), name=actor_json['name'])
             actor_page.write(index_template.render(content=actor_details))
