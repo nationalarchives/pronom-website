@@ -1,0 +1,38 @@
+{% from "components/text-input/macro.html" import tnaTextInput %}
+{% from "components/button/macro.html" import tnaButton %}
+{% from "components/select/macro.html" import tnaSelect %}
+
+<form action="https://d3hk4y84s0zka0.cloudfront.net/submission" method="POST">
+  <input type="hidden" name="puid" value="{{ result.puid }}">
+
+  <h2>Edit {{ result.name }}</h2>
+  <h3>{{ result.puid }}</h3>
+  {{ tnaTextInput({ 'label': "Contributor Name",  'id': "contributorName", 'name': "contributorName", 'hint': 'This will be used to generate the release notes and will be available publicly' }) }}
+  {{ tnaTextInput({ 'label': "Name", 'id': "name", 'name': "formatName", 'value': result.name }) }}
+  {{ tnaTextInput({ 'label': "Family", 'id': "families", 'name': "formatFamilies", 'value': result.families }) }}
+  {{ tnaTextInput({ 'label': "Disclosure", 'id': "disclosure", 'name': "formatDisclosure", 'value': result.disclosure }) }}
+  {{ tnaTextInput({ 'label': "Description", 'id': "description", 'name': "formatDescription", 'value': result.description }) }}
+  {{ tnaTextInput({ 'label': "Source", 'id': "source", 'name': "provenanceCompoundName", 'value': result.source }) }}
+  {{ tnaTextInput({ 'label': "Note", 'id': "note", 'name': "formatNote", 'value': result.note }) }}
+  {{ tnaSelect({
+    'label': "Developed by",
+    'id': "developedBy",
+    'name': "developedBy",
+    'items': actors,
+    'selected': result.developedBy
+  }) }}
+  {{ tnaSelect({
+    'label': "Supported by",
+    'id': "supportedBy",
+    'name': "supportedBy",
+    'items': actors,
+    'selected': result.supportedBy
+  }) }}
+  <div class="tna-button-group">
+    {{ tnaButton({
+      'text': "Submit",
+      'buttonElement': true,
+      'buttonType': "submit"
+    }) }}
+  </div>
+</form>

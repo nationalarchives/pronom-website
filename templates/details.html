@@ -1,6 +1,15 @@
 {% from "components/accordion/macro.html" import tnaAccordion %}
+{% from "components/button/macro.html" import tnaButton %}
 <div class="tna-column tna-column--full tna-!--padding-vertical-s">
   <h1 class="tna-heading-m">{{ name }}</h1>
+  <form method="GET" action="{{ editPath }}">
+    {{ tnaButton({
+      'text': "Edit",
+      'small': true,
+      'buttonElement': true,
+      'buttonType': "submit"
+    }) }}
+  </form>
   {{ summary|safe }}
   {{ signatures|safe }}
   {{ tnaAccordion({

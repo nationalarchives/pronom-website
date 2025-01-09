@@ -18,7 +18,9 @@ def get_summary(data):
     identifiers = ', '.join(
         [f"{identifier['identifierType']}: {identifier['identifierText']}" for identifier in data['identifiers']]
     )
+
     def str_for_attr(attr): return data[attr] if attr in data and data[attr] is not None else ''
+
     return {
         'Name': str_for_attr('formatName'),
         'Version': str_for_attr('version'),
@@ -54,7 +56,27 @@ def read_json_from_s3(file_key):
     return json_data
 
 
-def create_detail(json_data):
+def create_edit_page(puid, json_data, actor_select):
+    def str_for_attr(attr): return json_data[attr] if attr in json_data and json_data[attr] is not None else ''
+
+    def num_for_attr(attr): return json_data[attr] if attr in json_data and json_data[attr] is not None else 0
+
+    edit_data = {
+        "puid": puid,
+        "name": str_for_attr("formatName"),
+        "families": str_for_attr("formatFamilies"),
+        "disclosure": str_for_attr("formatDisclosure"),
+        "description": str_for_attr("formatDescription"),
+        "source": str_for_attr("provenanceCompoundName"),
+        "note": str_for_attr("formatNote"),
+        "developedBy": json_data["developedBy"]['actorId'] if "developedBy" in json_data else 0,
+        "supportedBy": json_data["supportedBy"]['actorId'] if "supportedBy" in json_data else 0
+    }
+    edit_template = env.get_template("edit.html")
+    return edit_template.render(result=edit_data, actors=actor_select)
+
+
+def create_detail(puid, json_data):
     index_template = env.get_template("index.html")
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
@@ -65,15 +87,16 @@ def create_detail(json_data):
         "results": [summary],
         "open": True,
         "developedBy": json_data['developedBy'] if 'developedBy' in json_data else None,
-        "supportedBy": json_data['supportedBy'] if 'supportedBy' in json_data else None,
+        "supportedBy": json_data['supportedBy'] if 'supportedBy' in json_data else None
     }
     signatures_args = {"title": "Signatures", "results": signatures, "id": "signatures"}
     summary_section = env.get_template("details_section.html").render(**summary_args)
     signatures_section = env.get_template("details_section.html").render(**signatures_args)
     container_template = env.get_template("container_signature_section.html")
     container_content = container_template.render(data=json_data)
+    edit_path = f'/edit/{puid}'
     content = details_template.render(name=summary['Name'], summary=summary_section,
-                                      signatures=signatures_section, containers=container_content)
+                                      signatures=signatures_section, containers=container_content, editPath=edit_path)
     return index_template.render(content=content)
 
 
@@ -143,25 +166,43 @@ def run():
     with open('site/search', 'w') as search:
         search.write(create_search())
 
-    actors = {}
+    all_json_files = {}
+    index_template = env.get_template("index.html")
+
     for sub_dir in ['fmt', 'x-fmt']:
         sig_files = os.listdir(f'{path}/signatures/{sub_dir}')
         for file in sig_files:
             json_path = f'{path}/signatures/{sub_dir}/{file}'
-            with open(f'site/{sub_dir}/{file.split(".")[0]}', 'w') as output, open(json_path, 'r') as sig_json:
-                json_data = json.load(sig_json)
-                output.write(create_detail(json_data))
-                if 'developedBy' in json_data:
-                    actors[json_data['developedBy']['actorId']] = json_data['developedBy']
-                if 'supportedBy' in json_data:
-                    actors[json_data['supportedBy']['actorId']] = json_data['supportedBy']
+            with open(json_path, 'r') as sig_json:
+                all_json_files[f'{sub_dir}/{file.split(".")[0]}'] = json.load(sig_json)
 
-    index_template = env.get_template("index.html")
+    actors = {}
+    for json_data in all_json_files.values():
+        if 'developedBy' in json_data:
+            actors[json_data['developedBy']['actorId']] = json_data['developedBy']
+        if 'supportedBy' in json_data:
+            actors[json_data['supportedBy']['actorId']] = json_data['supportedBy']
+
+    actor_select = [{'text': '', 'value': 0}]
+    for actor_json in actors.values():
+        actor_select.append({'text': actor_json['name'], 'value': actor_json['actorId']})
+
+    actor_select = sorted(actor_select, key=lambda x: x['text'])
+
+    for puid, json_data in all_json_files.items():
+        with open(f'site/{puid}', 'w') as output, open(f'site/edit/{puid}', 'w') as edit_page:
+            output.write(create_detail(puid, json_data))
+            edit_page.write(index_template.render(content=create_edit_page(puid, json_data, actor_select)))
+
     for actor_json in actors.values():
         with open(f'site/actor/{actor_json['actorId']}', 'w') as actor_page:
             actor_details_template = env.get_template("actor_details.html")
             actor_details = actor_details_template.render(results=create_actor(actor_json), name=actor_json['name'])
             actor_page.write(index_template.render(content=actor_details))
+
+    submissions_received_template = env.get_template("submissions_received.html")
+    with open(f'site/submission-received', 'w') as submission_received:
+        submission_received.write(index_template.render(content=submissions_received_template.render()))
 
 
 run()

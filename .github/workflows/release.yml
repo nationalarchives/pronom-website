@@ -26,8 +26,8 @@ jobs:
           role-session-name: DeployPRONOM
       - run: |
           pip install boto3
-          pip install -r requirements.txt
-          mkdir -p site/fmt site/x-fmt site/actor
+          pip install -r requirements-results.txt
+          mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt
           python .github/scripts/generate_pages.py "$PWD/signature-files"
           cd site
           aws s3 sync --quiet --content-type text/html . s3://tna-pronom-signatures-spike
@@ -40,6 +40,7 @@ jobs:
           cd ..
           zip function.zip templates/index.html templates/search_results.html results.py indexes
           aws lambda update-function-code --zip-file fileb://function.zip --function-name pronom-results
+          
           LATEST_SIGNATURE_FILE=$(aws s3 ls s3://tna-pronom-signatures-spike/signatures/ | sort -t'V' -k2,2n | tail -1 | awk '{split($0,a," "); print a[4]}')
           aws lambda update-function-configuration --function-name pronom-soap --environment Variables={DOWNLOAD_URL=https://d3hk4y84s0zka0.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE}
           while true; do
@@ -53,3 +54,11 @@ jobs:
           python .github/scripts/generate_version_file.py $LATEST_SIGNATURE_FILE
           zip function-soap.zip soap.py version
           aws lambda update-function-code --zip-file fileb://function-soap.zip --function-name pronom-soap
+          
+          mkdir -p package-submissions
+          pip install -r requirements-submissions.txt --target=package-submissions
+          cd package-submissions
+          zip -r ../submissions.zip .
+          cd ..
+          zip submissions.zip submissions.py
+          aws lambda update-function-code --zip-file fileb://submissions.zip --function-name pronom-submissions
