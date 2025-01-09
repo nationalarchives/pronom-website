@@ -34,7 +34,7 @@ jobs:
           cd ..
           python .github/scripts/generate_index_file.py "$PWD/signature-files"
           mkdir -p package
-          pip install -r requirements.txt --target=package
+          pip install -r requirements-results.txt --target=package
           cd package 
           zip -r ../function.zip .
           cd ..
