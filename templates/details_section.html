@@ -7,6 +7,10 @@
     <dt>{{ key }}</dt>
     <dd>{{ value }}</dd>
     {% endfor %}
+    {% if source is defined and source is not none %}
+      <dt>Source</dt>
+      <dd><a href="/actor/{{ source['actorId'] }}">{{ source['name'] }}</a></dd>
+    {% endif %}
     {% if developedBy is defined and developedBy is not none %}
       <dt>Developed by</dt>
       <dd><a href="/actor/{{ developedBy['actorId'] }}">{{ developedBy['name'] }}</a></dd>

@@ -50,23 +50,64 @@ def lambda_handler(event, context):
                 actors[json_data['developedBy']['actorId']] = json_data['developedBy']
             if 'supportedBy' in json_data:
                 actors[json_data['supportedBy']['actorId']] = json_data['supportedBy']
+            if 'source' in json_data:
+                actors[json_data['source']['actorId']] = json_data['source']
 
         puid = body_json['puid']
         del body_json['puid']
         format_json = json_files[f'{puid}.json']
         changed = False
 
+        if 'identifierType' in body_json and 'identifierText' in body_json:
+            identifiers = format_json['identifiers'] if 'identifiers' in format_json else []
+            new_identifier = {
+                'identifierText': body_json['identifierText'],
+                'identifierType': body_json['identifierType']
+            }
+            identifiers.append(new_identifier)
+            format_json['identifiers'] = identifiers
+            changed = True
+
+        if 'relationshipType' in body_json and 'relatedFormatName' in body_json:
+            relationships = format_json['relationships'] if 'relationships' in format_json else []
+            new_relationship = {
+                'relationshipType': body_json['relationshipType'],
+                'relatedFormatID': json_files[f'{body_json['relatedFormatName']}.json']['fileFormatID']
+            }
+            relationships.append(new_relationship)
+            format_json['relationships'] = relationships
+            changed = True
+
         def update_actor(field_name):
+            next_actor_id = max(actors.keys()) + 1
+
             existing_value = format_json.get(field_name)
             body_value = body_json.get(field_name)
             if body_value != '0':
                 if existing_value is None or existing_value['actorId'] != int(body_value):
                     format_json[field_name] = actors[int(body_value)]
                     return True
+            else:
+                actor = {'actorId': next_actor_id}
+
+                def add_if_not_empty(key, suffix):
+                    if f'{field_name}{suffix}' in body_json:
+                        actor[key] = body_json[f'{field_name}{suffix}']
+
+                add_if_not_empty('name', 'Name')
+                add_if_not_empty('address', 'Address')
+                add_if_not_empty('country', 'Country')
+                add_if_not_empty('companyWebsite', 'Company Website')
+                add_if_not_empty('supportWebsite', 'Support Website')
+                if len(actor) > 1:
+                    format_json[field_name] = actor
+                    actors[next_actor_id] = actor
+                    return True
             return False
 
         supported_by_updated = update_actor('supportedBy')
         developed_by_updated = update_actor('developedBy')
+
         for key, value in body_json.items():
             if key in format_json and format_json[key] != body_json[key] and key not in ['supportedBy', 'developedBy']:
                 format_json[key] = body_json[key]
@@ -80,7 +121,7 @@ def lambda_handler(event, context):
             existing_sha = api.repos.get_content(owner, repo, path, branch_name)['sha']
             committer = {'name': tna_name, 'email': tna_email}
 
-            if 'contributorName' in body_json and body_json['contributorName'] is not None:
+            if body_json.get('contributorName') and body_json['contributorName'] != '':
                 author_name = body_json['contributorName']
             else:
                 author_name = 'The National Archives'
@@ -97,7 +138,7 @@ def lambda_handler(event, context):
             )
             head = f'{owner}:{branch_name}'
             base = 'develop'
-            body_text = 'Test'
+            body_text = body_json['changeDescription'] if 'changeDescription' in body_json else message
             res = api.pulls.create(parent_owner, repo, message, head=head, base=base, body=body_text)
             print(res)
         else:

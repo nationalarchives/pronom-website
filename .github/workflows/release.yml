@@ -26,8 +26,8 @@ jobs:
           role-session-name: DeployPRONOM
       - run: |
           pip install boto3
-          pip install -r requirements-results.txt
-          mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt
+          pip install -r requirements-generate.txt
+          mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/edit/new/fmt site/edit/new/x-fmt
           python .github/scripts/generate_pages.py "$PWD/signature-files"
           cd site
           aws s3 sync --quiet --content-type text/html . s3://tna-pronom-signatures-spike

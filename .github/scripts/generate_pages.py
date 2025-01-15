@@ -5,6 +5,7 @@ import boto3
 import json
 from jinja2 import Environment, ChoiceLoader, PackageLoader, FileSystemLoader, select_autoescape
 from datetime import datetime
+import pycountry
 
 env = Environment(
     loader=ChoiceLoader([FileSystemLoader("templates"), PackageLoader("tna_frontend_jinja"), ]),
@@ -25,6 +26,7 @@ def get_summary(data):
         'Name': str_for_attr('formatName'),
         'Version': str_for_attr('version'),
         'Identifiers': identifiers,
+        'Format Type': str_for_attr('formatTypes'),
         'Family': str_for_attr('formatFamilies'),
         'Disclosure': str_for_attr('formatDisclosure'),
         'Description': str_for_attr('formatDescription'),
@@ -56,10 +58,31 @@ def read_json_from_s3(file_key):
     return json_data
 
 
-def create_edit_page(puid, json_data, actor_select):
-    def str_for_attr(attr): return json_data[attr] if attr in json_data and json_data[attr] is not None else ''
+def create_edit_page(puid, json_data, actor_select, json_by_id):
+    def str_for_attr(attr):
+        return json_data[attr] if attr in json_data and json_data[attr] is not None else ''
 
-    def num_for_attr(attr): return json_data[attr] if attr in json_data and json_data[attr] is not None else 0
+    identifier_type_names = ['PUID', 'Other', 'GDFR Format Identifier', 'MIME', 'TOM Identifier', 'GDFRClass',
+                             'GDFRRegistry', 'URL', 'Apple Uniform Type Identifier',
+                             'Library of Congress Format Description Identifier', 'Wikidata QID Identifier']
+    relationship_type_names = ['Other', 'Is subsequent version of', 'Is previous version of', 'Is subtype of',
+                               'Is supertype of', 'Can contain', 'Can be contained by', 'Has priority over',
+                               'Equivalent to']
+
+    def get_types(type_names):
+        types = sorted([{'text': x, 'value': x} for x in type_names], key=lambda x: x['text'])
+        types.insert(0, {'text': '', 'value': ''})
+        return types
+
+    relationship_types = get_types(relationship_type_names)
+    identifier_types = get_types(identifier_type_names)
+
+    relationships = []
+    if 'relationships' in json_data:
+        for relationship in json_data['relationships']:
+            related_format = json_by_id[relationship['relatedFormatID']]
+            relationship_type = relationship['relationshipType']
+            relationships.append({'puid': related_format, 'type': relationship_type})
 
     edit_data = {
         "puid": puid,
@@ -67,13 +90,25 @@ def create_edit_page(puid, json_data, actor_select):
         "families": str_for_attr("formatFamilies"),
         "disclosure": str_for_attr("formatDisclosure"),
         "description": str_for_attr("formatDescription"),
+        "formatTypes": str_for_attr("formatTypes"),
+        "identifiers": json_data['identifiers'],
+        "relationships": relationships,
+        "identifierTypes": identifier_types,
+        "relationshipTypes": relationship_types,
         "source": str_for_attr("provenanceCompoundName"),
         "note": str_for_attr("formatNote"),
         "developedBy": json_data["developedBy"]['actorId'] if "developedBy" in json_data else 0,
         "supportedBy": json_data["supportedBy"]['actorId'] if "supportedBy" in json_data else 0
     }
     edit_template = env.get_template("edit.html")
-    return edit_template.render(result=edit_data, actors=actor_select)
+
+    def get_countries():
+        return [{'text': country.name, 'value': country.alpha_3} for country in pycountry.countries]
+
+    countries = sorted(get_countries(), key=lambda x: x['text'])
+    countries.insert(0, {'text': '', 'value': ''})
+
+    return edit_template.render(result=edit_data, actors=actor_select, countries=countries)
 
 
 def create_detail(puid, json_data):
@@ -87,7 +122,8 @@ def create_detail(puid, json_data):
         "results": [summary],
         "open": True,
         "developedBy": json_data['developedBy'] if 'developedBy' in json_data else None,
-        "supportedBy": json_data['supportedBy'] if 'supportedBy' in json_data else None
+        "supportedBy": json_data['supportedBy'] if 'supportedBy' in json_data else None,
+        "source": json_data['source'] if 'source' in json_data else None
     }
     signatures_args = {"title": "Signatures", "results": signatures, "id": "signatures"}
     summary_section = env.get_template("details_section.html").render(**summary_args)
@@ -104,8 +140,8 @@ def create_actor(data):
     def format_date(): return datetime.strptime(data['sourceDate'], "%Y-%m-%d").strftime("%d %b %Y")
 
     return {
-        'Address': data['address'] if 'version' in data else '',
-        'Country': data['country'] if 'country' in data else '',
+        'Address': data['address'] if 'address' in data else '',
+        'Country': data['addressCountry'] if 'addressCountry' in data else '',
         'Support Website': data['supportWebsite'] if 'supportWebsite' in data else '',
         'Company Website': data['companyWebsite'] if 'companyWebsite' in data else '',
         'Contact': data['contact'] if 'contact' in data else '',
@@ -167,6 +203,7 @@ def run():
         search.write(create_search())
 
     all_json_files = {}
+    json_by_id = {}
     index_template = env.get_template("index.html")
 
     for sub_dir in ['fmt', 'x-fmt']:
@@ -174,7 +211,10 @@ def run():
         for file in sig_files:
             json_path = f'{path}/signatures/{sub_dir}/{file}'
             with open(json_path, 'r') as sig_json:
-                all_json_files[f'{sub_dir}/{file.split(".")[0]}'] = json.load(sig_json)
+                puid = f'{sub_dir}/{file.split(".")[0]}'
+                loaded_json = json.load(sig_json)
+                all_json_files[puid] = loaded_json
+                json_by_id[loaded_json['fileFormatID']] = puid
 
     actors = {}
     for json_data in all_json_files.values():
@@ -182,6 +222,8 @@ def run():
             actors[json_data['developedBy']['actorId']] = json_data['developedBy']
         if 'supportedBy' in json_data:
             actors[json_data['supportedBy']['actorId']] = json_data['supportedBy']
+        if 'source' in json_data:
+            actors[json_data['source']['actorId']] = json_data['source']
 
     actor_select = [{'text': '', 'value': 0}]
     for actor_json in actors.values():
@@ -192,7 +234,7 @@ def run():
     for puid, json_data in all_json_files.items():
         with open(f'site/{puid}', 'w') as output, open(f'site/edit/{puid}', 'w') as edit_page:
             output.write(create_detail(puid, json_data))
-            edit_page.write(index_template.render(content=create_edit_page(puid, json_data, actor_select)))
+            edit_page.write(index_template.render(content=create_edit_page(puid, json_data, actor_select, json_by_id)))
 
     for actor_json in actors.values():
         actor_id = actor_json['actorId']
