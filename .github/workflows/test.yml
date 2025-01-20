@@ -11,4 +11,4 @@ jobs:
     name: Test changed-files
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Tests passed"
+      - run: python -m unittest discover -v -s lambdas/test
