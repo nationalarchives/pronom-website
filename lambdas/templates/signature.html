@@ -1,0 +1,26 @@
+{% from "components/text-input/macro.html" import tnaTextInput %}
+{% from "components/select/macro.html" import tnaSelect %}
+
+<hr>
+<section class="tna-section">
+  <h3 class="tna-heading-l">Signatures</h3>
+  {{ tnaSelect({
+    'label': "Position Type",
+    'id': "signature-positionType",
+    'name': "signature-positionType",
+    'items': position_types,
+    'selected': ''
+  }) }}
+  {{ tnaTextInput({ 'label': "Offset", 'id': "signature-offset", 'name': "signature-offset" }) }}
+  {{ tnaTextInput({ 'label': "Max Offset", 'id': "signature-maxOffset", 'name': "signature-maxOffset" }) }}
+  {{ tnaTextInput({ 'label': "Byte Sequence", 'id': "signature-byteSequence", 'name': "signature-byteSequence" }) }}
+  {{ tnaSelect({
+    'label': "Endianness",
+    'id': "signature-endianness",
+    'name': "signature-endianness",
+    'items': [{'text': '', 'value': ''}, {'text': 'Little-endian', 'value': 'Little-endian'}, {'text': 'Big-endian', 'value': 'Big-endian'}],
+    'selected': ''
+  }) }}
+  {{ tnaTextInput({ 'label': "Name", 'id': "signature-name", 'name': "signature-name" }) }}
+  {{ tnaTextInput({ 'label': "Note", 'id': "signature-note", 'name': "signature-note" }) }}
+</section>

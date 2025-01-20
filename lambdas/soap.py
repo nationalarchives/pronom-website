@@ -6,7 +6,7 @@ def response(contents):
     return {
         'statusCode': 200,
         'body': contents,
-        'contentType': 'text/xml'
+        "headers": {"Content-Type": "text/xml"}
     }
 
 

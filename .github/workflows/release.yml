@@ -24,41 +24,4 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/SandboxGithubActionsDeployPronomWebsite
           aws-region: eu-west-2
           role-session-name: DeployPRONOM
-      - run: |
-          pip install boto3
-          pip install -r requirements-generate.txt
-          mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/edit/new/fmt site/edit/new/x-fmt
-          python .github/scripts/generate_pages.py "$PWD/signature-files"
-          cd site
-          aws s3 sync --quiet --content-type text/html . s3://tna-pronom-signatures-spike
-          cd ..
-          python .github/scripts/generate_index_file.py "$PWD/signature-files"
-          mkdir -p package
-          pip install -r requirements-results.txt --target=package
-          cd package 
-          zip -r ../function.zip .
-          cd ..
-          zip function.zip templates/index.html templates/search_results.html results.py indexes
-          aws lambda update-function-code --zip-file fileb://function.zip --function-name pronom-results
-          
-          LATEST_SIGNATURE_FILE=$(aws s3 ls s3://tna-pronom-signatures-spike/signatures/ | sort -t'V' -k2,2n | tail -1 | awk '{split($0,a," "); print a[4]}')
-          aws lambda update-function-configuration --function-name pronom-soap --environment Variables={DOWNLOAD_URL=https://d3hk4y84s0zka0.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE}
-          while true; do
-            status=$(aws lambda get-function --function-name pronom-soap --query 'Configuration.LastUpdateStatus' --output text)
-            if [ "$status" = "Successful" ]; then
-              echo "Update status is Successful. Proceeding..."
-              break
-            fi
-            sleep 0.5
-          done
-          python .github/scripts/generate_version_file.py $LATEST_SIGNATURE_FILE
-          zip function-soap.zip soap.py version
-          aws lambda update-function-code --zip-file fileb://function-soap.zip --function-name pronom-soap
-          
-          mkdir -p package-submissions
-          pip install -r requirements-submissions.txt --target=package-submissions
-          cd package-submissions
-          zip -r ../submissions.zip .
-          cd ..
-          zip submissions.zip submissions.py
-          aws lambda update-function-code --zip-file fileb://submissions.zip --function-name pronom-submissions
+      - run: release.sh

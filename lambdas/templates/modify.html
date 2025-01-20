@@ -2,11 +2,15 @@
 {% from "components/button/macro.html" import tnaButton %}
 {% from "components/select/macro.html" import tnaSelect %}
 
-<form action="https://d3hk4y84s0zka0.cloudfront.net/submission" method="POST">
-  <input type="hidden" name="puid" value="{{ result.puid }}">
-
-  <h2>Edit {{ result.name }}</h2>
-  <h3>{{ result.puid }}</h3>
+<form action="/submissions" method="POST">
+  <input type="hidden" name="submissionType" value="{{ change_type }}-format">
+  {% if change_type == 'add' %}
+    <h2>Add a new signature</h2>
+  {% else %}
+    <input type="hidden" name="puid" value="{{ result.puid }}">
+    <h2>Edit {{ result.name }}</h2>
+    <h3>{{ result.puid }}</h3>
+  {% endif %}
   <hr>
   <section class="tna-section">
     <h3 class="tna-heading-l">Your details</h3>
@@ -28,6 +32,20 @@
     {{ tnaTextInput({ 'label': "Description", 'id': "description", 'name': "formatDescription", 'value': result.description }) }}
     {{ tnaTextInput({ 'label': "Format Type", 'id': "formatTypes", 'name': "formatTypes", 'value': result.formatTypes }) }}
     {{ tnaTextInput({ 'label': "Note", 'id': "formatNote", 'name': "formatNote", 'value': result.note }) }}
+    {{ tnaSelect({
+      'label': "Format developed by",
+      'id': "developedBy",
+      'name': "developedBy",
+      'items': actors,
+      'selected': result.developedBy
+    }) }}
+    {{ tnaSelect({
+      'label': "Format supported by",
+      'id': "supportedBy",
+      'name': "supportedBy",
+      'items': actors,
+      'selected': result.supportedBy
+    }) }}
   </section>
   <hr>
   <section class="tna-section">
@@ -97,56 +115,11 @@
             </tr>
           </tbody>
     </table>
+  </section>
+  {% if signature is defined and signature is not none %}
+    {{ signature|safe }}
+  {% endif %}
 
-  </section>
-  <section class="tna-section">
-    <h3 class="tna-heading-l">Format developed by</h3>
-    <h4 class="tna-heading-m">Choose an existing organisation</h4>
-    {{ tnaSelect({
-      'label': "Organisation",
-      'id': "developedBy",
-      'name': "developedBy",
-      'items': actors,
-      'selected': result.developedBy
-    }) }}
-    <h4 class="tna-heading-m">Or create a new one</h4>
-    {{ tnaTextInput({ 'label': "Name", 'id': "developedByName", 'name': "developedByName" }) }}
-      {{ tnaTextInput({ 'label': "Address", 'id': "developedByAddress", 'name': "developedByAddress" }) }}
-      {{ tnaSelect({
-      'label': "Country",
-      'id': "developedByCountry",
-      'name': "developedByCountry",
-      'items': countries,
-      'selected': ''
-    }) }}
-    {{ tnaTextInput({ 'label': "Company Website", 'id': "developedByCompanyWebsite", 'name': "developedByCompanyWebsite" }) }}
-    {{ tnaTextInput({ 'label': "Support Website", 'id': "developedBySupportWebsite", 'name': "developedBySupportWebsite" }) }}
-
-  </section>
-  <hr>
-  <section class="tna-section">
-    <h3 class="tna-heading-l">Format supported by</h3>
-    <h4 class="tna-heading-m">Choose an existing organisation</h4>
-    {{ tnaSelect({
-      'label': "Organisation",
-      'id': "supportedBy",
-      'name': "supportedBy",
-      'items': actors,
-      'selected': result.supportedBy
-    }) }}
-    <h4 class="tna-heading-m">Or create a new one</h4>
-    {{ tnaTextInput({ 'label': "Name", 'id': "supportedByName", 'name': "supportedByName" }) }}
-      {{ tnaTextInput({ 'label': "Address", 'id': "supportedByAddress", 'name': "supportedByAddress" }) }}
-      {{ tnaSelect({
-      'label': "Country",
-      'id': "supportedByCountry",
-      'name': "supportedByCountry",
-      'items': countries,
-      'selected': ''
-    }) }}
-      {{ tnaTextInput({ 'label': "Company Website", 'id': "supportedByCompanyWebsite", 'name': "supportedByCompanyWebsite" }) }}
-      {{ tnaTextInput({ 'label': "Support Website", 'id': "supportedBySupportWebsite", 'name': "supportedBySupportWebsite" }) }}
-  </section>
   <div class="tna-button-group">
     {{ tnaButton({
       'text': "Submit",

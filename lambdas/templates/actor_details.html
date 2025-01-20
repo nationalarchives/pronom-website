@@ -1,5 +1,8 @@
 {% from "components/accordion/macro.html" import tnaAccordion %}
 <h2 class="tna-heading-m">{{ name }}</h2>
+<div class="tna-button-group">
+  <a class="tna-button tna-button--small" href="/actor/edit/{{ actorId }}">Edit</a>
+</div>
 <dl class="tna-dl">
     {% for key, value in results.items() %}
     <dt>{{ key }}</dt>

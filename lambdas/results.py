@@ -3,7 +3,7 @@ import sqlite3
 import re
 
 env = Environment(
-    loader=ChoiceLoader([FileSystemLoader("./templates"), PackageLoader("tna_frontend_jinja"), ]),
+    loader=ChoiceLoader([FileSystemLoader("./lambdas/templates"), PackageLoader("tna_frontend_jinja"), ]),
     autoescape=select_autoescape()
 )
 
@@ -40,17 +40,8 @@ def lambda_handler(event, _):
     content = search_results.render(data=data)
     body = index_template.render(content=content)
 
-    try:
-        return {
-            "statusCode": 200,
-            "body": body,
-            "headers": {"Content-Type": "text/html"}
-        }
-    except Exception as e:
-        return {
-            "statusCode": 500,
-            "body": f"An error occurred: {str(e)}",
-            "headers": {
-                "Content-Type": "text/html"
-            }
-        }
+    return {
+        "statusCode": 200,
+        "body": body,
+        "headers": {"Content-Type": "text/html"}
+    }

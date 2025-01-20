@@ -2,14 +2,9 @@
 {% from "components/button/macro.html" import tnaButton %}
 <div class="tna-column tna-column--full tna-!--padding-vertical-s">
   <h1 class="tna-heading-m">{{ name }}</h1>
-  <form method="GET" action="{{ editPath }}">
-    {{ tnaButton({
-      'text': "Edit",
-      'small': true,
-      'buttonElement': true,
-      'buttonType': "submit"
-    }) }}
-  </form>
+  <div class="tna-button-group">
+    <a class="tna-button tna-button--small" href="{{ editPath }}">Edit</a>
+  </div>
   {{ summary|safe }}
   {{ signatures|safe }}
   {{ tnaAccordion({

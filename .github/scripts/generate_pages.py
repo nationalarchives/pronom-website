@@ -7,12 +7,19 @@ from jinja2 import Environment, ChoiceLoader, PackageLoader, FileSystemLoader, s
 from datetime import datetime
 import pycountry
 
+template_dir = "./lambdas/templates"
 env = Environment(
-    loader=ChoiceLoader([FileSystemLoader("templates"), PackageLoader("tna_frontend_jinja"), ]),
+    loader=ChoiceLoader([FileSystemLoader(template_dir), PackageLoader("tna_frontend_jinja"), ]),
     autoescape=select_autoescape()
 )
 
 bucket_name = 'tna-pronom-signatures-spike'
+
+
+def render_index(content):
+    with open(f'{template_dir}/site.js') as js_file:
+        index_template = env.get_template("index.html")
+        return index_template.render(js=js_file.read(), content=content)
 
 
 def get_summary(data):
@@ -58,7 +65,7 @@ def read_json_from_s3(file_key):
     return json_data
 
 
-def create_edit_page(puid, json_data, actor_select, json_by_id):
+def create_modify_page(puid, json_data, actor_select, json_by_id):
     def str_for_attr(attr):
         return json_data[attr] if attr in json_data and json_data[attr] is not None else ''
 
@@ -84,35 +91,56 @@ def create_edit_page(puid, json_data, actor_select, json_by_id):
             relationship_type = relationship['relationshipType']
             relationships.append({'puid': related_format, 'type': relationship_type})
 
-    edit_data = {
-        "puid": puid,
+    modify_data = {
         "name": str_for_attr("formatName"),
         "families": str_for_attr("formatFamilies"),
         "disclosure": str_for_attr("formatDisclosure"),
         "description": str_for_attr("formatDescription"),
         "formatTypes": str_for_attr("formatTypes"),
-        "identifiers": json_data['identifiers'],
+        "identifiers": json_data['identifiers'] if 'identifiers' in json_data else [],
         "relationships": relationships,
         "identifierTypes": identifier_types,
         "relationshipTypes": relationship_types,
         "source": str_for_attr("provenanceCompoundName"),
         "note": str_for_attr("formatNote"),
-        "developedBy": json_data["developedBy"]['actorId'] if "developedBy" in json_data else 0,
-        "supportedBy": json_data["supportedBy"]['actorId'] if "supportedBy" in json_data else 0
+        "developedBy": json_data["developedBy"] if "developedBy" in json_data else 0,
+        "supportedBy": json_data["supportedBy"] if "supportedBy" in json_data else 0
     }
-    edit_template = env.get_template("edit.html")
+    signature = None
+    change_type = 'edit'
+    if puid:
+        modify_data['puid'] = puid
+    else:
+        change_type = 'add'
+        signature = create_signature_section()
+    modify = env.get_template("modify.html")
 
+    return modify.render(result=modify_data, actors=actor_select, change_type=change_type, signature=signature)
+
+
+def create_countries_select():
     def get_countries():
-        return [{'text': country.name, 'value': country.alpha_3} for country in pycountry.countries]
+        return [{'text': country.name, 'value': country.name} for country in pycountry.countries]
 
     countries = sorted(get_countries(), key=lambda x: x['text'])
     countries.insert(0, {'text': '', 'value': ''})
+    return countries
 
-    return edit_template.render(result=edit_data, actors=actor_select, countries=countries)
+
+def create_add_actor():
+    add_actor_template = env.get_template("modify_actor.html")
+    countries = create_countries_select()
+    actor = {'name': '', 'address': '', 'addressCountry': '', 'supportWebsite': '', 'companyWebsite': ''}
+    return add_actor_template.render(countries=countries, change_type='add', actor=actor)
 
 
-def create_detail(puid, json_data):
-    index_template = env.get_template("index.html")
+def create_edit_actor(actor):
+    add_actor_template = env.get_template("modify_actor.html")
+    countries = create_countries_select()
+    return add_actor_template.render(countries=countries, change_type='edit', actor=actor)
+
+
+def create_detail(puid, json_data, all_actors):
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
     signatures = get_signatures(json_data)
@@ -121,9 +149,9 @@ def create_detail(puid, json_data):
         "title": "Summary",
         "results": [summary],
         "open": True,
-        "developedBy": json_data['developedBy'] if 'developedBy' in json_data else None,
-        "supportedBy": json_data['supportedBy'] if 'supportedBy' in json_data else None,
-        "source": json_data['source'] if 'source' in json_data else None
+        "developedBy": all_actors[json_data['developedBy']] if 'developedBy' in json_data else None,
+        "supportedBy": all_actors[json_data['supportedBy']] if 'supportedBy' in json_data else None,
+        "source": all_actors[json_data['source']] if 'source' in json_data else None
     }
     signatures_args = {"title": "Signatures", "results": signatures, "id": "signatures"}
     summary_section = env.get_template("details_section.html").render(**summary_args)
@@ -133,7 +161,7 @@ def create_detail(puid, json_data):
     edit_path = f'/edit/{puid}'
     content = details_template.render(name=summary['Name'], summary=summary_section,
                                       signatures=signatures_section, containers=container_content, editPath=edit_path)
-    return index_template.render(content=content)
+    return render_index(content=content)
 
 
 def create_actor(data):
@@ -150,16 +178,23 @@ def create_actor(data):
     }
 
 
+def create_signature_section():
+    position_type_names = ['Absolute from BOF', 'Absolute from EOF', 'Variable', 'Indirect From BOF',
+                           'Indirect From EOF']
+    position_type_select = [{'value': x, 'text': x} for x in position_type_names]
+    position_type_select.insert(0, {'value': '', 'text': ''})
+    signature_template = env.get_template('signature.html')
+    return signature_template.render(position_types=position_type_select)
+
+
 def create_home():
     home_template = env.get_template("home.html")
-    index_template = env.get_template("index.html")
-    return index_template.render(content=home_template.render())
+    return render_index(home_template.render())
 
 
 def create_search():
-    index_template = env.get_template("index.html")
     search_template = env.get_template("search.html")
-    return index_template.render(content=search_template.render())
+    return render_index(search_template.render())
 
 
 path = sys.argv[1]
@@ -185,11 +220,10 @@ def create_file_list():
     signature_map = [{'name': signature_key_to_name(key), 'href': key} for key in signatures]
     container_signature_map = [{'name': container_key_to_name(key), 'href': key} for key in container_signatures]
 
-    index_template = env.get_template("index.html")
     signature_list_template = env.get_template("signature_list.html")
     signature_list_content = (
         signature_list_template.render(signature_data=signature_map, container_signature_data=container_signature_map))
-    return index_template.render(content=signature_list_content)
+    return render_index(signature_list_content)
 
 
 def run():
@@ -203,8 +237,14 @@ def run():
         search.write(create_search())
 
     all_json_files = {}
+    all_actors = {}
     json_by_id = {}
-    index_template = env.get_template("index.html")
+
+    for file in os.listdir(f'{path}/actors'):
+        with open(f'{path}/actors/{file}') as actor_file:
+            actor_json = json.load(actor_file)
+            actor_id = actor_json['actorId']
+            all_actors[actor_id] = actor_json
 
     for sub_dir in ['fmt', 'x-fmt']:
         sig_files = os.listdir(f'{path}/signatures/{sub_dir}')
@@ -216,36 +256,37 @@ def run():
                 all_json_files[puid] = loaded_json
                 json_by_id[loaded_json['fileFormatID']] = puid
 
-    actors = {}
-    for json_data in all_json_files.values():
-        if 'developedBy' in json_data:
-            actors[json_data['developedBy']['actorId']] = json_data['developedBy']
-        if 'supportedBy' in json_data:
-            actors[json_data['supportedBy']['actorId']] = json_data['supportedBy']
-        if 'source' in json_data:
-            actors[json_data['source']['actorId']] = json_data['source']
-
     actor_select = [{'text': '', 'value': 0}]
-    for actor_json in actors.values():
+    for actor_json in all_actors.values():
         actor_select.append({'text': actor_json['name'], 'value': actor_json['actorId']})
 
     actor_select = sorted(actor_select, key=lambda x: x['text'])
 
     for puid, json_data in all_json_files.items():
         with open(f'site/{puid}', 'w') as output, open(f'site/edit/{puid}', 'w') as edit_page:
-            output.write(create_detail(puid, json_data))
-            edit_page.write(index_template.render(content=create_edit_page(puid, json_data, actor_select, json_by_id)))
+            output.write(create_detail(puid, json_data, all_actors))
+            edit_content = create_modify_page(puid, json_data, actor_select, json_by_id)
+            edit_page.write(render_index(edit_content))
 
-    for actor_json in actors.values():
+    with open('site/add', 'w') as add_page:
+        add_page.write(render_index(create_modify_page(None, {}, actor_select, {})))
+
+    for actor_json in all_actors.values():
         actor_id = actor_json['actorId']
-        with open(f'site/actor/{actor_id}', 'w') as actor_page:
+        view_path = f'site/actor/{actor_id}'
+        edit_path = f'site/actor/edit/{actor_id}'
+        with open(view_path, 'w') as actor_page, open(edit_path, 'w') as edit_actor_page:
             actor_details_template = env.get_template("actor_details.html")
-            actor_details = actor_details_template.render(results=create_actor(actor_json), name=actor_json['name'])
-            actor_page.write(index_template.render(content=actor_details))
+            actor = create_actor(actor_json)
+            name = actor_json['name']
+            actor_details = actor_details_template.render(results=actor, name=name, actorId=actor_id)
+            actor_page.write(render_index(actor_details))
+            edit_actor_page.write(render_index(create_edit_actor(actor_json)))
 
-    submissions_received_template = env.get_template("submissions_received.html")
-    with open(f'site/submission-received', 'w') as submission_received:
-        submission_received.write(index_template.render(content=submissions_received_template.render()))
+    with open('site/actor/add', 'w') as add_actor_page, open('site/contribute', 'w') as contribute_page:
+        contribute_page_template = env.get_template('contribute.html')
+        add_actor_page.write(render_index(create_add_actor()))
+        contribute_page.write(render_index(contribute_page_template.render()))
 
 
 run()

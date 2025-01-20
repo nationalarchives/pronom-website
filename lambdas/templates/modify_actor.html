@@ -1,0 +1,29 @@
+{% from "components/text-input/macro.html" import tnaTextInput %}
+{% from "components/button/macro.html" import tnaButton %}
+{% from "components/select/macro.html" import tnaSelect %}
+
+<form action="/submissions" method="POST">
+  <input type="hidden" name="submissionType" value="{{ change_type }}-actor"/>
+  {% if actor.actorId is defined and actor.actorId is not none %}
+    <input type="hidden" name="actorId" value="{{ actor.actorId }}"/>
+  {% endif %}
+  <h2 class="tna-heading-l">Add a new organisation</h2>
+  {{ tnaTextInput({ 'label': "Name", 'id': "name", 'name': "name", 'value': actor.name }) }}
+  {{ tnaTextInput({ 'label': "Address", 'id': "address", 'name': "address", 'value': actor.address }) }}
+  {{ tnaSelect({
+  'label': "Country",
+  'id': "addressCountry",
+  'name': "addressCountry",
+  'items': countries,
+  'selected': actor.addressCountry
+  }) }}
+  {{ tnaTextInput({ 'label': "Company Website", 'id': "companyWebsite", 'name': "companyWebsite", 'value': actor.companyWebsite }) }}
+  {{ tnaTextInput({ 'label': "Support Website", 'id': "supportWebsite", 'name': "supportWebsite", 'value': actor.supportWebsite }) }}
+  <div class="tna-button-group">
+    {{ tnaButton({
+      'text': "Submit",
+      'buttonElement': true,
+      'buttonType': "submit"
+    }) }}
+  </div>
+</form>
