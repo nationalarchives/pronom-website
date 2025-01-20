@@ -24,4 +24,4 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/SandboxGithubActionsDeployPronomWebsite
           aws-region: eu-west-2
           role-session-name: DeployPRONOM
-      - run: release.sh
+      - run: .github/scripts/release.sh
