@@ -1,8 +1,11 @@
 {% from "components/breadcrumbs/macro.html" import tnaBreadcrumbs %}
 {% from "components/hero/macro.html" import tnaHero %}
-
+<!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="PRONOM - The National Archives">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.css"
           integrity="sha256-WVAh+/5fHHcNqyOWkvwD52cXAg/ATlYdsNke+YvVbwQ=" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.js"></script>
@@ -15,26 +18,6 @@
   <body>
     <div class="tna-accent-blue">
       <div class="tna-background-accent">
-        <div class="tna-container">
-          <div class="tna-column tna-column--full tna-!--padding-top-s">
-            {{ tnaBreadcrumbs({
-              'items': [
-                {
-                  'text': "Home",
-                  'href': "/"
-                },
-                {
-                  'text': "Search",
-                  'href': "/search"
-                },
-                {
-                  'text': "Signature Files",
-                  'href': "/signature_list"
-                }
-              ]
-            }) }}
-          </div>
-        </div>
       </div>
       <main class="tna-main" id="main-content">
         <div class="tna-background-accent">

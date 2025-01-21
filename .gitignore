@@ -6,5 +6,8 @@ package-edit
 .venv
 site/
 indexes
+test_indexes
 lambdas/__pycache__
 lambdas/test/__pycache__
+nohup.out
+tests/node_modules

@@ -11,7 +11,7 @@ from base64 import b64decode
 
 tna_name = 'The National Archives'
 tna_email = 'digitalpreservation@nationalarchives.gov.uk'
-owner = 'mancuniansam'
+owner = 'tna-pronom'
 parent_owner = 'nationalarchives'
 repo = 'pronom-signatures'
 
@@ -134,7 +134,7 @@ def add_actor(body_json):
 
     add_if_not_empty('name')
     add_if_not_empty('address')
-    add_if_not_empty('country')
+    add_if_not_empty('addressCountry')
     add_if_not_empty('companyWebsite')
     add_if_not_empty('supportWebsite')
     return actor

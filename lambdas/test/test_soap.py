@@ -34,7 +34,3 @@ class SoapTest(unittest.TestCase):
         self.assertEqual(response['body'], 'Test file content')
         self.assertEqual(response['headers']['Content-Type'], 'text/xml')
         self.assertEqual(response['statusCode'], 200)
-
-
-if __name__ == '__main__':
-    unittest.main()

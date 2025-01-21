@@ -49,16 +49,10 @@ def run():
             data = json.load(file)
             format_name = data['formatName']
             puid = [idf['identifierText'] for idf in data['identifiers'] if idf['identifierType'] == 'PUID'][0]
-            for value in data.values():
-                if type(value) is list:
-                    for each in value:
-                        for obj_value in each.values():
-                            if obj_value is not None:
-                                data_values.append(str(obj_value))
-                else:
-                    if value is not None:
-                        data_values.append(str(value))
-            field = ''.join([str(field) for field in data_values])
+            external_signatures = data['externalSignatures'] if 'externalSignatures' in data else []
+            file_extension_list = [x for x in external_signatures if x['signatureType'] == 'File Extension']
+            file_extension = file_extension_list[0] if len(file_extension_list) > 1 else ''
+            field = ''.join([format_name, file_extension])
             insert_into_indexes(puid, format_name, field)
 
 

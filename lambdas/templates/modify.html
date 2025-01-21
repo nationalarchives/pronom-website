@@ -5,10 +5,10 @@
 <form action="/submissions" method="POST">
   <input type="hidden" name="submissionType" value="{{ change_type }}-format">
   {% if change_type == 'add' %}
-    <h2>Add a new signature</h2>
+    <h2 class="tna-heading-l">Add a new signature</h2>
   {% else %}
     <input type="hidden" name="puid" value="{{ result.puid }}">
-    <h2>Edit {{ result.name }}</h2>
+    <h2 class="tna-heading-l">Edit {{ result.name }}</h2>
     <h3>{{ result.puid }}</h3>
   {% endif %}
   <hr>
@@ -20,7 +20,7 @@
   <hr>
   <section class="tna-section">
     <h3 class="tna-heading-l">Format details</h3>
-    {{ tnaTextInput({ 'label': "Name", 'id': "name", 'name': "formatName", 'value': result.name }) }}
+    {{ tnaTextInput({ 'label': "Format Name", 'id': "formatName", 'name': "formatName", 'value': result.name }) }}
     {{ tnaTextInput({ 'label': "Family", 'id': "families", 'name': "formatFamilies", 'value': result.families }) }}
     {{ tnaSelect({
       'label': "Disclosure",
@@ -50,7 +50,7 @@
   <hr>
   <section class="tna-section">
     <h3 class="tna-heading-l">Identifiers</h3>
-    <table class="tna-table--full">
+    <table class="tna-table--full" id="identifiersTable">
       <caption class="tna-table__caption">Identifiers for {{ result.puid }}</caption>
         <thead class="tna-table__head">
           <tr class="tna-table__row">
@@ -60,7 +60,7 @@
         </thead>
           <tbody class="tna-table__body">
             {% for identifier in result.identifiers %}
-              <tr class="tna-table__row">
+              <tr class="tna-table__row identifier-row">
                 <td class="tna-table__header">{{ identifier.identifierType }}</td>
                 <td class="tna-table__header">{{ identifier.identifierText }}</td>
               </tr>
@@ -85,7 +85,7 @@
   <hr>
   <section class="tna-section">
     <h3 class="tna-heading-l">Relationships</h3>
-    <table class="tna-table--full">
+    <table class="tna-table--full" id="relationshipsTable">
       <caption class="tna-table__caption">Relationships for {{ result.puid }}</caption>
         <thead class="tna-table__head">
           <tr class="tna-table__row">
@@ -95,7 +95,7 @@
         </thead>
           <tbody class="tna-table__body">
             {% for relationship in result.relationships %}
-              <tr class="tna-table__row">
+              <tr class="tna-table__row relationship-row">
                 <td class="tna-table__header">{{ relationship.type }}</td>
                 <td class="tna-table__header">{{ relationship.puid }}</td>
               </tr>

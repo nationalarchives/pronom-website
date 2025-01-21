@@ -1,13 +1,18 @@
 import unittest
 import sqlite3
+from unittest import mock
+
 from lambdas import results
 import os
 
+db_name = "test_indexes"
 
+
+@mock.patch.dict(os.environ, {"DB_NAME": db_name})
 class ResultsTest(unittest.TestCase):
 
     def setUp(self):
-        conn = sqlite3.connect("indexes")
+        conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS indexes")
         cursor.execute("CREATE TABLE indexes (path, name, field)")
@@ -16,7 +21,7 @@ class ResultsTest(unittest.TestCase):
         conn.commit()
 
     def tearDown(self):
-        os.remove("indexes")
+        os.remove(db_name)
 
     def test_search_found(self):
         response = results.lambda_handler({'queryStringParameters': {'q': 'search'}}, None)
@@ -34,7 +39,3 @@ class ResultsTest(unittest.TestCase):
     def test_search_not_existing_fmt(self):
         response = results.lambda_handler({'queryStringParameters': {'q': 'fmt/321'}}, None)
         self.assertTrue('<p class="tna-large-paragraph">No results found</p>' in response['body'])
-
-
-if __name__ == '__main__':
-    unittest.main()

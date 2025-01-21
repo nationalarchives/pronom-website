@@ -1,5 +1,4 @@
-pip install boto3
-pip install -r requirements-generate.txt
+pip install boto3 pycountry
 mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit
 python .github/scripts/generate_pages.py "$PWD/signature-files"
 cd site
@@ -8,7 +7,7 @@ cd ..
 python .github/scripts/generate_index_file.py "$PWD/signature-files"
 
 mkdir -p package
-pip install -r requirements-results.txt --target=package
+pip install -r requirements.txt --target=package
 cd package
 zip -q -r ../function.zip .
 cd ../lambdas
@@ -34,7 +33,7 @@ cd ..
 aws lambda update-function-code --zip-file fileb://function-soap.zip --function-name pronom-soap | cat > /dev/null
 
 mkdir -p package-submissions
-pip install -r requirements-submissions.txt --target=package-submissions
+pip install ghapi --target=package-submissions
 cd package-submissions
 zip -q -r ../submissions.zip .
 cd ../lambdas
@@ -43,7 +42,7 @@ cd ..
 aws lambda update-function-code --zip-file fileb://submissions.zip --function-name pronom-submissions | cat > /dev/null
 
 mkdir -p package-submissions-received
-pip install -r requirements-results.txt --target=package-submissions-received
+pip install -r requirements.txt --target=package-submissions-received
 cd package-submissions-received
 zip -q -r ../submissions-received.zip .
 cd ../lambdas
