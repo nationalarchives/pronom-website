@@ -8,7 +8,3 @@ class SubmissionsReceivedTest(unittest.TestCase):
         self.assertEqual(response['statusCode'], 200)
         self.assertEqual(response['headers']['Content-Type'], 'text/html')
         self.assertTrue('nationalarchives/pronom-signatures/pull/1' in response['body'])
-
-
-if __name__ == '__main__':
-    unittest.main()

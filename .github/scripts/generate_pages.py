@@ -1,8 +1,9 @@
 import os
 import re
 import sys
-import boto3
 import json
+from urllib import request
+
 from jinja2 import Environment, ChoiceLoader, PackageLoader, FileSystemLoader, select_autoescape
 from datetime import datetime
 import pycountry
@@ -37,7 +38,6 @@ def get_summary(data):
         'Family': str_for_attr('formatFamilies'),
         'Disclosure': str_for_attr('formatDisclosure'),
         'Description': str_for_attr('formatDescription'),
-        'Source': str_for_attr('provenanceCompoundName'),
         'Note': str_for_attr('formatNote')
     }
 
@@ -54,15 +54,6 @@ def get_signatures(data):
         }
 
     return [process_signature(sig) for sig in data['internalSignatures']]
-
-
-def read_json_from_s3(file_key):
-    s3_client = boto3.client('s3')
-
-    response = s3_client.get_object(Bucket=bucket_name, Key=file_key)
-    content = response['Body'].read().decode('utf-8')
-    json_data = json.loads(content)
-    return json_data
 
 
 def create_modify_page(puid, json_data, actor_select, json_by_id):
@@ -201,28 +192,15 @@ path = sys.argv[1]
 
 
 def create_file_list():
-    client = boto3.client('s3')
+    with request.urlopen("https://d3hk4y84s0zka0.cloudfront.net/signatures.json") as url:
+        all_signatures = json.load(url)
 
-    def list_keys(prefix):
-        return [obj['Key'] for obj in client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)['Contents']]
-
-    def signature_key_to_name(key):
-        version = key.split('_')[2].split('.')[0]
-        return f'DROID Signature File {version}'
-
-    def container_key_to_name(key):
-        date_str = key.split('-')[3].split('.')[0]
-        date_obj = datetime.strptime(date_str, "%Y%m%d")
-        return date_obj.strftime("%d %B %Y")
-
-    signatures = sorted(list_keys('signatures'), key=lambda k: int(re.search(r'(\d+)', k).group(1)))
-    container_signatures = list_keys('container-signatures')
-    signature_map = [{'name': signature_key_to_name(key), 'href': key} for key in signatures]
-    container_signature_map = [{'name': container_key_to_name(key), 'href': key} for key in container_signatures]
+    signatures = sorted(all_signatures['signatures'], key=lambda k: int(re.search(r'(\d+)', k["location"]).group(1)))
+    container_signatures = all_signatures["container_signatures"]
 
     signature_list_template = env.get_template("signature_list.html")
     signature_list_content = (
-        signature_list_template.render(signature_data=signature_map, container_signature_data=container_signature_map))
+        signature_list_template.render(signature_data=signatures, container_signature_data=container_signatures))
     return render_index(signature_list_content)
 
 

@@ -1,14 +1,21 @@
 name: Test
 
 on:
-  pull_request:
-    branches:
-      - main
-
+  push:
+permissions:
+  id-token: write
+  contents: read
 jobs:
   test:
     runs-on: ubuntu-latest
     name: Test changed-files
     steps:
       - uses: actions/checkout@v4
-      - run: python -m unittest discover -v -s lambdas/test
+      - uses: actions/checkout@v4
+        with:
+          repository: nationalarchives/pronom-signatures
+          path: 'signature-files'
+      - run: |
+          . ./run-server.sh $PWD/signature-files
+          npm --prefix tests cit
+          python -m unittest discover -v -s lambdas/test

@@ -1,3 +1,5 @@
+import os
+
 from jinja2 import Environment, ChoiceLoader, PackageLoader, FileSystemLoader, select_autoescape
 import sqlite3
 import re
@@ -9,7 +11,8 @@ env = Environment(
 
 
 def puid_exists(puid):
-    conn = sqlite3.connect("indexes")
+    db_name = os.getenv("DB_NAME", "indexes")
+    conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     cursor.execute("SELECT path from indexes where path = ?", (puid,))
     rows = cursor.fetchall()
@@ -17,7 +20,8 @@ def puid_exists(puid):
 
 
 def search(search_string):
-    conn = sqlite3.connect('indexes')
+    db_name = os.getenv("DB_NAME", "indexes")
+    conn = sqlite3.connect(db_name)
     cur = conn.cursor()
     cur.execute('select path, name from indexes where field like ?', (f"%{search_string}%",))
     rows = cur.fetchall()

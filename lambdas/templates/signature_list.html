@@ -8,12 +8,12 @@
 <h2 class="tna-heading-s">Binary signature files</h2>
 <ol class="tna-ol tna-ol--plain">
   {% for data in signature_data %}
-    <li><a href="{{ data['href'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a></li>
+    <li><a href="{{ data['location'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a></li>
   {% endfor %}
 </ol>
 <h2 class="tna-heading-s">Container signature files</h2>
 <ol class="tna-ol tna-ol--plain">
   {% for data in container_signature_data %}
-    <li><a href="{{ data['href'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a></li>
+    <li><a href="{{ data['location'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a></li>
   {% endfor %}
 </ol>

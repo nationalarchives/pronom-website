@@ -141,12 +141,12 @@ class SubmissionsTest(unittest.TestCase):
     @patch('lambdas.submissions.GhApi')
     @patch('boto3.client')
     def test_add_actor(self, _, mock_gh_api):
-        form_body = ('submissionType=add-actor&name=testName&address=testAddress&country=GBR'
+        form_body = ('submissionType=add-actor&name=testName&address=testAddress&addressCountry=GBR'
                      '&companyWebsite=https://example.com&supportWebsite=https://example.com')
         pr_file_contents = self.get_pr_file_contents(mock_gh_api, form_body, {}, {})
         self.assertEqual(pr_file_contents['name'], 'testName')
         self.assertEqual(pr_file_contents['address'], 'testAddress')
-        self.assertEqual(pr_file_contents['country'], 'GBR')
+        self.assertEqual(pr_file_contents['addressCountry'], 'GBR')
         self.assertEqual(pr_file_contents['supportWebsite'], 'https://example.com')
         self.assertEqual(pr_file_contents['companyWebsite'], 'https://example.com')
 
@@ -225,7 +225,7 @@ class SubmissionsTest(unittest.TestCase):
         body = b64encode(form_body.encode()).decode()
         mock_instance = mock_gh_api.return_value
         mock_instance.repos.download_zipball_archive.return_value = self.create_zip_file({}, {})
-        mock_instance.repos.get_content.side_effect = HTTPError("url", "", "", "", "")
+        mock_instance.repos.get_content.side_effect = HTTPError("url", "", "", "", None)
         submissions.lambda_handler({'body': body}, None)
         pr_args = mock_instance.repos.create_or_update_file_contents.mock_calls[0].kwargs
         self.assertIsNone(pr_args.get('sha'))
@@ -256,7 +256,3 @@ class SubmissionsTest(unittest.TestCase):
         response = submissions.lambda_handler({'body': body}, None)
         self.assertEqual(response['statusCode'], 500)
         self.assertEqual(response['body'], 'An error occurred: submissionType invalid not found')
-
-
-if __name__ == '__main__':
-    unittest.main()
