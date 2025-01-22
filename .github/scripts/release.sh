@@ -1,4 +1,4 @@
-pip install boto3 pycountry requirements.txt
+pip install -r requirements.txt boto3 pycountry
 mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit
 python .github/scripts/generate_pages.py "$PWD/signature-files"
 cd site
