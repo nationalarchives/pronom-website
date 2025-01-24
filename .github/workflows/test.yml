@@ -18,4 +18,5 @@ jobs:
       - run: |
           . ./run-server.sh $PWD/signature-files
           npm --prefix tests cit
+          npm --prefix infrastructure cit
           python -m unittest discover -v -s lambdas/test
