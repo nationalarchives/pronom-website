@@ -90,8 +90,9 @@ def edit_format(puid, body_json, json_files):
     supported_by_updated = update_actor('supportedBy')
     developed_by_updated = update_actor('developedBy')
     del body_json['submissionType']
+    excluded_keys = ['supportedBy', 'developedBy', 'contributorName', 'changeDescription']
     for key, value in body_json.items():
-        if format_json.get(key) != body_json[key] and key not in ['supportedBy', 'developedBy']:
+        if format_json.get(key) != body_json[key] and key not in excluded_keys:
             format_json[key] = body_json[key]
             changed = True
     return changed or supported_by_updated or developed_by_updated
