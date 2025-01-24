@@ -7,4 +7,7 @@ source .venv/bin/activate
 pip install -r requirements.txt pycountry ghapi boto3
 python3 .github/scripts/generate_pages.py $SIGNATURE_FILES_LOCATION
 python3 .github/scripts/generate_index_file.py $SIGNATURE_FILES_LOCATION
+cd site
+wget https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.css https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.js https://www.nationalarchives.gov.uk/favicon.ico
+cd ..
 nohup python3 http_server.py &
