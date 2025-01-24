@@ -48,4 +48,4 @@ zip -q submissions_received.zip ./lambdas/templates/index.html ./lambdas/templat
 cp *.zip infrastructure
 cd infrastructure
 npm ci
-npx cdk deploy --all -c environment=$ENVIRONMENT --require-approval
+npx cdk deploy --all -c environment=$ENVIRONMENT --require-approval never
