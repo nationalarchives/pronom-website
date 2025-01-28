@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import {Match, Template} from 'aws-cdk-lib/assertions';
+import {Template} from 'aws-cdk-lib/assertions';
 import * as cf from '../lib/cloudfront-waf'
 import * as inf from '../lib/infrastructure-stack'
 import {InlineCode} from "aws-cdk-lib/aws-lambda";

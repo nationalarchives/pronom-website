@@ -22,19 +22,19 @@ export class InfrastructureStack extends cdk.Stack {
         const bucketProps: (suffix: string) => BucketProps = suffix => {
             return {bucketName: `${environment}-pronom-website${suffix}`}
         }
-            const cloudfrontToS3: CloudFrontToS3 = new CloudFrontToS3(this, "pronom-website", {
-            bucketProps: {versioned: false ,...bucketProps("")},
+        const cloudfrontToS3: CloudFrontToS3 = new CloudFrontToS3(this, "pronom-website", {
+            bucketProps: {versioned: false, ...bucketProps("")},
             loggingBucketProps: bucketProps("-logs"),
             cloudFrontLoggingBucketProps: bucketProps("-cloudfront-logs"),
             cloudFrontLoggingBucketAccessLogBucketProps: bucketProps("-cloudfront-logs-access-logs"),
-            cloudFrontDistributionProps: { defaultRootObject: "home" }
+            cloudFrontDistributionProps: {defaultRootObject: "home"}
         });
 
         const parameterArn: string = StringParameter.fromSecureStringParameterAttributes(this, "github-token", {
             parameterName: "/github/token"
         }).parameterArn
 
-        const createLambda: (name: string,  fileName: string) => lambda.Function = (name, fileName) => {
+        const createLambda: (name: string, fileName: string) => lambda.Function = (name, fileName) => {
             return new lambda.Function(this, name, {
                 functionName: `${environment}-pronom-${name}`,
                 runtime: lambda.Runtime.PYTHON_3_13,
@@ -43,7 +43,7 @@ export class InfrastructureStack extends cdk.Stack {
             })
         }
 
-        const searchResults: lambda.Function = createLambda("search-results",  "results")
+        const searchResults: lambda.Function = createLambda("search-results", "results")
 
         const submissionReceived: lambda.Function = createLambda("submission-received", "submissions_received")
 

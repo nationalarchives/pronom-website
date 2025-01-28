@@ -14,7 +14,7 @@ python .github/scripts/generate_index_file.py "$PWD/signature-files"
 mkdir -p package
 pip install -r requirements.txt --target=package
 cd package
-zip -q -r ../function.zip .
+zip -q -r ../results.zip .
 cd ../lambdas
 zip -q ../results.zip results.py
 cd ..

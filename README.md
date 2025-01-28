@@ -71,6 +71,6 @@ npm --prefix tests t
 ```
 
 ## Infrastructure
-The AWS infrastructure is stored in the `infrastructure` directory and is written using [Pulumi](https://www.pulumi.com/).
+The AWS infrastructure is stored in the `infrastructure` directory and is written using [CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html).
 
 [signature_files_repository]: https://github.com/nationalarchives/pronom-signatures/

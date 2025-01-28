@@ -153,7 +153,7 @@ def error(e):
 
 def lambda_handler(event, context):
     token = get_token()
-    body_json = {k: v[0] for k, v in parse_qs(b64decode(event['body']).decode()).items()}
+    body_json = {k: v[0] for k, v in event['body'].items()}
     branch_name = create_branch(token)
     json_files, actor_files = get_json_files(token, branch_name)
 
