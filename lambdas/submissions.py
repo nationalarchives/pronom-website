@@ -7,7 +7,6 @@ from datetime import datetime
 import base64
 import boto3
 from fastcore.net import HTTPError
-from base64 import b64decode
 
 tna_name = 'The National Archives'
 tna_email = 'digitalpreservation@nationalarchives.gov.uk'
@@ -153,46 +152,55 @@ def error(e):
 
 def lambda_handler(event, context):
     token = get_token()
-    body_json = {k: v[0] for k, v in event['body'].items()}
+    body_json = {k: v[0] for k, v in parse_qs(event['body']).items()}
     branch_name = create_branch(token)
     json_files, actor_files = get_json_files(token, branch_name)
 
     submission_type = body_json['submissionType']
 
     def get_body_text(pr_message):
-        return body_json['changeDescription'] if 'changeDescription' in body_json else pr_message
+        if 'changeDescription' in body_json:
+            body = body_json['changeDescription']
+            del body_json['changeDescription']
+        else:
+            body = pr_message
+        return body
 
     if body_json.get('contributorName') and body_json['contributorName'] != '':
         author_name = body_json['contributorName']
+        del body_json['contributorName']
     else:
         author_name = 'The National Archives'
     pr_id = None
     if submission_type == 'edit-format':
         puid = body_json['puid']
+        message = f'Submission to change {puid}'
+        body_text = get_body_text(message)
         format_json = json_files[f'{puid}.json']
         changed = edit_format(puid, body_json, json_files)
         if changed:
-            message = f'Submission to change {puid}'
             path = f'signatures/{puid}.json'
             content_bytes = json.dumps(format_json, indent=2).encode()
-            body_text = get_body_text(message)
             pr_id = create_pull_request(token, message, path, content_bytes, branch_name, author_name, body_text)
     elif submission_type == 'add-actor':
+        message = 'Submission to add a new organisation'
+        body_text = get_body_text(message)
         actor = add_actor(body_json)
         if len(actor) > 0:
-            message = 'Submission to add a new organisation'
             file_name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
             path = f'submissions/actors/{file_name}.json'
             content_bytes = json.dumps(actor, indent=2).encode()
-            body_text = get_body_text(message)
+
             pr_id = create_pull_request(token, message, path, content_bytes, branch_name, author_name, body_text)
     elif submission_type == 'edit-actor':
         actor_id = body_json['actorId']
+        actor = actor_files[f'{actor_id}.json']
+        message = f'Submission to change {actor['name']}'
+        body_text = get_body_text(message)
         body_json['actorId'] = int(actor_id)
         del body_json['submissionType']
         if not actor_files.get(f'{actor_id}.json'):
             raise ValueError(f'Actor {actor_id} does not exist')
-        actor = actor_files[f'{actor_id}.json']
         changed = False
         for key in body_json.keys():
             if key not in actor or actor[key] != body_json[key]:
@@ -200,19 +208,14 @@ def lambda_handler(event, context):
         if changed:
             for key, value in body_json.items():
                 actor[key] = value
-            message = f'Submission to change {actor['name']}'
             path = f'actors/{actor_id}.json'
             content_bytes = json.dumps(actor, indent=2).encode()
-            body_text = get_body_text(message)
+
             pr_id = create_pull_request(token, message, path, content_bytes, branch_name, author_name, body_text)
     elif submission_type == 'add-format':
         message = "New submission"
         body_text = get_body_text(message)
         del body_json['submissionType']
-        if 'contributorName' in body_json:
-            del body_json['contributorName']
-        if 'changeDescription' in body_json:
-            del body_json['changeDescription']
 
         signature_json = {}
 
