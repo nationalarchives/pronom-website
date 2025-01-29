@@ -192,7 +192,7 @@ path = sys.argv[1]
 
 
 def create_file_list():
-    with request.urlopen("https://d3hk4y84s0zka0.cloudfront.net/signatures.json") as url:
+    with request.urlopen("https://d21gi86t6uhf68.cloudfront.net/signatures.json") as url:
         all_signatures = json.load(url)
 
     signatures = sorted(all_signatures['signatures'], key=lambda k: int(re.search(r'(\d+)', k["location"]).group(1)))

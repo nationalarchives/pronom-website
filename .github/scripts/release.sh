@@ -21,7 +21,7 @@ cd ..
 zip -q ./results.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html  indexes
 
 LATEST_SIGNATURE_FILE=$(aws s3 ls s3://$ENVIRONMENT-pronom-website/signatures/ | sort -t'V' -k2,2n | tail -1 | awk '{split($0,a," "); print a[4]}')
-aws lambda update-function-configuration --function-name pronom-soap --environment Variables={DOWNLOAD_URL=https://d3hk4y84s0zka0.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE} | cat > /dev/null
+aws lambda update-function-configuration --function-name pronom-soap --environment Variables={DOWNLOAD_URL=https://d21gi86t6uhf68.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE} | cat > /dev/null
 
 python .github/scripts/generate_version_file.py $LATEST_SIGNATURE_FILE
 cd lambdas
