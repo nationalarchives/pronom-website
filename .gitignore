@@ -11,3 +11,4 @@ lambdas/__pycache__
 lambdas/test/__pycache__
 nohup.out
 tests/node_modules
+signature-files

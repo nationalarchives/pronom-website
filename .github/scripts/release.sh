@@ -1,36 +1,32 @@
-pip install boto3 pycountry requirements.txt
+ENVIRONMENT=$1
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/all.css
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.js | aws s3 cp --content-type text/javascript - s3://$ENVIRONMENT-pronom-website/all.js
+curl https://www.nationalarchives.gov.uk/favicon.ico | aws s3 cp --content-type image/x-icon - s3://$ENVIRONMENT-pronom-website/favicon.ico
+
+pip install -r requirements.txt boto3 pycountry
 mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit
 python .github/scripts/generate_pages.py "$PWD/signature-files"
 cd site
-aws s3 sync --quiet --content-type text/html . s3://tna-pronom-signatures-spike
+aws s3 sync --quiet --content-type text/html . s3://$ENVIRONMENT-pronom-website
 cd ..
 python .github/scripts/generate_index_file.py "$PWD/signature-files"
 
 mkdir -p package
 pip install -r requirements.txt --target=package
 cd package
-zip -q -r ../function.zip .
+zip -q -r ../results.zip .
 cd ../lambdas
-zip -q ../function.zip ./templates/index.html ./templates/search_results.html results.py ../indexes
+zip -q ../results.zip results.py
 cd ..
-aws lambda update-function-code --zip-file fileb://function.zip --function-name pronom-results | cat > /dev/null
+zip -q ./results.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html  indexes
 
-LATEST_SIGNATURE_FILE=$(aws s3 ls s3://tna-pronom-signatures-spike/signatures/ | sort -t'V' -k2,2n | tail -1 | awk '{split($0,a," "); print a[4]}')
-aws lambda update-function-configuration --function-name pronom-soap --environment Variables={DOWNLOAD_URL=https://d3hk4y84s0zka0.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE}
-while true; do
-  status=$(aws lambda get-function --function-name pronom-soap --query 'Configuration.LastUpdateStatus' --output text)
-  echo $status
-  if [ "$status" = "Successful" ]; then
-    echo "Update status is Successful. Proceeding..."
-    break
-  fi
-  sleep 0.5
-done
+LATEST_SIGNATURE_FILE=$(aws s3 ls s3://$ENVIRONMENT-pronom-website/signatures/ | sort -t'V' -k2,2n | tail -1 | awk '{split($0,a," "); print a[4]}')
+aws lambda update-function-configuration --function-name pronom-soap --environment Variables={DOWNLOAD_URL=https://d21gi86t6uhf68.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE} | cat > /dev/null
+
 python .github/scripts/generate_version_file.py $LATEST_SIGNATURE_FILE
 cd lambdas
-zip -q ../function-soap.zip soap.py version
+zip -q ../soap.zip soap.py version
 cd ..
-aws lambda update-function-code --zip-file fileb://function-soap.zip --function-name pronom-soap | cat > /dev/null
 
 mkdir -p package-submissions
 pip install ghapi --target=package-submissions
@@ -39,13 +35,17 @@ zip -q -r ../submissions.zip .
 cd ../lambdas
 zip -q ../submissions.zip submissions.py
 cd ..
-aws lambda update-function-code --zip-file fileb://submissions.zip --function-name pronom-submissions | cat > /dev/null
 
 mkdir -p package-submissions-received
 pip install -r requirements.txt --target=package-submissions-received
 cd package-submissions-received
-zip -q -r ../submissions-received.zip .
+zip -q -r ../submissions_received.zip .
 cd ../lambdas
-zip -q ../submissions-received.zip submissions_received.py ./templates/index.html ./templates/submissions_received.html
+zip -q ../submissions_received.zip submissions_received.py
 cd ..
-aws lambda update-function-code --zip-file fileb://submissions-received.zip --function-name pronom-submission-received | cat > /dev/null
+zip -q submissions_received.zip ./lambdas/templates/index.html ./lambdas/templates/submissions_received.html
+
+cp *.zip infrastructure
+cd infrastructure
+npm ci
+npx cdk deploy --all -c environment=$ENVIRONMENT --require-approval never
