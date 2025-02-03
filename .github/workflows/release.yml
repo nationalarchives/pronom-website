@@ -19,7 +19,7 @@ jobs:
           repository: nationalarchives/pronom-signatures
           path: 'signature-files'
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@v4.0.2
+        uses: aws-actions/configure-aws-credentials@v4.0.3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/SandboxGithubActionsDeployPronomWebsite
           aws-region: eu-west-2
