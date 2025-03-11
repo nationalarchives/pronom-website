@@ -42,20 +42,6 @@ def get_summary(data):
     }
 
 
-def get_signatures(data):
-    def process_signature(internal_signature):
-        return {
-            'Name': internal_signature['name'],
-            'Description': internal_signature['note'],
-            'Position Type': internal_signature['positionType'],
-            'Offset': internal_signature['offset'],
-            'Maximum offset': internal_signature['maxOffset'],
-            'Value': internal_signature['byteSequence']
-        }
-
-    return [process_signature(sig) for sig in data['internalSignatures']]
-
-
 def create_modify_page(puid, json_data, actor_select, json_by_id):
     def str_for_attr(attr):
         return json_data[attr] if attr in json_data and json_data[attr] is not None else ''
@@ -134,7 +120,6 @@ def create_edit_actor(actor):
 def create_detail(puid, json_data, all_actors):
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
-    signatures = get_signatures(json_data)
     summary_args = {
         "id": "summary",
         "title": "Summary",
@@ -144,9 +129,8 @@ def create_detail(puid, json_data, all_actors):
         "supportedBy": all_actors[json_data['supportedBy']] if 'supportedBy' in json_data else None,
         "source": all_actors[json_data['source']] if 'source' in json_data else None
     }
-    signatures_args = {"title": "Signatures", "results": signatures, "id": "signatures"}
     summary_section = env.get_template("details_section.html").render(**summary_args)
-    signatures_section = env.get_template("details_section.html").render(**signatures_args)
+    signatures_section = env.get_template("signature_section.html").render(signatures=json_data["internalSignatures"])
     container_template = env.get_template("container_signature_section.html")
     container_content = container_template.render(data=json_data)
     edit_path = f'/edit/{puid}'

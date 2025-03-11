@@ -20,17 +20,15 @@ class SubmissionsTest(unittest.TestCase):
         return in_memory_zip.getvalue()
 
     def assert_pr_not_created(self, mock_gh_api, form_body, signature, actor):
-        body = b64encode(form_body.encode()).decode()
         mock_instance = mock_gh_api.return_value
         mock_instance.repos.download_zipball_archive.return_value = self.create_zip_file(signature, actor)
-        submissions.lambda_handler({'body': body}, None)
+        submissions.lambda_handler({'body': form_body}, None)
         self.assertEqual(mock_instance.repos.create_or_update_file_contents.call_count, 0)
 
     def run_lambda(self, mock_gh_api, form_body, signature, actor):
-        body = b64encode(form_body.encode()).decode()
         mock_instance = mock_gh_api.return_value
         mock_instance.repos.download_zipball_archive.return_value = self.create_zip_file(signature, actor)
-        submissions.lambda_handler({'body': body}, None)
+        submissions.lambda_handler({'body': form_body}, None)
         return mock_instance
 
     def get_pr_file_contents(self, mock_gh_api, form_body, signature, actor):
@@ -169,9 +167,9 @@ class SubmissionsTest(unittest.TestCase):
     @patch('boto3.client')
     def test_edit_actor_returns_error_if_actor_does_not_exist(self, _, mock_gh_api):
         form_body = 'submissionType=edit-actor&address=testAddress&actorId=10'
-        with self.assertRaises(ValueError) as err:
+        with self.assertRaises(KeyError) as err:
             self.get_pr_file_contents(mock_gh_api, form_body, {}, {})
-        self.assertEqual(err.exception.args[0], 'Actor 10 does not exist')
+        self.assertEqual(err.exception.args[0], '10.json')
 
     @patch('lambdas.submissions.GhApi')
     @patch('boto3.client')
@@ -210,11 +208,10 @@ class SubmissionsTest(unittest.TestCase):
     @patch('boto3.client')
     def test_add_sha_if_file_exists(self, _, mock_gh_api):
         form_body = 'submissionType=add-format'
-        body = b64encode(form_body.encode()).decode()
         mock_instance = mock_gh_api.return_value
         mock_instance.repos.download_zipball_archive.return_value = self.create_zip_file({}, {})
         mock_instance.repos.get_content.return_value = {'sha': 'testSha'}
-        submissions.lambda_handler({'body': body}, None)
+        submissions.lambda_handler({'body': form_body}, None)
         pr_args = mock_instance.repos.create_or_update_file_contents.mock_calls[0].kwargs
         self.assertEqual(pr_args['sha'], 'testSha')
 
@@ -222,11 +219,10 @@ class SubmissionsTest(unittest.TestCase):
     @patch('boto3.client')
     def test_no_sha_if_file_does_not_exist(self, _, mock_gh_api):
         form_body = 'submissionType=add-format'
-        body = b64encode(form_body.encode()).decode()
         mock_instance = mock_gh_api.return_value
         mock_instance.repos.download_zipball_archive.return_value = self.create_zip_file({}, {})
         mock_instance.repos.get_content.side_effect = HTTPError("url", "", "", "", None)
-        submissions.lambda_handler({'body': body}, None)
+        submissions.lambda_handler({'body': form_body}, None)
         pr_args = mock_instance.repos.create_or_update_file_contents.mock_calls[0].kwargs
         self.assertIsNone(pr_args.get('sha'))
 
@@ -250,9 +246,8 @@ class SubmissionsTest(unittest.TestCase):
     @patch('boto3.client')
     def test_error_with_invalid_submission_type(self, _, mock_gh_api):
         form_body = 'submissionType=invalid'
-        body = b64encode(form_body.encode()).decode()
         mock_instance = mock_gh_api.return_value
         mock_instance.repos.download_zipball_archive.return_value = self.create_zip_file({}, {})
-        response = submissions.lambda_handler({'body': body}, None)
+        response = submissions.lambda_handler({'body': form_body}, None)
         self.assertEqual(response['statusCode'], 500)
         self.assertEqual(response['body'], 'An error occurred: submissionType invalid not found')
