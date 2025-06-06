@@ -50,8 +50,8 @@ def run():
             format_name = data['formatName']
             puid = [idf['identifierText'] for idf in data['identifiers'] if idf['identifierType'] == 'PUID'][0]
             external_signatures = data['externalSignatures'] if 'externalSignatures' in data else []
-            file_extension_list = [x for x in external_signatures if x['signatureType'] == 'File Extension']
-            file_extension = file_extension_list[0] if len(file_extension_list) > 1 else ''
+            file_extension_list = [x for x in external_signatures if x['signatureType'] == 'File extension']
+            file_extension = ''.join([fe['externalSignature'] for fe in file_extension_list])
             field = ''.join([format_name, file_extension])
             insert_into_indexes(puid, format_name, field)
 
