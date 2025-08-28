@@ -10,4 +10,4 @@ python3 .github/scripts/generate_index_file.py $SIGNATURE_FILES_LOCATION
 cd site
 wget https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.23.1/nationalarchives/all.css https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.23.1/nationalarchives/all.js https://www.nationalarchives.gov.uk/favicon.ico
 cd ..
-python3 http_server.py
+python3 http_server.py &
