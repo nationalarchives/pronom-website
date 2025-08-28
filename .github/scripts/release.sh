@@ -1,6 +1,6 @@
 ENVIRONMENT=$1
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/all.css
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.2.15/nationalarchives/all.js | aws s3 cp --content-type text/javascript - s3://$ENVIRONMENT-pronom-website/all.js
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.23.1/nationalarchives/all.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/all.css
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.23.1/nationalarchives/all.js | aws s3 cp --content-type text/javascript - s3://$ENVIRONMENT-pronom-website/all.js
 curl https://www.nationalarchives.gov.uk/favicon.ico | aws s3 cp --content-type image/x-icon - s3://$ENVIRONMENT-pronom-website/favicon.ico
 
 pip install -r requirements.txt boto3 pycountry

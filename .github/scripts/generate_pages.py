@@ -17,12 +17,6 @@ env = Environment(
 bucket_name = 'tna-pronom-signatures-spike'
 
 
-def render_index(content):
-    with open(f'{template_dir}/site.js') as js_file:
-        index_template = env.get_template("index.html")
-        return index_template.render(js=js_file.read(), content=content)
-
-
 def get_summary(data):
     identifiers = ', '.join(
         [f"{identifier['identifierType']}: {identifier['identifierText']}" for identifier in data['identifiers']]
@@ -121,22 +115,14 @@ def create_detail(puid, json_data, all_actors):
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
     summary_args = {
-        "id": "summary",
-        "title": "Summary",
         "results": [summary],
-        "open": True,
         "developedBy": all_actors[json_data['developedBy']] if 'developedBy' in json_data else None,
         "supportedBy": all_actors[json_data['supportedBy']] if 'supportedBy' in json_data else None,
         "source": all_actors[json_data['source']] if 'source' in json_data else None
     }
-    summary_section = env.get_template("details_section.html").render(**summary_args)
-    signatures_section = env.get_template("signature_section.html").render(signatures=json_data["internalSignatures"])
-    container_template = env.get_template("container_signature_section.html")
-    container_content = container_template.render(data=json_data)
+    signatures = json_data["internalSignatures"]
     edit_path = f'/edit/{puid}'
-    content = details_template.render(name=summary['Name'], summary=summary_section,
-                                      signatures=signatures_section, containers=container_content, editPath=edit_path)
-    return render_index(content=content)
+    return details_template.render(name=summary['Name'], summary=summary_args, signatures=signatures, containers=json_data.get("containerSignatures", []), editPath=edit_path)
 
 
 def create_actor(data):
@@ -163,13 +149,11 @@ def create_signature_section():
 
 
 def create_home():
-    home_template = env.get_template("home.html")
-    return render_index(home_template.render())
+    return env.get_template("home.html").render()
 
 
 def create_search():
-    search_template = env.get_template("search.html")
-    return render_index(search_template.render())
+    return env.get_template("search.html").render()
 
 
 path = sys.argv[1]
@@ -182,10 +166,7 @@ def create_file_list():
     signatures = sorted(all_signatures['signatures'], key=lambda k: int(re.search(r'(\d+)', k["location"]).group(1)))
     container_signatures = all_signatures["container_signatures"]
 
-    signature_list_template = env.get_template("signature_list.html")
-    signature_list_content = (
-        signature_list_template.render(signature_data=signatures, container_signature_data=container_signatures))
-    return render_index(signature_list_content)
+    return env.get_template("signature_list.html").render(signature_data=signatures, container_signature_data=container_signatures)
 
 
 def run():
@@ -228,10 +209,10 @@ def run():
         with open(f'site/{puid}', 'w') as output, open(f'site/edit/{puid}', 'w') as edit_page:
             output.write(create_detail(puid, json_data, all_actors))
             edit_content = create_modify_page(puid, json_data, actor_select, json_by_id)
-            edit_page.write(render_index(edit_content))
+            edit_page.write(edit_content)
 
     with open('site/add', 'w') as add_page:
-        add_page.write(render_index(create_modify_page(None, {}, actor_select, {})))
+        add_page.write(create_modify_page(None, {}, actor_select, {}))
 
     for actor_json in all_actors.values():
         actor_id = actor_json['actorId']
@@ -242,13 +223,13 @@ def run():
             actor = create_actor(actor_json)
             name = actor_json['name']
             actor_details = actor_details_template.render(results=actor, name=name, actorId=actor_id)
-            actor_page.write(render_index(actor_details))
-            edit_actor_page.write(render_index(create_edit_actor(actor_json)))
+            actor_page.write(actor_details)
+            edit_actor_page.write(create_edit_actor(actor_json))
 
     with open('site/actor/add', 'w') as add_actor_page, open('site/contribute', 'w') as contribute_page:
+        add_actor_page.write(create_add_actor())
         contribute_page_template = env.get_template('contribute.html')
-        add_actor_page.write(render_index(create_add_actor()))
-        contribute_page.write(render_index(contribute_page_template.render()))
+        contribute_page.write(contribute_page_template.render())
 
 
 run()
