@@ -39,10 +39,8 @@ def lambda_handler(event, _):
         }
     rows = search(search_term)
     data = {f'{row[0]}': row[1] for row in rows}
-    index_template = env.get_template("index.html")
     search_results = env.get_template("search_results.html")
-    content = search_results.render(data=data)
-    body = index_template.render(content=content)
+    body = search_results.render(data=data, search_term=search_term)
 
     return {
         "statusCode": 200,

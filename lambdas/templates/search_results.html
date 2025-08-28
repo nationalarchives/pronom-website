@@ -1,10 +1,46 @@
-<h1 class="tna-heading-m">Search results</h1>
-<dl class="tna-dl">
-  {% for key, value in data.items() %}
-    <dt><a href="{{ key }}">{{ key }}</a></dt>
-    <dd>{{ value }}</dd>
-  {% endfor %}
-  {% if data|length == 0 %}
-    <p class="tna-large-paragraph">No results found</p>
-  {% endif %}
-</dl>
+{%- extends 'index.html' -%}
+
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+
+{%- set pageTitle = 'Search results' -%}
+
+{% block beforeContent %}
+  <div class="tna-!--padding-vertical-s">
+    <div class="tna-container">
+      <div class="tna-column tna-column--full">
+        {{ tnaBreadcrumbs({
+          'items': [
+            {
+              'text': 'Home',
+              'href': '/'
+            },
+            {
+              'text': 'Search',
+              'href': '/search'
+            }
+          ]
+        }) | indent(6) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="tna-container tna-section">
+    <div class="tna-column tna-column--full">
+      {% if data|length == 0 %}
+        <h1 class="tna-heading-xl">No results found</h1>
+        <p>Try widening your search term.</p>
+      {% else %}
+      <h1 class="tna-heading-xl">{{ pageTitle }}</h1>
+      <p>Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}.</p>
+      <dl class="tna-dl">
+        {% for key, value in data.items() %}
+          <dt><a href="{{ key }}">{{ key }}</a></dt>
+          <dd>{{ value }}</dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
