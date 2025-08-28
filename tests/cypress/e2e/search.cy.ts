@@ -1,7 +1,7 @@
 describe('PRONOM Search Spec', () => {
   beforeEach(() => {
     cy.visit('')
-    cy.get("a[href='/search']").click()
+    cy.get("main a[href='/search']").click()
   })
 
   it('renders the search page', () => {
@@ -46,7 +46,7 @@ describe('PRONOM Search Spec', () => {
     cy.intercept('GET', '/results?q=*').as('results')
     cy.get("form[action='/results']").submit()
     cy.wait('@results').its('response.statusCode').should('eq', 200)
-    cy.get('p.tna-large-paragraph').should('have.text', 'No results found')
+    cy.get('h1').should('have.text', 'No results found')
   })
 
   it('returns no results if the search is a non-existent puid', () => {
@@ -54,6 +54,6 @@ describe('PRONOM Search Spec', () => {
     cy.intercept('GET', '/results?q=*').as('results')
     cy.get("form[action='/results']").submit()
     cy.wait('@results').its('response.statusCode').should('eq', 200)
-    cy.get('p.tna-large-paragraph').should('have.text', 'No results found')
+    cy.get('h1').should('have.text', 'No results found')
   })
 })
