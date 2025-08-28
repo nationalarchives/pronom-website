@@ -62,7 +62,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    PORT = 8084
+    PORT = 8000
     DIRECTORY = "."
 
     os.chdir(DIRECTORY)
