@@ -1,6 +1,10 @@
 ENVIRONMENT=$1
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.23.1/nationalarchives/all.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/all.css
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@0.23.1/nationalarchives/all.js | aws s3 cp --content-type text/javascript - s3://$ENVIRONMENT-pronom-website/all.js
+TNA_FRONTEND_VERSION=0.23.1
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/all.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/all.css
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/font-awesome.css | sed -e 's/\/assets\/fonts/\//g' | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/font-awesome.css
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/print.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/print.css
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/ie.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/ie.css
+curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/all.js | aws s3 cp --content-type text/javascript - s3://$ENVIRONMENT-pronom-website/all.js
 curl https://www.nationalarchives.gov.uk/favicon.ico | aws s3 cp --content-type image/x-icon - s3://$ENVIRONMENT-pronom-website/favicon.ico
 
 pip install -r requirements.txt boto3 pycountry
