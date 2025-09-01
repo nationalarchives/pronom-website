@@ -1,11 +1,15 @@
 ENVIRONMENT=$1
+
 TNA_FRONTEND_VERSION=0.23.1
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/all.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/all.css
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/font-awesome.css | sed -e 's/\/assets\/fonts/\//g' | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/font-awesome.css
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/print.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/print.css
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/ie.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/ie.css
-curl https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives/all.js | aws s3 cp --content-type text/javascript - s3://$ENVIRONMENT-pronom-website/all.js
-curl https://www.nationalarchives.gov.uk/favicon.ico | aws s3 cp --content-type image/x-icon - s3://$ENVIRONMENT-pronom-website/favicon.ico
+CDN_BASE_URL=https://cdn.jsdelivr.net/npm/@nationalarchives/frontend@$TNA_FRONTEND_VERSION/nationalarchives
+
+curl $CDN_BASE_URL/all.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/all.css
+curl $CDN_BASE_URL/all.js | aws s3 cp --content-type text/javascript - s3://$ENVIRONMENT-pronom-website/all.js
+curl $CDN_BASE_URL/font-awesome.css | sed -e 's/\/assets\/fonts/\//g' | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/font-awesome.css
+curl $CDN_BASE_URL/ie.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/ie.css
+curl $CDN_BASE_URL/print.css | aws s3 cp --content-type text/css - s3://$ENVIRONMENT-pronom-website/print.css
+curl $CDN_BASE_URL/assets/images/favicon.ico | aws s3 cp --content-type image/x-icon - s3://$ENVIRONMENT-pronom-website/favicon.ico
+curl $CDN_BASE_URL/assets/fonts/fa-solid-900.woff2 | aws s3 cp --content-type font/woff2 - s3://$ENVIRONMENT-pronom-website/fa-solid-900.woff2
 
 pip install -r requirements.txt boto3 pycountry
 mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit
