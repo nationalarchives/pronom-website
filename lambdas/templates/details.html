@@ -36,13 +36,13 @@
         {%- for signature in signatures %}
           {%- set ns.sidebar_container_signatures = ns.sidebar_container_signatures + [{
             'text': signature.name,
-            'href': '#signature-name-' ~ signature.signatureID
+            'href': '#internal-signatures-' ~ signature.signatureID
           }] %}
         {%- endfor %}
         {% set ns.sidebar_items = ns.sidebar_items + [
           {
-            'text': 'Container signatures',
-            'href': '#container-signatures',
+            'text': 'Internal signatures',
+            'href': '#internal-signatures',
             'children': ns.sidebar_container_signatures
           }
         ] %}
@@ -51,14 +51,14 @@
       {%- if containers %}
         {%- for container in containers %}
           {%- set ns.sidebar_containers = ns.sidebar_containers + [{
-            'text': container.id,
-            'href': '#container-' ~ container.id
+            'text': container.description,
+            'href': '#container-signatures-' ~ container.id
           }] %}
         {%- endfor %}
         {% set ns.sidebar_items = ns.sidebar_items + [
           {
-            'text': 'Containers',
-            'href': '#containers',
+            'text': 'Container signatures',
+            'href': '#container-signatures',
             'children': ns.sidebar_containers
           }
         ] %}
@@ -105,9 +105,9 @@
       {% endfor %}
 
       {% if signatures %}
-      <h2 class="tna-heading-l" id="container-signatures">Container signatures</h2>
+      <h2 class="tna-heading-l" id="internal-signatures">Internal signatures</h2>
       {% for signature in signatures %}
-        <div class="tna-aside tna-background-tint" id="signature-name-{{ signature.signatureID }}">
+        <div class="tna-aside tna-background-tint" id="internal-signatures-{{ signature.signatureID }}">
           <h3 class="tna-heading-m">{{ signature.name }}</h3>
           {% if signature.description or signature.note %}
           <dl class="tna-dl tna-dl--plain tna-dl--stacked">
@@ -144,9 +144,9 @@
       {% endif %}
 
       {% if containers %}
-      <h2 class="tna-heading-l" id="containers">Containers</h2>
+      <h2 class="tna-heading-l" id="container-signatures">Container signatures</h2>
       {% for container in containers %}
-      <h3 class="tna-heading-m" id="container-{{ container.id }}">Container {{ container.id }} {{ container.description }} {{ container.containerType }}</h3>
+      <h3 class="tna-heading-m" id="container-signatures-{{ container.id }}">Container {{ container.id }} {{ container.description }} {{ container.containerType }}</h3>
       {% for file in container.files %}
         <hr>
         <section class="tna-section">
