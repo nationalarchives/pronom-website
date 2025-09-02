@@ -1,24 +1,191 @@
-{% from "components/accordion/macro.html" import tnaAccordion %}
-{% from "components/button/macro.html" import tnaButton %}
-<div class="tna-column tna-column--full tna-!--padding-vertical-s">
-  <h1 class="tna-heading-m">{{ name }}</h1>
-  <div class="tna-button-group">
-    <a class="tna-button tna-button--small" href="{{ editPath }}">Edit</a>
+{%- extends 'index.html' -%}
+
+{%- from "components/accordion/macro.html" import tnaAccordion -%}
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+{%- from "components/button/macro.html" import tnaButton -%}
+{%- from "components/sidebar/macro.html" import tnaSidebar -%}
+
+{%- set pageTitle = name -%}
+
+{% block beforeContent %}
+  <div class="tna-!--padding-vertical-s">
+    <div class="tna-container">
+      <div class="tna-column tna-column--full">
+        {{ tnaBreadcrumbs({
+          'items': [
+            {
+              'text': 'Home',
+              'href': '/'
+            }
+          ]
+        }) | indent(6) }}
+      </div>
+    </div>
   </div>
-  {{ summary|safe }}
-  {{ signatures|safe }}
-  {{ tnaAccordion({
-    'itemHeadingLevel': 1,
-    'id': 'container',
-    'items': [
-      {
-        'title': 'Container signatures',
-        'body': containers|safe,
-        'open': false
+{% endblock %}
 
-      },
-    ],
-    'group': "group-1"
-  }) }}
+{% block content %}
+  <div class="tna-container tna-!--margin-bottom-l">
+    <div class="tna-column tna-column--width-1-3 tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
+      {%- set ns = namespace(sidebar_items=[{
+          'text': 'Summary',
+          'href': '#summary'
+        }], sidebar_container_signatures=[], sidebar_containers=[]) %}
 
-</div>
+      {%- if signatures %}
+        {%- for signature in signatures %}
+          {%- set ns.sidebar_container_signatures = ns.sidebar_container_signatures + [{
+            'text': signature.name,
+            'href': '#internal-signatures-' ~ signature.signatureID
+          }] %}
+        {%- endfor %}
+        {% set ns.sidebar_items = ns.sidebar_items + [
+          {
+            'text': 'Internal signatures',
+            'href': '#internal-signatures',
+            'children': ns.sidebar_container_signatures
+          }
+        ] %}
+      {%- endif %}
+
+      {%- if containers %}
+        {%- for container in containers %}
+          {%- set ns.sidebar_containers = ns.sidebar_containers + [{
+            'text': container.description,
+            'href': '#container-signatures-' ~ container.id
+          }] %}
+        {%- endfor %}
+        {% set ns.sidebar_items = ns.sidebar_items + [
+          {
+            'text': 'Container signatures',
+            'href': '#container-signatures',
+            'children': ns.sidebar_containers
+          }
+        ] %}
+      {%- endif %}
+
+      {{ tnaSidebar({
+        'title': 'On this page',
+        'headingLevel': 2,
+        'items': ns.sidebar_items,
+        'type': 'contents',
+        'sticky': True,
+        'classes': 'tna-!--padding-top-s'
+      }) | indent(6) }}
+    </div>
+    <div class="tna-column tna-column--width-2-3 tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
+      <h1 class="tna-heading-xl">{{ pageTitle }}</h1>
+      <div class="tna-button-group tna-button-group--small">
+        {{ tnaButton({
+          'text': 'Edit this page',
+          'href': editPath,
+        }) }}
+      </div>
+
+      <h2 class="tna-heading-l" id="summary">Summary</h2>
+      {% for result in summary.results %}
+        <dl class="tna-dl">
+          {% for key, value in result.items() %}
+          <dt>{{ key }}</dt>
+          <dd>{{ value }}</dd>
+          {% endfor %}
+          {% if source is defined and source is not none %}
+            <dt>Source</dt>
+            <dd><a href="/actor/{{ source.actorId }}">{{ source.name }}</a></dd>
+          {% endif %}
+          {% if result.developedBy %}
+            <dt>Developed by</dt>
+            <dd><a href="/actor/{{ result.developedBy.actorId }}">{{ developedBy.name }}</a></dd>
+          {% endif %}
+          {% if result.supportedBy %}
+            <dt>Supported by</dt>
+            <dd><a href="/actor/{{ result.supportedBy.actorId }}">{{ supportedBy.name }}</a></dd>
+          {% endif %}
+        </dl>
+      {% endfor %}
+
+      {% if signatures %}
+      <h2 class="tna-heading-l" id="internal-signatures">Internal signatures</h2>
+      {% for signature in signatures %}
+        <div class="tna-aside tna-background-tint" id="internal-signatures-{{ signature.signatureID }}">
+          <h3 class="tna-heading-m">{{ signature.name }}</h3>
+          {% if signature.description or signature.note %}
+          <dl class="tna-dl tna-dl--plain tna-dl--stacked">
+            {% if signature.description %}
+            <dt id="signature-description-{{ signature.signatureID }}">Description</dt>
+            <dd>{{ signature.description }}</dd>
+            {% endif %}
+            {% if signature.note %}
+            <dt id="signature-note-{{ signature.signatureID }}">Note</dt>
+            <dd>{{ signature.note }}</dd>
+            {% endif %}
+          </dl>
+          {% endif %}
+          {% if 'byteSequences' in signature %}
+            <h4 class="tna-heading-s">Byte sequences</h4>
+            {% for byte_sequence in signature.byteSequences %}
+            {{ '<hr class="tna-!--margin-vertical-s">'|safe if not loop.first and signature.byteSequences|length > 1 else '' }}
+            <dl class="tna-dl tna-dl--plain tna-!--margin-top-s">
+              <dt>Min Frag Length</dt>
+              <dd>{{ byte_sequence.positionType }}</dd>
+              <dt>Offset</dt>
+              <dd>{{ byte_sequence.offset }}</dd>
+              <dt>Max offset</dt>
+              <dd>{{ byte_sequence.maxOffset }}</dd>
+              <dt>Byte Sequence</dt>
+              <dd>{{ byte_sequence.byteSequence }}</dd>
+              <dt>Endianness</dt>
+              <dd>{{ byte_sequence.endianness }}</dd>
+            </dl>
+            {% endfor %}
+          {% endif %}
+        </div>
+      {% endfor %}
+      {% endif %}
+
+      {% if containers %}
+      <h2 class="tna-heading-l" id="container-signatures">Container signatures</h2>
+      {% for container in containers %}
+      <h3 class="tna-heading-m" id="container-signatures-{{ container.id }}">Container {{ container.id }} {{ container.description }} {{ container.containerType }}</h3>
+      {% for file in container.files %}
+        <hr>
+        <section class="tna-section">
+          <h4 class="tna-heading-s">File path</h4>
+          <p id="file-path-{{ container.id }}">{{ file['path'] }}</p>
+          {% if 'byteSequences' in file %}
+            {% for byte_sequence in file.byteSequences %}
+              <section class="tna-section">
+                <h5 class="tna-heading-s">Byte sequence reference</h5>
+                <p id="byteSequence{{ byte_sequence['reference'] }}">{{ byte_sequence.reference }}</p>
+                {% if 'subSequences' in byte_sequence %}
+                  <h6 class="tna-heading-s">Sub sequences</h6>
+                  {% for sub_sequence in byte_sequence.subSequences %}
+                    <dl class="tna-dl">
+                        <dt>Min Frag Length</dt> <dd>{{ sub_sequence.minFragLength }}</dd>
+                        <dt>Position</dt><dd>{{ sub_sequence.position }}</dd>
+                        <dt>Sub sequence min offset</dt><dd>{{ sub_sequence.subSeqMinOffset }}</dd>
+                        <dt>Sub sequence max offset</dt><dd>{{ sub_sequence.subSeqMaxOffset }}</dd>
+                        <dt>Sequence</dt><dd>{{ sub_sequence.sequence }}</dd>
+                        {% if 'leftFragment' in sub_sequence %}
+                          <dt>Left fragment</dt><dd>Max offset {{ sub_sequence.leftFragment.maxOffset }} Min offset {{ sub_sequence.leftFragment.minOffset }} Position {{ sub_sequence.leftFragment.position }}</dd>
+                        {% endif %}
+                        {% if 'rightFragment' in sub_sequence %}
+                          <dt>Right fragment</dt><dd>Max offset {{ sub_sequence.rightFragment.maxOffset }} Min offset {{ sub_sequence.rightFragment.minOffset }} Position {{ sub_sequence.rightFragment.position }}</dd>
+                        {% endif %}
+                      </dl>
+                  {% endfor %}
+                {% endif %}
+              </section>
+            {% endfor %}
+          {% endif %}
+        </section>
+      {% endfor %}
+      {% endfor %}
+      {% endif %}
+
+
+
+
+    </div>
+  </div>
+{% endblock %}

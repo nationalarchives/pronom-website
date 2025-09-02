@@ -16,7 +16,14 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         file_path = self.translate_path(f'site/{self.path}')
         if os.path.isfile(file_path):
             self.send_response(200)
-            self.send_header("Content-type", "text/html")
+            if file_path.endswith('.css'):
+                self.send_header("Content-type", "text/css; charset=utf-8")
+            elif file_path.endswith('.js'):
+                self.send_header("Content-type", "application/javascript; charset=utf-8")
+            elif file_path.endswith('.woff2'):
+                self.send_header("Content-type", "font/woff2")
+            else:
+                self.send_header("Content-type", "text/html; charset=utf-8")
             self.end_headers()
             with open(file_path, "rb") as file:
                 self.wfile.write(file.read())

@@ -3,8 +3,8 @@ import {checkSelectInput, checkTextInput, jsonFromForm} from "./utils";
 describe('PRONOM Add Organisation Spec', () => {
     beforeEach(() => {
         cy.visit('')
-        cy.get("a[href='/contribute']").click()
-        cy.get("a[href='/actor/add']").click()
+        cy.get("main a[href='/contribute']").click()
+        cy.get("main a[href='/actor/add']").click()
     })
 
 

@@ -3,8 +3,8 @@ import {checkSelectInput, checkTextInput, jsonFromForm} from "./utils";
 describe('PRONOM Add Signature Spec', () => {
     beforeEach(() => {
       cy.visit('')
-      cy.get("a[href='/contribute']").click()
-      cy.get("a[href='/add']").click()
+      cy.get("main a[href='/contribute']").click()
+      cy.get("main a[href='/add']").click()
     })
 
     const checkInputTables: (selectId: string, textId: string) => void  = (selectId, textId) => {

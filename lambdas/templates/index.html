@@ -1,37 +1,90 @@
-{% from "components/breadcrumbs/macro.html" import tnaBreadcrumbs %}
-{% from "components/hero/macro.html" import tnaHero %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="PRONOM - The National Archives">
-    <link rel="stylesheet" href="/all.css" crossorigin="anonymous">
-    <script src="/all.js"></script>
-    <link rel="icon" href="/favicon.ico">
-    <title>PRONOM</title>
-  </head>
-  <body>
-    <div class="tna-accent-blue">
-      <div class="tna-background-accent">
+{%- extends 'layouts/base.html' -%}
+
+{%- from "components/cookie-banner/macro.html" import tnaCookieBanner -%}
+{%- from "components/footer/macro.html" import tnaFooter -%}
+{%- from "components/header/macro.html" import tnaHeader -%}
+
+{%- set pageTitle = pageTitle or 'PRONOM' -%}
+{%- set themeAccent = 'blue' -%}
+{%- set htmlAttributes = {
+  'data-tna-cookies-domain': 'd21gi86t6uhf68.cloudfront.net'
+} -%}
+
+{% block headIcons %}
+  <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/favicon.ico" type="image/x-icon">
+{% endblock %}
+
+{% block head %}
+<meta name="description" content="PRONOM - The National Archives">
+{% endblock %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="/all.css" media="screen,print">
+  <link rel="stylesheet" href="/font-awesome.css">
+  <link rel="preconnect" href="https://use.typekit.net">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/kaq6qqh.css" media="screen,print">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400..700&family=Roboto+Mono:wght@400..500&display=swap" media="screen,print">
+  <link rel="stylesheet" href="https://www.nationalarchives.gov.uk/enrichment/css/logo-adornments.css" media="screen">
+  <link rel="stylesheet" href="/print.css" media="print">
+  <link rel="stylesheet" href="/ie.css" media="all and (-ms-high-contrast: none), (-ms-high-contrast: active)">
+{% endblock %}
+
+{% block cookies %}
+  <!-- {{ tnaCookieBanner({
+    cookiesUrl: 'https://www.nationalarchives.gov.uk/cookies/'
+  }) | indent(6) }} -->
+{% endblock %}
+
+{% block header %}
+  {{ tnaHeader({
+    'logo': {
+      'strapline': 'PRONOM',
+      'href': '/'
+    },
+    'navigation': [
+      {
+        'text': 'Search',
+        'href': '/search'
+      },
+      {
+        'text': 'Contribute',
+        'href': '/contribute'
+      },
+      {
+        'text': 'DROID Signature Files',
+        'href': '/signature_list'
+      }
+    ]
+  }) | indent(4) }}
+{% endblock %}
+
+{% block beforeContent %}
+  <div class="tna-section tna-background-accent-light">
+    <div class="tna-container">
+      <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+        <h2 class="tna-heading-l">PRONOM</h2>
+        <p>The technical registry</p>
       </div>
-      <main class="tna-main" id="main-content">
-        <div class="tna-background-accent">
-          <div class="tna-container tna-section">
-            <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
-              <hgroup class="tna-hgroup-xl">
-                <h1 class="tna-hgroup__title">PRONOM</h1>
-              </hgroup>
-              <h2 class="tna-large-paragraph">The technical registry</h2>
-            </div>
-          </div>
-        </div>
-        <div class="tna-section tna-container">
-          <div class="tna-column tna-column--width-2-3">
-            {{ content|safe }}
-          </div>
-        </div>
-      </main>
     </div>
-  </body>
-</html>
+  </div>
+{% endblock %}
+
+{% block content %}
+  {{ content | safe }}
+{% endblock %}
+
+{% block footer %}
+  {{ tnaFooter({}) | indent(4) }}
+{% endblock %}
+
+{% block bodyEnd %}
+  <script src="/all.js"></script>
+  <script>
+    if(window.TNAFrontend) {
+      window.TNAFrontend.initAll();
+    }
+  </script>
+  <script type="module" src="https://www.nationalarchives.gov.uk/enrichment/js/logo-adornments.js" defer></script>
+{% endblock %}

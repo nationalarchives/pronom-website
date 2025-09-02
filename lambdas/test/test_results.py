@@ -29,7 +29,7 @@ class ResultsTest(unittest.TestCase):
 
     def test_search_not_found(self):
         response = results.lambda_handler({'queryStringParameters': {'q': 'invalid'}}, None)
-        self.assertTrue('<p class="tna-large-paragraph">No results found</p>' in response['body'])
+        self.assertTrue('<h1 class="tna-heading-xl">No results found</h1>' in response['body'])
 
     def test_search_existing_fmt(self):
         response = results.lambda_handler({'queryStringParameters': {'q': 'fmt/123'}}, None)
@@ -38,4 +38,4 @@ class ResultsTest(unittest.TestCase):
 
     def test_search_not_existing_fmt(self):
         response = results.lambda_handler({'queryStringParameters': {'q': 'fmt/321'}}, None)
-        self.assertTrue('<p class="tna-large-paragraph">No results found</p>' in response['body'])
+        self.assertTrue('<h1 class="tna-heading-xl">No results found</h1>' in response['body'])

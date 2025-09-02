@@ -1,4 +1,4 @@
-tna-frontend-jinja
+tna-frontend-jinja==0.23.0
 
 Jinja2~=3.1.6
 MarkupSafe~=3.0.2

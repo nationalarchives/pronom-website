@@ -1,7 +1,7 @@
 describe('PRONOM Contribute Spec', () => {
     beforeEach(() => {
         cy.visit('')
-        cy.get("a[href='/contribute']").click()
+        cy.get("main a[href='/contribute']").click()
     })
 
     it('displays the expected links', () => {
