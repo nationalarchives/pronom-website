@@ -13,7 +13,7 @@ jest.mock("aws-cdk-lib/aws-lambda", () => ({
 
 const app: cdk.App = new cdk.App();
 const infrastructureStack = new inf.InfrastructureStack(app, "TestInfrastructure")
-const stack: cf.CloudFrontWAFStack = new cf.CloudFrontWAFStack(app, 'MyTestStack', infrastructureStack.cloudFrontDistribution);
+const stack: cf.CloudFrontWAFStack = new cf.CloudFrontWAFStack(app, 'MyTestStack', infrastructureStack.cloudFrontDistribution, infrastructureStack.rateLimitRule);
 const template: Template = Template.fromStack(stack);
 
 test("All expected resources have been created", () => {
