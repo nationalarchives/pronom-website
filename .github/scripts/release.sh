@@ -38,8 +38,9 @@ LATEST_SIGNATURE_FILE=$(aws s3 ls "s3://$ENVIRONMENT-pronom-website/signatures/"
 
 python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 cd lambdas || exit
-zip -q ../soap.zip soap.py version
+zip -q ../soap.zip soap.py
 cd ..
+zip -q soap.zip version
 
 cp ./*.zip infrastructure
 cd infrastructure || exit

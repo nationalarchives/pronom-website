@@ -13,3 +13,4 @@ __pycache__
 nohup.out
 tests/node_modules
 signature-files
+version

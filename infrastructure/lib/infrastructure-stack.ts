@@ -10,10 +10,13 @@ import * as agw from 'aws-cdk-lib/aws-apigateway'
 import {WafwebaclToApiGateway} from "@aws-solutions-constructs/aws-wafwebacl-apigateway";
 import {Effect, PolicyStatement} from "aws-cdk-lib/aws-iam";
 import {StringParameter} from "aws-cdk-lib/aws-ssm";
+import * as wafv2 from "aws-cdk-lib/aws-wafv2";
 
 
 export class InfrastructureStack extends cdk.Stack {
     public readonly cloudFrontDistribution: cf.Distribution;
+    public readonly rateLimitRule: wafv2.CfnWebACL.RuleProperty
+
 
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
@@ -46,6 +49,27 @@ export class InfrastructureStack extends cdk.Stack {
             insertHttpSecurityHeaders: false,
             responseHeadersPolicyProps: {securityHeadersBehavior},
         });
+
+        const rateLimitRule: wafv2.CfnWebACL.RuleProperty = {
+            name: 'RateLimit15000',
+            priority: 1,
+            action: {
+                block: {},
+            },
+            statement: {
+                rateBasedStatement: {
+                    limit: 15000,
+                    aggregateKeyType: 'IP'
+                },
+            },
+            visibilityConfig: {
+                sampledRequestsEnabled: true,
+                cloudWatchMetricsEnabled: true,
+                metricName: 'RateLimit15000',
+            },
+        };
+
+        this.rateLimitRule = rateLimitRule;
 
         const parameterArn: string = StringParameter.fromSecureStringParameterAttributes(this, "github-token", {
             parameterName: "/github/token"
@@ -94,7 +118,10 @@ export class InfrastructureStack extends cdk.Stack {
 
 
         new WafwebaclToApiGateway(this, 'pronom-soap-wafwebacl-apigateway', {
-            existingApiGatewayInterface: soapRESTAPI
+            existingApiGatewayInterface: soapRESTAPI,
+            webaclProps: {
+                rules: [rateLimitRule]
+            }
         });
 
         this.cloudFrontDistribution = cloudfrontToS3.cloudFrontWebDistribution

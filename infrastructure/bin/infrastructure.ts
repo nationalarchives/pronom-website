@@ -21,5 +21,5 @@ const app: cdk.App = new cdk.App();
 
 const infrastructure = new InfrastructureStack(app, 'pronom-website', londonProps);
 
-new CloudFrontWAFStack(app, 'cloudfront-waf', infrastructure.cloudFrontDistribution, virginiaProps)
+new CloudFrontWAFStack(app, 'cloudfront-waf', infrastructure.cloudFrontDistribution, infrastructure.rateLimitRule, virginiaProps)
 
