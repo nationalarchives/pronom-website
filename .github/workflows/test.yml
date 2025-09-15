@@ -15,6 +15,7 @@ jobs:
         with:
           repository: nationalarchives/pronom-signatures
           path: 'signature-files'
+      - uses: snok/install-poetry@v1
       - run: |
           . ./run-server.sh $PWD/signature-files
           npm --prefix tests cit
