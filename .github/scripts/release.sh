@@ -15,49 +15,34 @@ curl $CDN_BASE_URL/print.css | aws s3 cp --content-type text/css - "s3://$ENVIRO
 curl $CDN_BASE_URL/assets/images/favicon.ico | aws s3 cp --content-type image/x-icon - "s3://$ENVIRONMENT-pronom-website/favicon.ico"
 curl $CDN_BASE_URL/assets/fonts/fa-solid-900.woff2 | aws s3 cp --content-type font/woff2 - "s3://$ENVIRONMENT-pronom-website/fa-solid-900.woff2"
 
-pip install -r requirements.txt boto3 pycountry
-mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install boto3 jinja2 tna-frontend-jinja
+mkdir -p site/fmt site/x-fmt site/actor
 python .github/scripts/generate_pages.py "$PWD/signature-files"
 cd site || exit
 aws s3 sync --quiet --content-type text/html . "s3://$ENVIRONMENT-pronom-website"
 cd ..
 python .github/scripts/generate_index_file.py "$PWD/signature-files"
 
+
+cd lambdas/results
 mkdir -p package
-pip install -r requirements.txt --target=package
+pip install --target=package .
 cd package || exit
-zip -q -r ../results.zip .
-cd ../lambdas || exit
-zip -q ../results.zip results.py
-cd ..
+zip -q -r ../../../results.zip .
+cd ../../../ || exit
 zip -q ./results.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html  indexes
 
 LATEST_SIGNATURE_FILE=$(aws s3 ls "s3://$ENVIRONMENT-pronom-website/signatures/" | sort -t'V' -k2,2n | tail -1 | awk '{split($0,a," "); print a[4]}')
-aws lambda update-function-configuration --function-name pronom-soap --environment "Variables={DOWNLOAD_URL=https://d21gi86t6uhf68.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE}" | cat > /dev/null
 
 python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 cd lambdas || exit
 zip -q ../soap.zip soap.py version
 cd ..
 
-mkdir -p package-submissions
-pip install ghapi --target=package-submissions
-cd package-submissions || exit
-zip -q -r ../submissions.zip .
-cd ../lambdas || exit
-zip -q ../submissions.zip submissions.py
-cd ..
-
-mkdir -p package-submissions-received
-pip install -r requirements.txt --target=package-submissions-received
-cd package-submissions-received || exit
-zip -q -r ../submissions_received.zip .
-cd ../lambdas || exit
-zip -q ../submissions_received.zip submissions_received.py
-cd ..
-zip -q submissions_received.zip ./lambdas/templates/index.html ./lambdas/templates/submissions_received.html
-
 cp ./*.zip infrastructure
 cd infrastructure || exit
 npm ci
 npx cdk deploy --all -c environment="$ENVIRONMENT" --require-approval never
+aws lambda update-function-configuration --function-name $ENVIRONMENT-pronom-soap --environment "Variables={DOWNLOAD_URL=https://d21gi86t6uhf68.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE}" | cat > /dev/null

@@ -22,12 +22,29 @@ export class InfrastructureStack extends cdk.Stack {
         const bucketProps: (suffix: string) => BucketProps = suffix => {
             return {bucketName: `${environment}-pronom-website${suffix}`}
         }
+
+        const securityHeadersBehavior = {
+            contentSecurityPolicy: {
+                contentSecurityPolicy: "default-src 'self'; base-uri 'none'; object-src 'none'; font-src 'self' https://fonts.gstatic.com https://use.typekit.net; style-src 'self' https://www.nationalarchives.gov.uk https://fonts.googleapis.com https://p.typekit.net https://use.typekit.net; script-src 'self' https://www.nationalarchives.gov.uk",
+                override: true
+            }
+        }
+
+
+        const responseHeadersPolicy = new cf.ResponseHeadersPolicy(this, 'CspHeadersPolicy', {
+            responseHeadersPolicyName: 'CspHeadersPolicy',
+            comment: 'Adds strict Content-Security-Policy for CloudFront responses',
+            securityHeadersBehavior
+        });
+
         const cloudfrontToS3: CloudFrontToS3 = new CloudFrontToS3(this, "pronom-website", {
             bucketProps: {versioned: false, ...bucketProps("")},
             loggingBucketProps: bucketProps("-logs"),
             cloudFrontLoggingBucketProps: bucketProps("-cloudfront-logs"),
             cloudFrontLoggingBucketAccessLogBucketProps: bucketProps("-cloudfront-logs-access-logs"),
-            cloudFrontDistributionProps: {defaultRootObject: "home"}
+            cloudFrontDistributionProps: {defaultRootObject: "home"},
+            insertHttpSecurityHeaders: false,
+            responseHeadersPolicyProps: {securityHeadersBehavior},
         });
 
         const parameterArn: string = StringParameter.fromSecureStringParameterAttributes(this, "github-token", {
@@ -45,23 +62,9 @@ export class InfrastructureStack extends cdk.Stack {
 
         const searchResults: lambda.Function = createLambda("search-results", "results")
 
-        const submissionReceived: lambda.Function = createLambda("submission-received", "submissions_received")
-
         const soap: lambda.Function = createLambda("soap", "soap")
 
-        const submissions: lambda.Function = createLambda("submissions", "submissions")
-
-        submissions.addToRolePolicy(new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: ["ssm:GetParameter"],
-            resources: [parameterArn]
-        }))
-
         const searchResultsUrl: lambda.FunctionUrl = searchResults.addFunctionUrl({
-            authType: lambda.FunctionUrlAuthType.AWS_IAM,
-        });
-
-        const submissionReceivedUrl: lambda.FunctionUrl = submissionReceived.addFunctionUrl({
             authType: lambda.FunctionUrlAuthType.AWS_IAM,
         });
 
@@ -70,19 +73,10 @@ export class InfrastructureStack extends cdk.Stack {
             defaultMethodOptions: {authorizer: undefined}
         })
 
-        const submissionRestApi: agw.RestApi = new agw.LambdaRestApi(this, 'submissionsApi', {
-            handler: submissions,
-            defaultMethodOptions: {authorizer: undefined}
-        })
-
         cloudfrontToS3.cloudFrontWebDistribution.addBehavior("/results", origins.FunctionUrlOrigin.withOriginAccessControl(searchResultsUrl), {
             cachePolicy: cf.CachePolicy.CACHING_DISABLED,
-            originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER
-        })
-
-        cloudfrontToS3.cloudFrontWebDistribution.addBehavior("/submission-received/*", origins.FunctionUrlOrigin.withOriginAccessControl(submissionReceivedUrl), {
-            cachePolicy: cf.CachePolicy.CACHING_DISABLED,
-            originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER
+            originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+            responseHeadersPolicy
         })
 
         const bucket: Bucket | undefined = cloudfrontToS3.s3Bucket
@@ -98,18 +92,9 @@ export class InfrastructureStack extends cdk.Stack {
             allowedMethods: AllowedMethods.ALLOW_ALL
         })
 
-        cloudfrontToS3.cloudFrontWebDistribution.addBehavior("/submissions", new origins.RestApiOrigin(submissionRestApi), {
-            cachePolicy: cf.CachePolicy.CACHING_DISABLED,
-            originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
-            allowedMethods: AllowedMethods.ALLOW_ALL
-        })
 
         new WafwebaclToApiGateway(this, 'pronom-soap-wafwebacl-apigateway', {
             existingApiGatewayInterface: soapRESTAPI
-        });
-
-        new WafwebaclToApiGateway(this, 'pronom-submissions-wafwebacl-apigateway', {
-            existingApiGatewayInterface: submissionRestApi
         });
 
         this.cloudFrontDistribution = cloudfrontToS3.cloudFrontWebDistribution

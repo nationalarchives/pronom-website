@@ -1,8 +1,7 @@
 import unittest
 import sqlite3
 from unittest import mock
-
-from lambdas import results
+from lambdas.results import results
 import os
 
 db_name = "test_indexes"

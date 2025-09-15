@@ -75,13 +75,6 @@
     </div>
     <div class="tna-column tna-column--width-2-3 tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
       <h1 class="tna-heading-xl">{{ pageTitle }}</h1>
-      <div class="tna-button-group tna-button-group--small">
-        {{ tnaButton({
-          'text': 'Edit this page',
-          'href': editPath,
-        }) }}
-      </div>
-
       <h2 class="tna-heading-l" id="summary">Summary</h2>
       {% for result in summary.results %}
         <dl class="tna-dl">

@@ -5,6 +5,6 @@ module.exports = defineConfig({
   projectId: 'vdyks4',
   e2e: {
     supportFile: false,
-    baseUrl: "http://localhost:8000"
+    baseUrl: "http://localhost:8081"
   },
 });

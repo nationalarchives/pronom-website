@@ -1,6 +1,6 @@
-import {checkSelectInput, checkTextInput, checkTextValue, jsonFromForm} from "./utils";
+import {checkSelectInput, checkTextValue, jsonFromForm} from "./utils";
 
-describe('PRONOM Edit Signature Spec', () => {
+describe.skip('PRONOM Edit Signature Spec', () => {
     beforeEach(() => {
       cy.visit('/edit/fmt/2008')
     })

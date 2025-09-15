@@ -1,10 +1,8 @@
 #!/bin/bash
-
+set -e
 SIGNATURE_FILES_LOCATION=$1
 mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt pycountry ghapi boto3
+poetry add pycountry ghapi boto3
 python3 .github/scripts/generate_pages.py $SIGNATURE_FILES_LOCATION
 python3 .github/scripts/generate_index_file.py $SIGNATURE_FILES_LOCATION
 cd site
@@ -18,5 +16,4 @@ wget $CDN_BASE_URL/print.css -O print.css
 wget $CDN_BASE_URL/assets/images/favicon.ico -O favicon.ico
 wget $CDN_BASE_URL/assets/fonts/fa-solid-900.woff2 -O fa-solid-900.woff2
 sed -i -e 's/\/assets\/fonts/\//g' font-awesome.css
-cd ..
-python3 http_server.py &
+docker compose up -d --build

@@ -1,6 +1,6 @@
 import {checkSelectInput, checkTextInput, jsonFromForm} from "./utils";
 
-describe('PRONOM Add Signature Spec', () => {
+describe.skip('PRONOM Add Signature Spec', () => {
     beforeEach(() => {
       cy.visit('')
       cy.get("main a[href='/contribute']").click()

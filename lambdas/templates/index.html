@@ -49,12 +49,8 @@
         'href': '/search'
       },
       {
-        'text': 'Contribute',
-        'href': '/contribute'
-      },
-      {
         'text': 'DROID Signature Files',
-        'href': '/signature_list'
+        'href': '/signature-list'
       }
     ]
   }) | indent(4) }}
@@ -81,10 +77,5 @@
 
 {% block bodyEnd %}
   <script src="/all.js"></script>
-  <script>
-    if(window.TNAFrontend) {
-      window.TNAFrontend.initAll();
-    }
-  </script>
   <script type="module" src="https://www.nationalarchives.gov.uk/enrichment/js/logo-adornments.js" defer></script>
 {% endblock %}

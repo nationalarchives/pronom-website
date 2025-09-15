@@ -1,6 +1,6 @@
 import {checkSelectInput, checkTextInput, checkTextValue, jsonFromForm} from "./utils";
 
-describe('PRONOM Edit Organisation Spec', () => {
+describe.skip('PRONOM Edit Organisation Spec', () => {
     beforeEach(() => {
         cy.visit('/actor/edit/93')
     })

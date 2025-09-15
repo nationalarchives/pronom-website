@@ -232,12 +232,12 @@ def lambda_handler(event, context):
         file_name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         path = f'submissions/{file_name}.json'
         content_bytes = json.dumps(body_json, indent=2).encode()
-        pr_id = create_pull_request(token, message, path, content_bytes, branch_name, author_name, body_text)
+        create_pull_request(token, message, path, content_bytes, branch_name, author_name, body_text)
     else:
         return error(Exception(f"submissionType {submission_type} not found"))
 
     return {
         "statusCode": 302,
-        "headers": {"Content-Type": "text/html", "Location": f"/submission-received/{pr_id}"}
+        "headers": {"Content-Type": "text/html", "Location": f"/submissions-received"}
     }
 

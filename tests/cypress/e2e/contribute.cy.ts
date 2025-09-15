@@ -1,4 +1,4 @@
-describe('PRONOM Contribute Spec', () => {
+describe.skip('PRONOM Contribute Spec', () => {
     beforeEach(() => {
         cy.visit('')
         cy.get("main a[href='/contribute']").click()

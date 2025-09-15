@@ -1,0 +1,17 @@
+[project]
+name = "results"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "MancunianSam",email = "sam.palmer@nationalarchives.gov.uk"}
+]
+requires-python = ">=3.12"
+dependencies = [
+    "boto3 (>=1.40.30,<2.0.0)",
+    "ghapi (>=1.0.6,<2.0.0)",
+    "fastcore (>=1.8.8,<2.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

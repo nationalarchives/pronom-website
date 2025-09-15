@@ -1,6 +1,7 @@
 package
 package-submissions
 package-submissions-received
+package-submissions-approved
 package-edit
 .idea
 .venv
@@ -8,7 +9,7 @@ site/
 indexes
 test_indexes
 lambdas/__pycache__
-lambdas/test/__pycache__
+__pycache__
 nohup.out
 tests/node_modules
 signature-files

@@ -1,0 +1,16 @@
+[project]
+name = "results"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "MancunianSam",email = "sam.palmer@nationalarchives.gov.uk"}
+]
+requires-python = ">=3.12"
+dependencies = [
+    "tna-frontend-jinja (>=0.24.0,<0.25.0)",
+    "jinja2 (>=3.1.6,<4.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
