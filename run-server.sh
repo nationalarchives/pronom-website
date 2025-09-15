@@ -3,6 +3,7 @@ set -e
 SIGNATURE_FILES_LOCATION=$1
 mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit
 poetry install
+eval $(poetry env activate)
 python3 .github/scripts/generate_pages.py $SIGNATURE_FILES_LOCATION
 python3 .github/scripts/generate_index_file.py $SIGNATURE_FILES_LOCATION
 cd site
