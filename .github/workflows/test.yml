@@ -13,6 +13,6 @@ jobs:
       - uses: actions/checkout@v5
       - run: |
           docker compose up --detach --wait --wait-timeout 120 nginx pronom
-          npm --prefix tests cit
+          npm --prefix tests cit || docker compose logs nginx && docker compose logs pronom
           npm --prefix infrastructure cit
           python -m unittest discover -v -s lambdas/test
