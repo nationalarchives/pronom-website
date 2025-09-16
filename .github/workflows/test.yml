@@ -14,6 +14,6 @@ jobs:
       - run: |
           docker compose up --detach --wait --wait-timeout 120
           docker compose exec pronom poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
-          npm --prefix tests cit || docker compose logs nginx && docker compose logs pronom
+          npm --prefix tests cit
           npm --prefix infrastructure cit
           docker compose exec dev poetry run python -m unittest discover -v -s lambdas/test
