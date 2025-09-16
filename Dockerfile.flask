@@ -1,0 +1,5 @@
+FROM ghcr.io/nationalarchives/tna-python-root
+COPY pyproject.toml poetry.lock package.json package-lock.json ./
+RUN tna-build
+COPY . .
+CMD ["tna-run", "app:app"]

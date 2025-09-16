@@ -1,10 +1,11 @@
 services:
   nginx:
-    image: nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
     ports:
       - "8081:80"
     volumes:
-      - site:/usr/share/nginx/html
       - ./nginx:/etc/nginx/conf.d
     restart: unless-stopped
     depends_on:
@@ -12,15 +13,17 @@ services:
   pronom:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.flask
     image: pronom:latest
     ports:
       - "8080:8080"
     environment:
       - ALLOW_INSECURE=true
+      - RUNTIME=develop
     volumes:
-      - site:/app/site
+      - .:/app
     restart: unless-stopped
-
-volumes:
-  site:
+  dev:
+    image: ghcr.io/nationalarchives/tna-python-dev:latest
+    volumes:
+      - .:/app

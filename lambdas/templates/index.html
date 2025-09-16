@@ -32,9 +32,11 @@
 {% endblock %}
 
 {% block cookies %}
-  <!-- {{ tnaCookieBanner({
+  {#
+  {{ tnaCookieBanner({
     cookiesUrl: 'https://www.nationalarchives.gov.uk/cookies/'
-  }) | indent(6) }} -->
+  }) | indent(6) }}
+  #}
 {% endblock %}
 
 {% block header %}
@@ -77,5 +79,6 @@
 
 {% block bodyEnd %}
   <script src="/all.js"></script>
+  <script src="/site.js"></script>
   <script type="module" src="https://www.nationalarchives.gov.uk/enrichment/js/logo-adornments.js" defer></script>
 {% endblock %}
