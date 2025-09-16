@@ -17,4 +17,5 @@ wget $CDN_BASE_URL/print.css -O print.css
 wget $CDN_BASE_URL/assets/images/favicon.ico -O favicon.ico
 wget $CDN_BASE_URL/assets/fonts/fa-solid-900.woff2 -O fa-solid-900.woff2
 sed -i -e 's/\/assets\/fonts/\//g' font-awesome.css
+cd ..
 docker compose up -d --build

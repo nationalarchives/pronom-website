@@ -59,9 +59,9 @@ test("Web ACLs should be attached to the REST APIs", () => {
 })
 
 test("All expected resources have been created", () => {
-    template.resourceCountIs("AWS::Lambda::Function", 4)
+    template.resourceCountIs("AWS::Lambda::Function", 2)
     template.resourceCountIs("AWS::S3::Bucket", 4)
-    template.resourceCountIs("AWS::ApiGateway::RestApi", 2)
+    template.resourceCountIs("AWS::ApiGateway::RestApi", 1)
     template.resourceCountIs("AWS::CloudFront::Distribution", 1)
-    template.resourceCountIs("AWS::WAFv2::WebACL", 2)
+    template.resourceCountIs("AWS::WAFv2::WebACL", 1)
 })
