@@ -11,13 +11,8 @@ jobs:
     name: Test changed-files
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/checkout@v5
-        with:
-          repository: nationalarchives/pronom-signatures
-          path: 'signature-files'
-      - uses: snok/install-poetry@v1
       - run: |
-          . ./run-server.sh $PWD/signature-files
+          docker compose up -d
           npm --prefix tests cit
           npm --prefix infrastructure cit
           python -m unittest discover -v -s lambdas/test

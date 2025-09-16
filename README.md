@@ -42,9 +42,9 @@ The lambda creates a pull request from a fork owned by the tna-pronom GitHub use
 This replicates the behaviour of the legacy SOAP API
 
 ## Running locally
-There is a script `run-server.sh` which will build and run a local copy of the site using docker and flask.
+Run `docker compose up -d` to build the service and start the nginx and Flask applications.
 
-The flask app is a single route for the search results page. It passes the local request to the lambda code to handle.
+The Flask app is a single route for the search results page. It passes the local request to the lambda code to handle.
 
 ## Tests
 There are two suites of tests

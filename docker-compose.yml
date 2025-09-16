@@ -1,14 +1,14 @@
-version: '3.8'
-
 services:
   nginx:
     image: nginx:latest
     ports:
       - "8081:80"
     volumes:
-      - ./site:/usr/share/nginx/html
+      - site:/usr/share/nginx/html
       - ./nginx:/etc/nginx/conf.d
     restart: unless-stopped
+    depends_on:
+      - pronom
   pronom:
     build:
       context: .
@@ -18,4 +18,9 @@ services:
       - "8080:8080"
     environment:
       - ALLOW_INSECURE=true
+    volumes:
+      - site:/app/site
     restart: unless-stopped
+
+volumes:
+  site:
