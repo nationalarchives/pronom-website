@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: |
-          docker compose up -d
+          docker compose up --detach --wait --wait-timeout 120 nginx pronom
           npm --prefix tests cit
           npm --prefix infrastructure cit
           python -m unittest discover -v -s lambdas/test
