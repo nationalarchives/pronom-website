@@ -7,7 +7,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "tna-frontend-jinja (>=0.24.0,<0.25.0)",
+    "tna-frontend-jinja (==0.25.0)",
     "jinja2 (>=3.1.6,<4.0.0)"
 ]
 

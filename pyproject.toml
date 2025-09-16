@@ -6,17 +6,22 @@ authors = [
     {name = "MancunianSam",email = "sam.palmer@nationalarchives.gov.uk"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "flask (>=3.1.2,<4.0.0)",
-    "tna-frontend-jinja (==0.25.0)",
-    "jinja2 (>=3.1.6,<4.0.0)",
-    "boto3 (>=1.40.30,<2.0.0)",
-    "ghapi (>=1.0.6,<2.0.0)",
-    "fastcore (>=1.8.8,<2.0.0)",
-    "pycountry (>=24.6.1,<25.0.0)"
-]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.1.2"
+tna-frontend-jinja = "0.25.0"
+jinja2 = "^3.1.6"
+boto3 = "^1.40.30"
+ghapi = "^1.0.6"
+fastcore = "^1.8.8"
+pycountry = "^24.6.1"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

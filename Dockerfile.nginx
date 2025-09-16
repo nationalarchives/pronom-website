@@ -8,8 +8,7 @@ RUN sed -i -e 's/\/assets\/fonts/\//g' site/font-awesome.css
 RUN cp lambdas/templates/site.js site
 RUN git clone https://github.com/nationalarchives/pronom-signatures/ /home/app/pronom-signatures
 RUN poetry run python .github/scripts/generate_pages.py /home/app/pronom-signatures
-RUN poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
-# CMD ["tail", "-f", "/dev/null"]
+
 
 
 FROM nginx:latest
