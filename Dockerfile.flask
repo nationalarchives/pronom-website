@@ -1,4 +1,4 @@
-FROM ghcr.io/nationalarchives/tna-python-dev
+FROM ghcr.io/nationalarchives/tna-python-dev:latest
 HEALTHCHECK --interval=15s CMD curl --fail http://localhost:8080/healthcheck/live/ || exit 1
 COPY pyproject.toml poetry.lock ./
 RUN tna-build
