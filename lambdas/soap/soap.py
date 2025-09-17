@@ -16,8 +16,10 @@ def file_response(file_name):
         return response(file_contents.read(), content_type)
 
 
-soap_response_prefix = """<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+xsd = "http://www.w3.org/2001/XMLSchema"
+xsi = "http://www.w3.org/2001/XMLSchema-instance"
+soap_response_prefix = f"""<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="{xsi}" xmlns:xsd="{xsd}">
   <soap:Body>
     <getSignatureFileV1Response xmlns="http://pronom.nationalarchives.gov.uk">
       <SignatureFile>

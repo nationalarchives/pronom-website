@@ -17,3 +17,5 @@ jobs:
           npm --prefix tests cit
           npm --prefix infrastructure cit
           docker compose exec dev poetry run python -m unittest discover -v -s lambdas/test
+          docker compose exec dev flake8 /app
+          docker compose exec dev black --check /app

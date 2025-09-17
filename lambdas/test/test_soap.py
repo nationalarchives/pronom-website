@@ -42,9 +42,10 @@ class SoapTest(unittest.TestCase):
         response = soap.lambda_handler(
             {"httpMethod": "POST", "headers": {"soapaction": action}}, None
         )
-
-        expected_body = """<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        xsi = "http://www.w3.org/2001/XMLSchema-instance"
+        xsd = "http://www.w3.org/2001/XMLSchema"
+        expected_body = f"""<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="{xsi}" xmlns:xsd="{xsd}">
   <soap:Body>
     <getSignatureFileV1Response xmlns="http://pronom.nationalarchives.gov.uk">
       <SignatureFile>
