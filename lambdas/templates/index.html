@@ -32,9 +32,11 @@
 {% endblock %}
 
 {% block cookies %}
-  <!-- {{ tnaCookieBanner({
+  {#
+  {{ tnaCookieBanner({
     cookiesUrl: 'https://www.nationalarchives.gov.uk/cookies/'
-  }) | indent(6) }} -->
+  }) | indent(6) }}
+  #}
 {% endblock %}
 
 {% block header %}
@@ -52,7 +54,11 @@
         'text': 'DROID Signature Files',
         'href': '/signature-list'
       }
-    ]
+    ],
+    'phaseBanner': {
+      'phase': 'Alpha',
+      'message': 'This service is still in development. Visit <a href="https://www.nationalarchives.gov.uk/pronom/">PRONOM</a> for the current live version.'
+    }
   }) | indent(4) }}
 {% endblock %}
 
@@ -77,5 +83,6 @@
 
 {% block bodyEnd %}
   <script src="/all.js"></script>
+  <script src="/site.js"></script>
   <script type="module" src="https://www.nationalarchives.gov.uk/enrichment/js/logo-adornments.js" defer></script>
 {% endblock %}

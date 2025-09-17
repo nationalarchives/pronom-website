@@ -1,21 +1,27 @@
-version: '3.8'
-
 services:
   nginx:
-    image: nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
     ports:
-      - "8081:80"
+      - 8081:80
     volumes:
-      - ./site:/usr/share/nginx/html
       - ./nginx:/etc/nginx/conf.d
     restart: unless-stopped
+    depends_on:
+      - pronom
   pronom:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.flask
     image: pronom:latest
-    ports:
-      - "8080:8080"
     environment:
       - ALLOW_INSECURE=true
+      - RUNTIME=develop
+    volumes:
+      - .:/app
     restart: unless-stopped
+  dev:
+    image: ghcr.io/nationalarchives/tna-python-dev:preview
+    volumes:
+      - .:/app

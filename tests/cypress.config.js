@@ -1,10 +1,9 @@
 const { defineConfig } = require("cypress");
 
-
 module.exports = defineConfig({
-  projectId: 'vdyks4',
+  projectId: "vdyks4",
   e2e: {
     supportFile: false,
-    baseUrl: "http://localhost:8081"
+    baseUrl: "http://localhost:8081",
   },
 });

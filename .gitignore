@@ -11,6 +11,6 @@ test_indexes
 lambdas/__pycache__
 __pycache__
 nohup.out
-tests/node_modules
+node_modules
 signature-files
 version
