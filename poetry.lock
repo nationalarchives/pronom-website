@@ -14,18 +14,18 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.40.30"
+version = "1.40.36"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "boto3-1.40.30-py3-none-any.whl", hash = "sha256:04e89abf61240857bf7dec160e22f097eec68c502509b2bb3c5010a22cb91052"},
-    {file = "boto3-1.40.30.tar.gz", hash = "sha256:e95db539c938710917f4cb4fc5915f71b27f2c836d949a1a95df7895d2e9ec8b"},
+    {file = "boto3-1.40.36-py3-none-any.whl", hash = "sha256:d7c1fe033f491f560cd26022a9dcf28baf877ae854f33bc64fffd0df3b9c98be"},
+    {file = "boto3-1.40.36.tar.gz", hash = "sha256:bfc1f3d5c4f5d12b8458406b8972f8794ac57e2da1ee441469e143bc0440a5c3"},
 ]
 
 [package.dependencies]
-botocore = ">=1.40.30,<1.41.0"
+botocore = ">=1.40.36,<1.41.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.14.0,<0.15.0"
 
@@ -34,14 +34,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.40.30"
+version = "1.40.36"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "botocore-1.40.30-py3-none-any.whl", hash = "sha256:1d87874ad81234bec3e83f9de13618f67ccdfefd08d6b8babc041cd45007447e"},
-    {file = "botocore-1.40.30.tar.gz", hash = "sha256:8a74f77cfe5c519826d22f7613f89544cbb8491a1a49d965031bd997f89a8e3f"},
+    {file = "botocore-1.40.36-py3-none-any.whl", hash = "sha256:d6edf75875e4013cb7078875a1d6c289afb4cc6675d99d80700c692d8d8e0b72"},
+    {file = "botocore-1.40.36.tar.gz", hash = "sha256:93386a8dc54173267ddfc6cd8636c9171e021f7c032aa1df3af7de816e3df616"},
 ]
 
 [package.dependencies]
@@ -54,14 +54,14 @@ crt = ["awscrt (==0.27.6)"]
 
 [[package]]
 name = "click"
-version = "8.2.1"
+version = "8.3.0"
 description = "Composable command line interface toolkit"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "click-8.2.1-py3-none-any.whl", hash = "sha256:61a3265b914e850b85317d0b3109c7f8cd35a670f963866005d6ef1d5175a12b"},
-    {file = "click-8.2.1.tar.gz", hash = "sha256:27c491cc05d968d271d5a1db13e3b5a184636d9d930f148c50b038f0d0646202"},
+    {file = "click-8.3.0-py3-none-any.whl", hash = "sha256:9b9f285302c6e3064f4330c05f05b81945b2a39544279343e6e7c5f27a9baddc"},
+    {file = "click-8.3.0.tar.gz", hash = "sha256:e7b8232224eba16f4ebe410c25ced9f7875cb5f3263ffc93cc3e8da705e229c4"},
 ]
 
 [package.dependencies]
@@ -82,21 +82,21 @@ files = [
 
 [[package]]
 name = "fastcore"
-version = "1.8.8"
+version = "1.8.11"
 description = "Python supercharged for fastai development"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "fastcore-1.8.8-py3-none-any.whl", hash = "sha256:f38853245e5ae5abb16275daac92fca00edeced020871b1d2416fb22cde70df8"},
-    {file = "fastcore-1.8.8.tar.gz", hash = "sha256:939f7b79c5510b059ba9fc512dfe8aab30f5a752130a640070f8a1b494493b56"},
+    {file = "fastcore-1.8.11-py3-none-any.whl", hash = "sha256:0a5bd1346445eca8d25f102d7ff12ac03b294c322343fc818091930c9e373726"},
+    {file = "fastcore-1.8.11.tar.gz", hash = "sha256:873dbe119293ddfd1b8286eb8a513a22a36efc628759965011925fe4e8beb5a3"},
 ]
 
 [package.dependencies]
 packaging = "*"
 
 [package.extras]
-dev = ["llms-txt", "matplotlib", "nbclassic", "nbdev (>=0.2.39)", "numpy", "pandas", "pillow", "plum-dispatch", "pysymbol_llm", "torch"]
+dev = ["llms-txt", "matplotlib", "nbclassic", "nbdev (>=0.2.39)", "numpy", "pandas", "pillow", "plum-dispatch", "pysymbol_llm", "toolslm", "torch"]
 
 [[package]]
 name = "flask"
@@ -124,14 +124,14 @@ dotenv = ["python-dotenv"]
 
 [[package]]
 name = "ghapi"
-version = "1.0.6"
+version = "1.0.8"
 description = "A python client for the GitHub API"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "ghapi-1.0.6-py3-none-any.whl", hash = "sha256:b3d96bf18fcaa2cb7131bad9de2948e2a1c2bb226377a25826f6c80950c57854"},
-    {file = "ghapi-1.0.6.tar.gz", hash = "sha256:64fdd9f06d8e3373065c42c2a03e067e2bbb9ca18b583cd6e38a28aaad0224f6"},
+    {file = "ghapi-1.0.8-py3-none-any.whl", hash = "sha256:3e4023f475ec966995dd3feeacd3f42f9e296dd23148e6f28d15e80487300e66"},
+    {file = "ghapi-1.0.8.tar.gz", hash = "sha256:9ab02dcd06b3c622ea2d9b21a2efee316076a744ce7847251a2fe9f542f381df"},
 ]
 
 [package.dependencies]
@@ -139,7 +139,7 @@ fastcore = ">=1.7.2"
 packaging = "*"
 
 [package.extras]
-dev = ["jsonref", "matplotlib"]
+dev = ["jsonref", "llms-txt", "matplotlib", "nbclassic", "nbdev", "pysymbol_llm"]
 
 [[package]]
 name = "itsdangerous"
@@ -377,4 +377,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "1217cf01e1d7c9fc6a747e0d1d71a0c7994e3bfc355a6a13756803b4f5a020f3"
+content-hash = "88a6eac5b849abc1ddf0561a8f677d6c2774824085f4f47d3ad806d45a3fef06"
