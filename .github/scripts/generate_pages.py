@@ -26,6 +26,59 @@ env = Environment(
 bucket_name = "tna-pronom-signatures-spike"
 
 
+def create_modify_page(puid, json_data, actor_select, json_by_id):
+    def str_for_attr(attr):
+        return json_data[attr] if attr in json_data and json_data[attr] is not None else ''
+
+    identifier_type_names = ['PUID', 'Other', 'GDFR Format Identifier', 'MIME', 'TOM Identifier', 'GDFRClass',
+                             'GDFRRegistry', 'URL', 'Apple Uniform Type Identifier',
+                             'Library of Congress Format Description Identifier', 'Wikidata QID Identifier']
+    relationship_type_names = ['Other', 'Is subsequent version of', 'Is previous version of', 'Is subtype of',
+                               'Is supertype of', 'Can contain', 'Can be contained by', 'Has priority over',
+                               'Equivalent to']
+
+    def get_types(type_names):
+        types = sorted([{'text': x, 'value': x} for x in type_names], key=lambda x: x['text'])
+        types.insert(0, {'text': '', 'value': ''})
+        return types
+
+    relationship_types = get_types(relationship_type_names)
+    identifier_types = get_types(identifier_type_names)
+
+    relationships = []
+    if 'relationships' in json_data:
+        for relationship in json_data['relationships']:
+            related_format = json_by_id[relationship['relatedFormatID']]
+            relationship_type = relationship['relationshipType']
+            relationships.append({'puid': related_format, 'type': relationship_type})
+
+    modify_data = {
+        "name": str_for_attr("formatName"),
+        "families": str_for_attr("formatFamilies"),
+        "disclosure": str_for_attr("formatDisclosure"),
+        "description": str_for_attr("formatDescription"),
+        "formatTypes": str_for_attr("formatTypes"),
+        "identifiers": json_data['identifiers'] if 'identifiers' in json_data else [],
+        "relationships": relationships,
+        "identifierTypes": identifier_types,
+        "relationshipTypes": relationship_types,
+        "source": str_for_attr("provenanceCompoundName"),
+        "note": str_for_attr("formatNote"),
+        "developedBy": json_data["developedBy"] if "developedBy" in json_data else 0,
+        "supportedBy": json_data["supportedBy"] if "supportedBy" in json_data else 0
+    }
+    signature = None
+    change_type = 'edit'
+    if puid:
+        modify_data['puid'] = puid
+    else:
+        change_type = 'add'
+        signature = create_signature_section()
+    modify = env.get_template("modify.html")
+
+    return modify.render(result=modify_data, actors=actor_select, change_type=change_type, signature=signature)
+
+
 def get_summary(data):
     identifiers = ", ".join(
         [
@@ -113,7 +166,7 @@ path = sys.argv[1]
 
 def create_file_list():
     with request.urlopen(
-        "https://d21gi86t6uhf68.cloudfront.net/signatures.json"
+            "https://d21gi86t6uhf68.cloudfront.net/signatures.json"
     ) as url:
         all_signatures = json.load(url)
 
@@ -170,8 +223,10 @@ def run():
     actor_select = sorted(actor_select, key=lambda x: x["text"])
 
     for puid, json_data in all_json_files.items():
-        with open(f"site/{puid}", "w") as output:
+        with open(f"site/{puid}", "w") as output, open(f'site/edit/{puid}', 'w') as edit_page:
             output.write(create_detail(puid, json_data, all_actors))
+            edit_content = create_modify_page(puid, json_data, actor_select, json_by_id)
+            edit_page.write(edit_content)
 
     for actor_json in all_actors.values():
         actor_id = actor_json["actorId"]
@@ -187,3 +242,4 @@ def run():
 
 
 run()
+

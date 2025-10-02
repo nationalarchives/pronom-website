@@ -1,16 +1,12 @@
-import base64
-import io
 import json
-import zipfile
+import os
+import subprocess
 from datetime import datetime
 from urllib.parse import parse_qs
 
 import boto3
-from fastcore.net import HTTPError
 from ghapi.all import GhApi
 
-tna_name = "The National Archives"
-tna_email = "digitalpreservation@nationalarchives.gov.uk"
 owner = "tna-pronom"
 parent_owner = "nationalarchives"
 repo = "pronom-signatures"
@@ -23,38 +19,36 @@ def get_token():
     ]
 
 
-def create_branch(token):
+def get_user(token):
     api = GhApi(token=token)
+    return api.users.get_authenticated()
+
+
+def create_branch():
+    signature_dir = os.getenv("SIGNATURES_DIRECTORY", "/home/app/pronom-signatures")
+    os.chdir(signature_dir)
     suffix = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    branch_name = f"refs/heads/pronom-submission-branch-{suffix}"
-    api.repos.merge_upstream(owner, repo, "develop")
-    sha = api.git.get_ref(owner, repo, "heads/develop")["object"]["sha"]
-    api.git.create_ref(owner, repo, branch_name, sha)
+    branch_name = f"pronom-submission-branch-{suffix}"
+    subprocess.run(["git", "checkout", "develop"])
+    subprocess.run(["git", "pull"])
+    subprocess.run(["git", "checkout", "-b", branch_name])
+    subprocess.run(["git", "merge", "develop"])
     return branch_name
 
 
-def get_json_files(token, branch_name):
-    api = GhApi(token=token)
-    repo_archive = api.repos.download_zipball_archive(owner, repo, branch_name)
-    zip_stream = io.BytesIO(repo_archive)
-    with zipfile.ZipFile(zip_stream) as zip_file:
-        file_names = zip_file.namelist()
-        signature_files = [
-            name
-            for name in file_names
-            if "/signatures/" in name and name.endswith(".json")
-        ]
-        actor_files = [
-            name for name in file_names if "/actors/" in name and name.endswith(".json")
-        ]
-        signature_json = {
-            "/".join(name.split("/")[2:]): json.loads(zip_file.read(name))
-            for name in signature_files
-        }
-        actor_json = {
-            "/".join(name.split("/")[2:]): json.loads(zip_file.read(name))
-            for name in actor_files
-        }
+def get_json_files():
+    signature_json = {}
+    actor_json = {}
+    signature_dir = os.getenv("SIGNATURES_DIRECTORY", "/home/app/pronom-signatures")
+    for prefix in ["fmt", "x-fmt"]:
+        files = os.listdir(f"{signature_dir}/signatures/{prefix}")
+        for file in files:
+            with open(f"{signature_dir}/signatures/{prefix}/{file}") as signature_file:
+                signature_json[f"{prefix}/{file}"] = json.load(signature_file)
+
+    for file in os.listdir(f"{signature_dir}/actors"):
+        with open(f"{signature_dir}/actors/{file}") as actor_file:
+            actor_json[file] = json.load(actor_file)
     return signature_json, actor_json
 
 
@@ -119,33 +113,13 @@ def edit_format(puid, body_json, json_files):
 
 
 def create_pull_request(
-    token, message, path, content_bytes, branch_name, author_name, body_text
+        token, message, branch_name, body_text
 ):
     api = GhApi(token=token)
-    base64_content = base64.b64encode(content_bytes).decode()
-    committer = {"name": tna_name, "email": tna_email}
 
-    file_contents_args = {
-        "owner": owner,
-        "repo": repo,
-        "message": message,
-        "path": path,
-        "committer": committer,
-        "author": {"name": author_name, "email": tna_email},
-        "content": base64_content,
-        "branch": branch_name,
-    }
-    try:
-        existing_sha = api.repos.get_content(owner, repo, path, branch_name)["sha"]
-        file_contents_args["sha"] = existing_sha
-    except HTTPError:
-        pass
-
-    api.repos.create_or_update_file_contents(**file_contents_args)
-    head = f"{owner}:{branch_name}"
     base = "develop"
     res = api.pulls.create(
-        parent_owner, repo, message, head=head, base=base, body=body_text
+        parent_owner, repo, message, head=branch_name, base=base, body=body_text
     )
     return res["number"]
 
@@ -174,10 +148,12 @@ def error(e):
 
 
 def lambda_handler(event, context):  # noqa: C901
-    token = get_token()
+    pr_number = 0
+    token = os.getenv("GITHUB_TOKEN")
     body_json = {k: v[0] for k, v in parse_qs(event["body"]).items()}
-    branch_name = create_branch(token)
-    json_files, actor_files = get_json_files(token, branch_name)
+    user = get_user(token)
+    branch_name = create_branch()
+    json_files, actor_files = get_json_files()
 
     submission_type = body_json["submissionType"]
 
@@ -189,11 +165,6 @@ def lambda_handler(event, context):  # noqa: C901
             body = pr_message
         return body
 
-    if body_json.get("contributorName") and body_json["contributorName"] != "":
-        author_name = body_json["contributorName"]
-        del body_json["contributorName"]
-    else:
-        author_name = "The National Archives"
     if submission_type == "edit-format":
         puid = body_json["puid"]
         message = f"Submission to change {puid}"
@@ -202,9 +173,9 @@ def lambda_handler(event, context):  # noqa: C901
         changed = edit_format(puid, body_json, json_files)
         if changed:
             path = f"signatures/{puid}.json"
-            content_bytes = json.dumps(format_json, indent=2).encode()
-            create_pull_request(
-                token, message, path, content_bytes, branch_name, author_name, body_text
+            write_and_push(format_json, path, user, branch_name, body_text, token)
+            pr_number = create_pull_request(
+                token, message, branch_name, body_text
             )
     elif submission_type == "add-actor":
         message = "Submission to add a new organisation"
@@ -213,10 +184,10 @@ def lambda_handler(event, context):  # noqa: C901
         if len(actor) > 0:
             file_name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
             path = f"submissions/actors/{file_name}.json"
-            content_bytes = json.dumps(actor, indent=2).encode()
-
-            create_pull_request(
-                token, message, path, content_bytes, branch_name, author_name, body_text
+            format_json = json.dumps(actor, indent=2)
+            write_and_push(format_json, path, user, branch_name, body_text, token)
+            pr_number = create_pull_request(
+                token, message, branch_name, body_text
             )
     elif submission_type == "edit-actor":
         actor_id = body_json["actorId"]
@@ -235,10 +206,10 @@ def lambda_handler(event, context):  # noqa: C901
             for key, value in body_json.items():
                 actor[key] = value
             path = f"actors/{actor_id}.json"
-            content_bytes = json.dumps(actor, indent=2).encode()
-
-            create_pull_request(
-                token, message, path, content_bytes, branch_name, author_name, body_text
+            format_json = json.dumps(actor, indent=2)
+            write_and_push(format_json, path, user, branch_name, body_text, token)
+            pr_number = create_pull_request(
+                token, message, branch_name, body_text
             )
     elif submission_type == "add-format":
         message = "New submission"
@@ -259,14 +230,29 @@ def lambda_handler(event, context):  # noqa: C901
             body_json["internalSignatures"] = [signature_json]
         file_name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         path = f"submissions/{file_name}.json"
-        content_bytes = json.dumps(body_json, indent=2).encode()
-        create_pull_request(
-            token, message, path, content_bytes, branch_name, author_name, body_text
+        format_json = json.dumps(body_json, indent=2)
+        write_and_push(format_json, path, user, branch_name, body_text, token)
+        pr_number = create_pull_request(
+            token, message, branch_name, body_text
         )
     else:
         return error(Exception(f"submissionType {submission_type} not found"))
 
     return {
         "statusCode": 302,
-        "headers": {"Content-Type": "text/html", "Location": "/submissions-received"},
+        "headers": {"Content-Type": "text/html", "Location": f"/submissions-received?number={pr_number}"},
     }
+
+
+def write_and_push(format_json, path, user, branch_name, commit_message, token):
+    signature_dir = os.getenv("SIGNATURES_DIRECTORY", "/home/app/pronom-signatures")
+    with open(f"{signature_dir}/{path}", "w") as file_path:
+        json.dump(format_json, file_path, indent=2)
+    remote_url = f"https://{user["login"]}:{token}@github.com/{parent_owner}/{repo}.git"
+    subprocess.run(["git", "config", "user.name", user["login"]])
+    subprocess.run(["git", "config", "user.email", user["email"]])
+    subprocess.run(["git", "remote", "set-url", "origin", remote_url])
+
+    subprocess.run(["git", "add", "-A"])
+    subprocess.run(["git", "commit", "-m", commit_message])
+    subprocess.run(["git", "push", "-u", "origin", branch_name])

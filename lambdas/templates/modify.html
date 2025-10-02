@@ -1,130 +1,139 @@
+{%- extends 'index.html' -%}
 {% from "components/text-input/macro.html" import tnaTextInput %}
 {% from "components/button/macro.html" import tnaButton %}
 {% from "components/select/macro.html" import tnaSelect %}
+{% block beforeContent %}{% endblock %}
 
-<form action="/submissions" method="POST">
-  <input type="hidden" name="submissionType" value="{{ change_type }}-format">
-  {% if change_type == 'add' %}
-    <h2 class="tna-heading-l">Add a new signature</h2>
-  {% else %}
-    <input type="hidden" name="puid" value="{{ result.puid }}">
-    <h2 class="tna-heading-l">Edit {{ result.name }}</h2>
-    <h3>{{ result.puid }}</h3>
-  {% endif %}
-  <hr>
-  <section class="tna-section">
-    <h3 class="tna-heading-l">Your details</h3>
-    {{ tnaTextInput({ 'label': "Your Name", 'id': "name", 'name': "contributorName", 'hint': 'This will be available publicly in the release notes' }) }}
-    {{ tnaTextInput({ 'label': "Change description", 'id': "changeDescription", 'name': "changeDescription", 'hint': 'A brief description of the change' }) }}
-  </section>
-  <hr>
-  <section class="tna-section">
-    <h3 class="tna-heading-l">Format details</h3>
-    {{ tnaTextInput({ 'label': "Format Name", 'id': "formatName", 'name': "formatName", 'value': result.name }) }}
-    {{ tnaTextInput({ 'label': "Family", 'id': "families", 'name': "formatFamilies", 'value': result.families }) }}
-    {{ tnaSelect({
-      'label': "Disclosure",
-      'id': "disclosure",
-      'name': "formatDisclosure",
-      'items': [{'text': '', 'value': ''}, {'text': 'Full', 'value': 'Full'}, {'text': 'Partial', 'value': 'Partial'}, {'text': 'None', 'value': 'None'}],
-      'selected': result.disclosure
-    }) }}
-    {{ tnaTextInput({ 'label': "Description", 'id': "description", 'name': "formatDescription", 'value': result.description }) }}
-    {{ tnaTextInput({ 'label': "Format Type", 'id': "formatTypes", 'name': "formatTypes", 'value': result.formatTypes }) }}
-    {{ tnaTextInput({ 'label': "Note", 'id': "formatNote", 'name': "formatNote", 'value': result.note }) }}
-    {{ tnaSelect({
-      'label': "Format developed by",
-      'id': "developedBy",
-      'name': "developedBy",
-      'items': actors,
-      'selected': result.developedBy
-    }) }}
-    {{ tnaSelect({
-      'label': "Format supported by",
-      'id': "supportedBy",
-      'name': "supportedBy",
-      'items': actors,
-      'selected': result.supportedBy
-    }) }}
-  </section>
-  <hr>
-  <section class="tna-section">
-    <h3 class="tna-heading-l">Identifiers</h3>
-    <table class="tna-table--full" id="identifiersTable">
-      <caption class="tna-table__caption">Identifiers for {{ result.puid }}</caption>
-        <thead class="tna-table__head">
-          <tr class="tna-table__row">
-            <th class="tna-table__header">Identifier type</th>
-            <th class="tna-table__header">Identifier value</th>
-          </tr>
-        </thead>
-          <tbody class="tna-table__body">
-            {% for identifier in result.identifiers %}
-              <tr class="tna-table__row identifier-row">
-                <td class="tna-table__header">{{ identifier.identifierType }}</td>
-                <td class="tna-table__header">{{ identifier.identifierText }}</td>
-              </tr>
-            {% endfor %}
-            <tr>
-              <td class="tna-table__header">
-                {{ tnaSelect({
-                  'id': "identifierType",
-                  'name': "identifierType",
-                  'items': result.identifierTypes,
-                  'selected': ''
-                 }) }}
-              </td>
-              <td class="tna-table__header">
-                {{ tnaTextInput({ 'id': "identifierText", 'name': "identifierText" }) }}
-              </td>
-            </tr>
-          </tbody>
-    </table>
+{% block content %}
+  <div class="tna-!--padding-vertical-s">
+    <div class="tna-container">
+      <div class="tna-column tna-column--full">
+        <form action="/submissions" method="POST">
+          <input type="hidden" name="submissionType" value="{{ change_type }}-format">
+          {% if change_type == 'add' %}
+            <h2 class="tna-heading-l">Add a new signature</h2>
+          {% else %}
+            <input type="hidden" name="puid" value="{{ result.puid }}">
+            <h2 class="tna-heading-l">Edit {{ result.name }}</h2>
+            <h3>{{ result.puid }}</h3>
+          {% endif %}
+          <hr>
+          <section class="tna-section">
+            <h3 class="tna-heading-l">Your details</h3>
+            {{ tnaTextInput({ 'label': "Change description", 'id': "changeDescription", 'name': "changeDescription", 'hint': 'A brief description of the change' }) }}
+          </section>
+          <hr>
+          <section class="tna-section">
+            <h3 class="tna-heading-l">Format details</h3>
+            {{ tnaTextInput({ 'label': "Format Name", 'id': "formatName", 'name': "formatName", 'value': result.name }) }}
+            {{ tnaTextInput({ 'label': "Family", 'id': "families", 'name': "formatFamilies", 'value': result.families }) }}
+            {{ tnaSelect({
+              'label': "Disclosure",
+              'id': "disclosure",
+              'name': "formatDisclosure",
+              'items': [{'text': '', 'value': ''}, {'text': 'Full', 'value': 'Full'}, {'text': 'Partial', 'value': 'Partial'}, {'text': 'None', 'value': 'None'}],
+              'selected': result.disclosure
+            }) }}
+            {{ tnaTextInput({ 'label': "Description", 'id': "description", 'name': "formatDescription", 'value': result.description }) }}
+            {{ tnaTextInput({ 'label': "Format Type", 'id': "formatTypes", 'name': "formatTypes", 'value': result.formatTypes }) }}
+            {{ tnaTextInput({ 'label': "Note", 'id': "formatNote", 'name': "formatNote", 'value': result.note }) }}
+            {{ tnaSelect({
+              'label': "Format developed by",
+              'id': "developedBy",
+              'name': "developedBy",
+              'items': actors,
+              'selected': result.developedBy
+            }) }}
+            {{ tnaSelect({
+              'label': "Format supported by",
+              'id': "supportedBy",
+              'name': "supportedBy",
+              'items': actors,
+              'selected': result.supportedBy
+            }) }}
+          </section>
+          <hr>
+          <section class="tna-section">
+            <h3 class="tna-heading-l">Identifiers</h3>
+            <table class="tna-table--full" id="identifiersTable">
+              <caption class="tna-table__caption">Identifiers for {{ result.puid }}</caption>
+                <thead class="tna-table__head">
+                  <tr class="tna-table__row">
+                    <th class="tna-table__header">Identifier type</th>
+                    <th class="tna-table__header">Identifier value</th>
+                  </tr>
+                </thead>
+                  <tbody class="tna-table__body">
+                    {% for identifier in result.identifiers %}
+                      <tr class="tna-table__row identifier-row">
+                        <td class="tna-table__header">{{ identifier.identifierType }}</td>
+                        <td class="tna-table__header">{{ identifier.identifierText }}</td>
+                      </tr>
+                    {% endfor %}
+                    <tr>
+                      <td class="tna-table__header">
+                        {{ tnaSelect({
+                          'id': "identifierType",
+                          'name': "identifierType",
+                          'items': result.identifierTypes,
+                          'selected': ''
+                         }) }}
+                      </td>
+                      <td class="tna-table__header">
+                        {{ tnaTextInput({ 'id': "identifierText", 'name': "identifierText" }) }}
+                      </td>
+                    </tr>
+                  </tbody>
+            </table>
 
-  </section>
-  <hr>
-  <section class="tna-section">
-    <h3 class="tna-heading-l">Relationships</h3>
-    <table class="tna-table--full" id="relationshipsTable">
-      <caption class="tna-table__caption">Relationships for {{ result.puid }}</caption>
-        <thead class="tna-table__head">
-          <tr class="tna-table__row">
-            <th class="tna-table__header">Relationship type</th>
-            <th class="tna-table__header">Format name</th>
-          </tr>
-        </thead>
-          <tbody class="tna-table__body">
-            {% for relationship in result.relationships %}
-              <tr class="tna-table__row relationship-row">
-                <td class="tna-table__header">{{ relationship.type }}</td>
-                <td class="tna-table__header">{{ relationship.puid }}</td>
-              </tr>
-            {% endfor %}
-            <tr>
-              <td class="tna-table__header">
-                {{ tnaSelect({
-                  'id': "relationshipType",
-                  'name': "relationshipType",
-                  'items': result.relationshipTypes,
-                  'selected': ''
-                 }) }}
-              </td>
-              <td class="tna-table__header">
-                {{ tnaTextInput({ 'id': "relatedFormatName", 'name': "relatedFormatName" }) }}
-              </td>
-            </tr>
-          </tbody>
-    </table>
-  </section>
-  {% if signature is defined and signature is not none %}
-    {{ signature|safe }}
-  {% endif %}
+          </section>
+          <hr>
+          <section class="tna-section">
+            <h3 class="tna-heading-l">Relationships</h3>
+            <table class="tna-table--full" id="relationshipsTable">
+              <caption class="tna-table__caption">Relationships for {{ result.puid }}</caption>
+                <thead class="tna-table__head">
+                  <tr class="tna-table__row">
+                    <th class="tna-table__header">Relationship type</th>
+                    <th class="tna-table__header">Format name</th>
+                  </tr>
+                </thead>
+                  <tbody class="tna-table__body">
+                    {% for relationship in result.relationships %}
+                      <tr class="tna-table__row relationship-row">
+                        <td class="tna-table__header">{{ relationship.type }}</td>
+                        <td class="tna-table__header">{{ relationship.puid }}</td>
+                      </tr>
+                    {% endfor %}
+                    <tr>
+                      <td class="tna-table__header">
+                        {{ tnaSelect({
+                          'id': "relationshipType",
+                          'name': "relationshipType",
+                          'items': result.relationshipTypes,
+                          'selected': ''
+                         }) }}
+                      </td>
+                      <td class="tna-table__header">
+                        {{ tnaTextInput({ 'id': "relatedFormatName", 'name': "relatedFormatName" }) }}
+                      </td>
+                    </tr>
+                  </tbody>
+            </table>
+          </section>
+          {% if signature is defined and signature is not none %}
+            {{ signature|safe }}
+          {% endif %}
 
-  <div class="tna-button-group">
-    {{ tnaButton({
-      'text': "Submit",
-      'buttonElement': true,
-      'buttonType': "submit"
-    }) }}
+          <div class="tna-button-group">
+            {{ tnaButton({
+              'text': "Submit",
+              'buttonElement': true,
+              'buttonType': "submit"
+            }) }}
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
-</form>
+{% endblock %}

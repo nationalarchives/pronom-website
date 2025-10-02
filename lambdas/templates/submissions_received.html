@@ -1,5 +1,15 @@
-<h2>Thank you for your submission</h2>
-<h3>Your submission is waiting for approval</h3>
-<div class="tna-button-group">
-  <a class="tna-button tna-button--small" href="/">Home</a>
+{%- extends 'index.html' -%}
+
+{% block content %}
+<div class="tna-!--padding-vertical-s">
+    <div class="tna-container">
+      <div class="tna-column tna-column--full">
+        <h2>Thank you for your submission</h2>
+        <h3>Your Pull Request has been created</h3>
+        <div class="tna-button-group">
+          <a class="tna-button tna-button--small" href="https://github.com/nationalarchives/pronom-signatures/pull/{{ number }}">View on GitHub</a>
+        </div>
+      </div>
+    </div>
 </div>
+{% endblock %}

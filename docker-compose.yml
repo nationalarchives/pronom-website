@@ -18,6 +18,7 @@ services:
     environment:
       - ALLOW_INSECURE=true
       - RUNTIME=develop
+      - GITHUB_TOKEN
     volumes:
       - .:/app
     restart: unless-stopped
