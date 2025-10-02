@@ -8,6 +8,6 @@
   "license": "MIT",
   "devDependencies": {
     "cypress": "^15.3.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }
