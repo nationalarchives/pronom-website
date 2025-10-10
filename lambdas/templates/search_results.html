@@ -33,7 +33,7 @@
         <form action="/results" method="get">
             {{ tnaSearchField({
               'label': pageTitle,
-              'headingLevel': 2,
+              'headingLevel': 2 if (data|length) == 0 else 1,
               'headingSize': 'l',
               'id': 'search',
               'name': 'q',
@@ -49,8 +49,7 @@
         <h1 class="tna-heading-xl">No results found</h1>
         <p>Try widening your search term.</p>
       {% else %}
-      <h1 class="tna-heading-xl">{{ pageTitle }}</h1>
-      <p>Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}.</p>
+      <p>Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
       <dl class="tna-dl">
         {% for key, value in data.items() %}
           <dt><a href="{{ key }}">{{ key }}</a></dt>
