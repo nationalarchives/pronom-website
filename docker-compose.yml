@@ -19,9 +19,12 @@ services:
       - ALLOW_INSECURE=true
       - RUNTIME=develop
     volumes:
-      - .:/app
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./poetry.lock:/app/poetry.lock
+      - ./app:/app/app
+      - ./lambdas:/app/lambdas
     restart: unless-stopped
   dev:
-    image: ghcr.io/nationalarchives/tna-python-dev:preview
+    image: ghcr.io/nationalarchives/tna-python-dev:0
     volumes:
       - .:/app
