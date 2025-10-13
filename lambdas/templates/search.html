@@ -6,7 +6,7 @@
 {%- set pageTitle = 'Search PRONOM' -%}
 
 {% block beforeContent %}
-  <div class="tna-!--padding-vertical-s">
+  <div class="tna-!--padding-vertical-s tna-background-accent-light">
     <div class="tna-container">
       <div class="tna-column tna-column--full">
         {{ tnaBreadcrumbs({
@@ -23,17 +23,19 @@
 {% endblock %}
 
 {% block content %}
-  <div class="tna-container tna-section">
-    <div class="tna-column tna-column--full">
-      <form action="/results" method="get">
-          {{ tnaSearchField({
-            'label': pageTitle,
-            'headingLevel': 1,
-            'headingSize': 'l',
-            'id': 'search',
-            'name': 'q'
-          }) }}
-      </form>
+  <div class="tna-!--padding-top-s tna-!--padding-bottom-m tna-background-accent-light">
+    <div class="tna-container">
+      <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+        <form action="/results" method="get">
+            {{ tnaSearchField({
+              'label': pageTitle,
+              'headingLevel': 1,
+              'headingSize': 'l',
+              'id': 'search',
+              'name': 'q'
+            }) }}
+        </form>
+      </div>
     </div>
   </div>
 {% endblock %}

@@ -78,7 +78,13 @@
 {% endblock %}
 
 {% block footer %}
-  {{ tnaFooter({}) | indent(4) }}
+  {{ tnaFooter({
+    'defaultContent': True,
+    'defaultContentBaseUrl': 'https://www.nationalarchives.gov.uk',
+    'navigation': [],
+    'showNewsletter': False,
+    'legal': []
+  }) | indent(4) }}
 {% endblock %}
 
 {% block bodyEnd %}
