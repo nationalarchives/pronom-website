@@ -5,6 +5,16 @@
 
 {%- set pageTitle = 'Search results' -%}
 
+{% block skipLink %}
+  {% if data|length > 0 %}
+    {{ tnaSkipLink({
+      'href': 'search-results',
+      'text': 'Skip to search results'
+    }) }}
+  {% endif %}
+  {{ super() }}
+{% endblock %}
+
 {% block beforeContent %}
   <div class="tna-!--padding-vertical-s tna-background-accent-light">
     <div class="tna-container">
@@ -44,7 +54,7 @@
     </div>
   </div>
   <div class="tna-container tna-section">
-    <div class="tna-column tna-column--full">
+    <div class="tna-column tna-column--full" id="search-results">
       {% if data|length == 0 %}
         <h1 class="tna-heading-xl">No results found</h1>
         <p>Try widening your search term.</p>
