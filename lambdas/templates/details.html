@@ -152,7 +152,7 @@
             {% for byte_sequence in file.byteSequences %}
               <section class="tna-section">
                 <h5 class="tna-heading-s">Byte sequence reference</h5>
-                <p id="byteSequence{{ byte_sequence['reference'] }}">{{ byte_sequence.reference }}</p>
+                <p id="byteSequence-{{ container.id }}-{{ loop.index }}">{{ byte_sequence.reference }}</p>
                 {% if 'subSequences' in byte_sequence %}
                   <h6 class="tna-heading-s">Sub sequences</h6>
                   {% for sub_sequence in byte_sequence.subSequences %}
