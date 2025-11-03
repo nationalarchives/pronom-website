@@ -147,7 +147,7 @@
         <hr>
         <section class="tna-section">
           <h4 class="tna-heading-s">File path</h4>
-          <p id="file-path-{{ container.id }}">{{ file['path'] }}</p>
+          <p id="file-path-{{ container.id }}--{{ loop.index }}">{{ file['path'] }}</p>
           {% if 'byteSequences' in file %}
             {% for byte_sequence in file.byteSequences %}
               <section class="tna-section">
