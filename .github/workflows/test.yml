@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test changed-files
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: |
           docker compose up --detach --wait --wait-timeout 120
           docker compose exec pronom poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
