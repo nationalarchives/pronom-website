@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Release
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           repository: nationalarchives/pronom-signatures
           path: "signature-files"
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@v5.1.0
+        uses: aws-actions/configure-aws-credentials@v5.1.1
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/SandboxGithubActionsDeployPronomWebsite
           aws-region: eu-west-2
