@@ -1,6 +1,6 @@
 {
   "name": "pronom-website",
   "dependencies": {
-    "@nationalarchives/frontend": "0.30.0"
+    "@nationalarchives/frontend": "0.31.0"
   }
 }
