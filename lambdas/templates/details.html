@@ -82,8 +82,10 @@
       {% for result in summary.results %}
         <dl class="tna-dl">
           {% for key, value in result.items() %}
-          <dt>{{ key }}</dt>
-          <dd>{{ value }}</dd>
+            {% if value is defined and value is not none %}
+              <dt>{{ key }}</dt>
+              <dd>{{ value }}</dd>
+            {% endif %}
           {% endfor %}
           {% if source is defined and source is not none %}
             <dt>Source</dt>

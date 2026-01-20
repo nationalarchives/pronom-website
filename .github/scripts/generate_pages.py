@@ -35,7 +35,11 @@ def get_summary(data):
     )
 
     def str_for_attr(attr):
-        return data[attr] if attr in data and data[attr] is not None else ""
+        if attr in data:
+            if data[attr] == "":
+                return None
+            else:
+                return data[attr]
 
     return {
         "Name": str_for_attr("formatName"),
