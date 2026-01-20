@@ -5,32 +5,44 @@
 {% block beforeContent %}{% endblock %}
 
 {% block content %}
-  <div class="tna-section tna-background-accent-light">
-    <div class="tna-container">
-      <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
-        <h1 class="tna-heading-xl">Welcome to PRONOM</h1>
-        <p class="tna-scene-setter">The online registry of technical information. PRONOM is a resource for anyone requiring impartial and definitive information about the file formats, software products and other technical components required to support long-term access to electronic records and other digital objects of cultural, historical or business value.</p>
-      </div>
+<div class="tna-section tna-background-accent-light">
+  <div class="tna-container">
+    <div
+        class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+      <h1 class="tna-heading-xl">Welcome to PRONOM</h1>
+      <p class="tna-scene-setter">PRONOM is an online database that provides clear, reliable information about digital
+        file formats. Archivists and others use it to understand the technical details behind files so they can keep
+        important digital records accessible over time. A key part of PRONOM is its database of file‑format signatures -
+        small patterns inside a file that help tools like DROID identify exactly what format it is. Knowing the precise
+        format helps you plan how to maintain access and readability, especially as older formats become harder to
+        open.</p>
     </div>
   </div>
-  <ul class="tna-section tna-container">
-    <li class="tna-column tna-column--width-1-3 tna-column--full-small tna-column--full-tiny tna-!--margin-bottom-l">
-      {{ tnaCard({
-        'title': 'Search PRONOM',
-        'headingLevel': 2,
-        'href': '/search',
-        'body': 'Find information about file formats, software products and other technical components.',
-        'fullAreaClick': True
-      }) }}
-    </li>
-    <li class="tna-column tna-column--width-1-3 tna-column--full-small tna-column--full-tiny tna-!--margin-bottom-l">
-      {{ tnaCard({
-        'title': 'View signature files',
-        'headingLevel': 2,
-        'href': '/signature-list',
-        'body': 'Download the latest DROID signature files to identify file formats.',
-        'fullAreaClick': True
-      }) }}
-    </li>
-  </ul>
+</div>
+<div class="tna-section">
+  <div class="tna-container">
+    <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+      <form action="/results" method="get">
+        <div class="tna-form-item">
+          <div class="tna-form-item__header">
+            <h1 class="tna-form-item__label tna-heading-l">
+              <label for="search">
+                Search PRONOM
+              </label>
+            </h1>
+          </div>
+          <div class="tna-form-item__body">
+            <div class="tna-search-field">
+              <input type="search" id="search" class="tna-search-field__input" name="q" value="" spellcheck="false" placeholder="Input a file format name or file extension">
+              <button class="tna-button tna-search-field__button" type="submit" title="Search">
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

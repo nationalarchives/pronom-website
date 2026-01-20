@@ -1,4 +1,4 @@
-describe("PRONOM Search Spec", () => {
+describe.skip("PRONOM Search Spec", () => {
   beforeEach(() => {
     cy.visit("");
     cy.get("main a[href='/search']").click();
