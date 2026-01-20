@@ -9,7 +9,7 @@ type AllSignatures = {
 describe("PRONOM Signature List Spec", () => {
   beforeEach(() => {
     cy.visit("");
-    cy.get("main a[href='/signature-list']").click();
+    cy.get("a[href='/signature-list']").click();
   });
   it("renders the signature files page", () => {
     cy.request<AllSignatures>(
