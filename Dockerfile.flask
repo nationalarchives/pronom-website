@@ -1,8 +1,8 @@
-FROM ghcr.io/nationalarchives/tna-python-dev:0
+FROM ghcr.io/nationalarchives/tna-python-dev:1
 HEALTHCHECK --interval=15s CMD curl --fail http://localhost:8080/healthcheck/live/ || exit 1
 COPY pyproject.toml poetry.lock ./
 RUN tna-build
 RUN git clone https://github.com/nationalarchives/pronom-signatures/ /home/app/pronom-signatures
 COPY . .
 RUN poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
-CMD ["tna-run", "app:app"]
+CMD ["tna-wsgi", "app:app"]
