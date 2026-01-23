@@ -21,4 +21,5 @@ services:
       - ./package-lock.json:/app/package-lock.json
       - ./app:/app/app
       - ./lambdas:/app/lambdas
+      - ./tests:/app/tests
     restart: unless-stopped
