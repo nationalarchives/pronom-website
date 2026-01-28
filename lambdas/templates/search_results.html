@@ -22,12 +22,12 @@
         {{ tnaBreadcrumbs({
           'items': [
             {
-              'text': 'Home',
-              'href': '/'
+              'text': 'The National Archives',
+              'href': 'https://www.nationalarchives.gov.uk/'
             },
             {
-              'text': 'Search',
-              'href': '/search'
+              'text': 'PRONOM',
+              'href': '/'
             }
           ]
         }) | indent(6) }}
@@ -37,30 +37,30 @@
 {% endblock %}
 
 {% block content %}
-  <div class="tna-!--padding-top-s tna-!--padding-bottom-m tna-background-accent-light">
+  <div class="tna-!--padding-top-xs tna-!--padding-bottom-m tna-background-accent-light">
     <div class="tna-container">
       <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
         <form action="/results" method="get">
-            {{ tnaSearchField({
-              'label': pageTitle,
-              'headingLevel': 2 if (data|length) == 0 else 1,
-              'headingSize': 'l',
-              'id': 'search',
-              'name': 'q',
-              'value': search_term if search_term else ''
-            }) }}
+          {{ tnaSearchField({
+            'label': pageTitle,
+            'headingLevel': 2 if (data|length) == 0 else 1,
+            'headingSize': 'l',
+            'id': 'search',
+            'name': 'q',
+            'value': search_term if search_term else ''
+          }) }}
         </form>
       </div>
     </div>
   </div>
   <div class="tna-container tna-section">
-    <div class="tna-column tna-column--full" id="search-results">
+    <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny" id="search-results">
       {% if data|length == 0 %}
         <h1 class="tna-heading-xl">No results found</h1>
         <p>Try widening your search term.</p>
       {% else %}
       <p>Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
-      <dl class="tna-dl">
+      <dl class="tna-dl tna-!--margin-top-s">
         {% for key, value in data.items() %}
           <dt><a href="{{ key }}">{{ key }}</a></dt>
           <dd>{{ value }}</dd>

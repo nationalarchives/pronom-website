@@ -1,13 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-  TNAFrontend.initAll();
-  const form = document.querySelector("form");
-  if (form) {
-    if (form.method == "post") {
-      form.onsubmit = (_) => {
-        const button = document.querySelector("button[type=submit]");
-        button.disabled = true;
-        button.innerHTML = "Processing...";
-      };
+  window.TNAFrontend.initAll();
+
+  const cookies = new window.TNAFrontend.Cookies();
+
+  const setTheme = (theme) => {
+    if (theme === "light") {
+      document.documentElement.classList.remove("tna-template--dark-theme");
+      document.documentElement.classList.remove("tna-template--system-theme");
+    } else {
+      document.documentElement.classList.add(`tna-template--${theme}-theme`);
     }
-  }
+  };
+
+  setTheme(cookies.exists("theme") ? cookies.get("theme") : "system");
 });

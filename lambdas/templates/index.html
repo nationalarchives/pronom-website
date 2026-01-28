@@ -5,10 +5,11 @@
 {%- from "components/header/macro.html" import tnaHeader -%}
 
 {%- set pageTitle = pageTitle or 'PRONOM' -%}
+{%- set theme = 'system' -%}
 {%- set themeAccent = 'blue' -%}
-{%- set htmlAttributes = {
+{# {%- set htmlAttributes = {
   'data-tna-cookies-domain': 'd21gi86t6uhf68.cloudfront.net'
-} -%}
+} -%} #}
 
 {% block headIcons %}
   <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/favicon.ico" type="image/x-icon">
@@ -32,11 +33,9 @@
 {% endblock %}
 
 {% block cookies %}
-  {#
   {{ tnaCookieBanner({
     cookiesUrl: 'https://www.nationalarchives.gov.uk/cookies/'
   }) | indent(6) }}
-  #}
 {% endblock %}
 
 {% block header %}
@@ -58,23 +57,14 @@
   }) | indent(4) }}
 {% endblock %}
 
-{% block beforeContent %}
-  <div class="tna-section tna-background-accent-light">
-    <div class="tna-container">
-      <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
-        <h2 class="tna-heading-l">PRONOM</h2>
-        <p>The technical registry</p>
-      </div>
-    </div>
-  </div>
-{% endblock %}
-
 {% block content %}
   {{ content | safe }}
 {% endblock %}
 
 {% block footer %}
   {{ tnaFooter({
+    'themeSelector': True,
+    'currentTheme': theme,
     'defaultContent': True,
     'defaultContentBaseUrl': 'https://www.nationalarchives.gov.uk',
     'navigation': [],

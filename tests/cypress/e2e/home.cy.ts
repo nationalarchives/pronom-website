@@ -5,7 +5,7 @@ describe("PRONOM Home Spec", () => {
 
   it("displays the expected links", () => {
     cy.get("a[href='/signature-list']")
-      .last()
+      .first()
       .should("contain.text", "DROID Signature Files");
   });
 });
