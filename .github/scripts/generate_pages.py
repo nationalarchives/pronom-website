@@ -133,6 +133,8 @@ def create_file_list():
 
 
 def run():
+    with open("site/error", "w") as error_page:
+        error_page.write(env.get_template("error.html").render())
     with open("site/signature-list", "w") as signature_list:
         signature_list.write(create_file_list())
 
