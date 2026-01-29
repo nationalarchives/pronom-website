@@ -57,10 +57,15 @@ def get_relationships(json_data, json_by_id):
     relationship_summary = []
     for relationship in relationships:
         relationship_json = json_by_id[relationship["relatedFormatID"]]
+        relationship_puid  =  [
+                idf["identifierText"]
+                for idf in relationship_json["identifiers"]
+                if idf["identifierType"] == "PUID"
+            ][0]
         relationship_version = f" ({relationship_json["version"]})" if relationship_json.get("version") else ""
         summary = {
             "type": relationship["relationshipType"],
-            "puid": relationship_json["fileFormatID"],
+            "puid": relationship_puid,
             "name": relationship["relatedFormatName"] + relationship_version
         }
         relationship_summary.append(summary)
