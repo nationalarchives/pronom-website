@@ -52,12 +52,26 @@ def get_summary(data):
         "Note": str_for_attr("formatNote"),
     }
 
+def get_relationships(json_data, json_by_id):
+    relationships = json_data["relationships"]
+    relationship_summary = []
+    for relationship in relationships:
+        relationship_json = json_by_id[relationship["relatedFormatID"]]
+        relationship_version = f" ({relationship_json["version"]})" if relationship_json.get("version") else ""
+        summary = {
+            "type": relationship["relationshipType"],
+            "puid": relationship_json["fileFormatID"],
+            "name": relationship["relatedFormatName"] + relationship_version
+        }
+        relationship_summary.append(summary)
+    return relationship_summary
 
-def create_detail(puid, json_data, all_actors):
+def create_detail(json_data, all_actors, json_by_id):
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
     summary_args = {
         "results": [summary],
+        "relationships": get_relationships(json_data, json_by_id),
         "developedBy": (
             all_actors[json_data["developedBy"]] if "developedBy" in json_data else None
         ),
@@ -165,7 +179,7 @@ def run():
                 puid = f'{sub_dir}/{file.split(".")[0]}'
                 loaded_json = json.load(sig_json)
                 all_json_files[puid] = loaded_json
-                json_by_id[loaded_json["fileFormatID"]] = puid
+                json_by_id[loaded_json["fileFormatID"]] = loaded_json
 
     actor_select = [{"text": "", "value": 0}]
     for actor_json in all_actors.values():
@@ -177,7 +191,7 @@ def run():
 
     for puid, json_data in all_json_files.items():
         with open(f"site/{puid}", "w") as output:
-            output.write(create_detail(puid, json_data, all_actors))
+            output.write(create_detail(json_data, all_actors, json_by_id))
 
     for actor_json in all_actors.values():
         actor_id = actor_json["actorId"]

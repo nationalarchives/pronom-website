@@ -102,6 +102,14 @@
         </dl>
       {% endfor %}
 
+      <h2 class="tna-heading-l" id="relationships">Relationships</h2>
+      <dl class="tna-dl">
+        {% for relationship in summary.relationships %}
+          <dt>{{ relationship.type }}</dt>
+          <dd><a href="/{{ relationship.puid }}">{{ relationship.name }}</a></dd>
+        {% endfor %}
+      </dl>
+
       {% if signatures %}
       <h2 class="tna-heading-l" id="internal-signatures">Internal signatures</h2>
       {% for signature in signatures %}
