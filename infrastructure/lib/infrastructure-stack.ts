@@ -47,6 +47,15 @@ export class InfrastructureStack extends cdk.Stack {
       },
     );
 
+    const errorResponses = [403, 404, 500, 502, 503, 504].map(res => {
+      return {
+        httpStatus: res,
+        responseHttpStatus: res,
+        responsePagePath: "/error",
+        ttl: cdk.Duration.minutes(0)
+      }
+    })
+
     const cloudfrontToS3: CloudFrontToS3 = new CloudFrontToS3(
       this,
       "pronom-website",
@@ -57,7 +66,7 @@ export class InfrastructureStack extends cdk.Stack {
         cloudFrontLoggingBucketAccessLogBucketProps: bucketProps(
           "-cloudfront-logs-access-logs",
         ),
-        cloudFrontDistributionProps: { defaultRootObject: "home" },
+        cloudFrontDistributionProps: { defaultRootObject: "home", errorResponses },
         insertHttpSecurityHeaders: false,
         responseHeadersPolicyProps: { securityHeadersBehavior },
       },
