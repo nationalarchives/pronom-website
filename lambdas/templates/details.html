@@ -1,28 +1,10 @@
 {%- extends 'index.html' -%}
 
 {%- from "components/accordion/macro.html" import tnaAccordion -%}
-{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 {%- from "components/button/macro.html" import tnaButton -%}
 {%- from "components/sidebar/macro.html" import tnaSidebar -%}
 
 {%- set pageTitle = name -%}
-
-{% block beforeContent %}
-  <div class="tna-!--padding-vertical-s">
-    <div class="tna-container">
-      <div class="tna-column tna-column--full">
-        {{ tnaBreadcrumbs({
-          'items': [
-            {
-              'text': 'Home',
-              'href': '/'
-            }
-          ]
-        }) | indent(6) }}
-      </div>
-    </div>
-  </div>
-{% endblock %}
 
 {% block content %}
   <div class="tna-container tna-!--margin-bottom-l">
@@ -30,7 +12,17 @@
       {%- set ns = namespace(sidebar_items=[{
           'text': 'Summary',
           'href': '#summary'
-        }], sidebar_container_signatures=[], sidebar_containers=[]) %}
+        }], sidebar_container_signatures=[], sidebar_containers=[], sidebar_relationships=[]) %}
+
+      {%- if summary.relationships %}
+        {% set ns.sidebar_items = ns.sidebar_items + [
+          {
+            'text': 'Relationships',
+            'href': '#relationships',
+            'children': []
+          }
+        ] %}
+      {%- endif %}
 
       {%- if signatures %}
         {%- for signature in signatures %}

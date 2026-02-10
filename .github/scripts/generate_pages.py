@@ -40,6 +40,7 @@ def get_summary(data):
                 return None
             else:
                 return data[attr]
+        return None
 
     return {
         "Name": str_for_attr("formatName"),
@@ -160,12 +161,6 @@ def run():
     with open("site/home", "w") as home:
         home.write(create_home())
 
-    with open("site/search", "w") as search:
-        search.write(create_search())
-
-    with open("site/submission-received", "w") as search:
-        search.write(create_search())
-
     all_json_files = {}
     all_actors = {}
     json_by_id = {}
@@ -186,13 +181,6 @@ def run():
                 all_json_files[puid] = loaded_json
                 json_by_id[loaded_json["fileFormatID"]] = loaded_json
 
-    actor_select = [{"text": "", "value": 0}]
-    for actor_json in all_actors.values():
-        actor_select.append(
-            {"text": actor_json["name"], "value": actor_json["actorId"]}
-        )
-
-    actor_select = sorted(actor_select, key=lambda x: x["text"])
 
     for puid, json_data in all_json_files.items():
         with open(f"site/{puid}", "w") as output:
