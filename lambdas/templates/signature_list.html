@@ -1,25 +1,6 @@
 {%- extends 'index.html' -%}
 
-{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
-
 {%- set pageTitle = 'DROID Signature Files' -%}
-
-{% block beforeContent %}
-  <div class="tna-!--padding-vertical-s">
-    <div class="tna-container">
-      <div class="tna-column tna-column--full">
-        {{ tnaBreadcrumbs({
-          'items': [
-            {
-              'text': 'Home',
-              'href': '/'
-            }
-          ]
-        }) | indent(6) }}
-      </div>
-    </div>
-  </div>
-{% endblock %}
 
 {% block content %}
   <div class="tna-container tna-section">

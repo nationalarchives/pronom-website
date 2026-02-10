@@ -17,27 +17,45 @@ class ResultsTest(unittest.TestCase):
         cursor.execute("DROP TABLE IF EXISTS indexes")
         cursor.execute("CREATE TABLE indexes (path, name, field)")
         insert_sql = "INSERT INTO indexes (path, name, field) VALUES (?, ?, ?)"
-        cursor.execute(
-            insert_sql,
-            ("fmt/123", "Test Name", "testsearchstring"),
-        )
+        for i in range(1, 1001):
+            cursor.execute(
+                insert_sql,
+                (f"fmt/{i}", f"Test Name {i}", "testsearchstring"),
+            )
         conn.commit()
 
     def tearDown(self):
         os.remove(db_name)
 
+    def check_pagination(self, page_count, pages, expected_ellipsis_count):
+        event = {"queryStringParameters": {"q": "search", "page": str(page_count)}}
+        body = results.lambda_handler(event, None)["body"]
+        for page in pages:
+            self.assertTrue(f"Page {page}" in body)
+        row_count = sum(['<td class="tna-table__cell"><a href="fmt/' in x for x in body.split("\n")])
+        ellipsis_count = sum(['tna-pagination__item--ellipses' in x for x in body.split("\n")])
+        self.assertEqual(row_count, 10)
+        self.assertEqual(ellipsis_count, expected_ellipsis_count)
+
     def test_search_found(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "search"}}, None
         )
-        self.assertTrue('<dt><a href="fmt/123">fmt/123</a></dt>' in response["body"])
+        self.assertTrue('<td class="tna-table__cell"><a href="fmt/1">fmt/1</a></td>' in response["body"])
+
+
+    def test_pagination(self):
+        self.check_pagination(1, [1, 2, 99, 100], 1)
+        self.check_pagination(20, [1, 19, 20, 99, 100], 2)
+        self.check_pagination(100, [1, 99, 100], 1)
+
 
     def test_search_not_found(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "invalid"}}, None
         )
         self.assertTrue(
-            '<h1 class="tna-heading-xl">No results found</h1>' in response["body"]
+            '<h3 class="tna-heading-m">No results found</h3>' in response["body"]
         )
 
     def test_search_existing_fmt(self):
@@ -49,8 +67,8 @@ class ResultsTest(unittest.TestCase):
 
     def test_search_not_existing_fmt(self):
         response = results.lambda_handler(
-            {"queryStringParameters": {"q": "fmt/321"}}, None
+            {"queryStringParameters": {"q": "fmt/3210"}}, None
         )
         self.assertTrue(
-            '<h1 class="tna-heading-xl">No results found</h1>' in response["body"]
+            '<h3 class="tna-heading-m">No results found</h3>' in response["body"]
         )

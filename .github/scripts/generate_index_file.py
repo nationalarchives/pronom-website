@@ -48,7 +48,8 @@ def run():
 
         with open(f"{path}/signatures/{file_path}", "r") as file:
             data = json.load(file)
-            format_name = data["formatName"]
+            version = ' ' + data['version'] if 'version' in data and data['version'] else ''
+            format_name = data["formatName"] + version
             puid = [
                 idf["identifierText"]
                 for idf in data["identifiers"]
