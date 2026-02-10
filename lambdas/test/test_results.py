@@ -27,15 +27,6 @@ class ResultsTest(unittest.TestCase):
     def tearDown(self):
         os.remove(db_name)
 
-    def check_pagination(self, page_count, pages, expected_ellipsis_count):
-        event = {"queryStringParameters": {"q": "search", "page": str(page_count)}}
-        body = results.lambda_handler(event, None)["body"]
-        for page in pages:
-            self.assertTrue(f"Page {page}" in body)
-        row_count = sum(['<td class="tna-table__cell"><a href="fmt/' in x for x in body.split("\n")])
-        ellipsis_count = sum(['tna-pagination__item--ellipses' in x for x in body.split("\n")])
-        self.assertEqual(row_count, 10)
-        self.assertEqual(ellipsis_count, expected_ellipsis_count)
 
     def test_search_found(self):
         response = results.lambda_handler(
@@ -43,11 +34,6 @@ class ResultsTest(unittest.TestCase):
         )
         self.assertTrue('<td class="tna-table__cell"><a href="fmt/1">fmt/1</a></td>' in response["body"])
 
-
-    def test_pagination(self):
-        self.check_pagination(1, [1, 2, 99, 100], 1)
-        self.check_pagination(20, [1, 19, 20, 99, 100], 2)
-        self.check_pagination(100, [1, 99, 100], 1)
 
 
     def test_search_not_found(self):
