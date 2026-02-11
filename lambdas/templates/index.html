@@ -58,17 +58,6 @@
   }) | indent(4) }}
 {% endblock %}
 
-{% block beforeContent %}
-  <div class="tna-section tna-background-accent-light">
-    <div class="tna-container">
-      <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
-        <h2 class="tna-heading-l">PRONOM</h2>
-        <p>The technical registry</p>
-      </div>
-    </div>
-  </div>
-{% endblock %}
-
 {% block content %}
   {{ content | safe }}
 {% endblock %}
