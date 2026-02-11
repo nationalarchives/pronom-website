@@ -40,7 +40,7 @@ def search(search_string):
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
     cur.execute(
-        "select path, name from indexes where field like ?", (f"%{search_string}%",)
+        "select path, name, extensions from indexes where field like ?", (f"%{search_string}%",)
     )
     rows = cur.fetchall()
     cur.close()
@@ -57,7 +57,7 @@ def lambda_handler(event, _):
     ):
         return {"statusCode": 302, "headers": {"Location": search_term}}
     rows = search(search_term)
-    data = {f"{row[0]}": row[1] for row in rows}
+    data = [{'puid': row[0], 'name': row[1], 'extensions': row[2]} for row in rows]
     search_results = env.get_template("search_results.html")
     body = search_results.render(data=data, search_term=search_term)
 

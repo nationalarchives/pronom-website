@@ -15,12 +15,12 @@ class ResultsTest(unittest.TestCase):
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS indexes")
-        cursor.execute("CREATE TABLE indexes (path, name, field)")
-        insert_sql = "INSERT INTO indexes (path, name, field) VALUES (?, ?, ?)"
+        cursor.execute("CREATE TABLE indexes (path, name, extensions, field)")
+        insert_sql = "INSERT INTO indexes (path, name, extensions, field) VALUES (?, ?, ?, ?)"
         for i in range(1, 1001):
             cursor.execute(
                 insert_sql,
-                (f"fmt/{i}", f"Test Name {i}", "testsearchstring"),
+                (f"fmt/{i}", f"Test Name {i}", f"ext{i}", "testsearchstring"),
             )
         conn.commit()
 
@@ -32,7 +32,10 @@ class ResultsTest(unittest.TestCase):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "search"}}, None
         )
-        self.assertTrue('<td class="tna-table__cell"><a href="fmt/1">fmt/1</a></td>' in response["body"])
+        for i in range(1, 1001):
+            self.assertTrue(f'<td class="tna-table__cell"><a href="fmt/{i}">fmt/{i}</a></td>' in response["body"])
+            self.assertTrue(f'<td class="tna-table__cell">ext{i}</td>' in response["body"])
+            self.assertTrue(f'<td class="tna-table__cell">Test Name {i}</td>' in response["body"])
 
 
 
