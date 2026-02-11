@@ -1,12 +1,27 @@
-{% from "components/accordion/macro.html" import tnaAccordion %}
-<h1 class="tna-heading-xl">{{ name }}</h1>
-<div class="tna-button-group">
-  <a class="tna-button tna-button--small" href="/actor/edit/{{ actorId }}">Edit</a>
-</div>
-<dl class="tna-dl">
-    {% for key, value in results.items() %}
-    <dt>{{ key }}</dt>
-    <dd>{{ value }}</dd>
-    {% endfor %}
+{%- extends 'index.html' -%}
 
-  </dl>
+{% from "components/accordion/macro.html" import tnaAccordion %}
+
+{% block content %}
+<div class="tna-container tna-!--margin-bottom-l">
+  <div class="tna-column tna-column--width-1-3 tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
+    <h1 class="tna-heading-l">{{ name }}</h1>
+    <table class="tna-table">
+      <thead class="tna-table__head">
+      <tr class="tna-table__row">
+      </tr>
+      </thead>
+      <tbody class="tna-table__body">
+      {% for key, value in results.items() %}
+        {% if value is defined and value is not none %}
+          <tr>
+            <td class="tna-table__cell">{{ key }}</td>
+            <td class="tna-table__cell">{{ value }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -40,6 +40,7 @@ def get_summary(data):
                 return None
             else:
                 return data[attr]
+        return None
 
     return {
         "Name": str_for_attr("formatName"),
@@ -62,7 +63,7 @@ def get_relationships(json_data, json_by_id):
                 for idf in relationship_json["identifiers"]
                 if idf["identifierType"] == "PUID"
             ][0]
-        relationship_version = f" ({relationship_json["version"]})" if relationship_json.get("version") else ""
+        relationship_version = f" {relationship_json["version"]}" if relationship_json.get("version") else ""
         summary = {
             "type": relationship["relationshipType"],
             "puid": relationship_puid,
@@ -71,12 +72,24 @@ def get_relationships(json_data, json_by_id):
         relationship_summary.append(summary)
     return relationship_summary
 
+
+def get_file_extensions(json_data):
+    external_signatures = (
+        json_data["externalSignatures"] if "externalSignatures" in json_data else []
+    )
+    file_extension_list = [
+        x for x in external_signatures if x["signatureType"] == "File extension"
+    ]
+    extension_names = [fe["externalSignature"] for fe in file_extension_list]
+    return ", ".join(extension_names) if extension_names else None
+
 def create_detail(json_data, all_actors, json_by_id):
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
     summary_args = {
         "results": [summary],
         "relationships": get_relationships(json_data, json_by_id),
+        "extensions": get_file_extensions(json_data),
         "developedBy": (
             all_actors[json_data["developedBy"]] if "developedBy" in json_data else None
         ),
@@ -99,13 +112,13 @@ def create_actor(data):
         return datetime.strptime(data["sourceDate"], "%Y-%m-%d").strftime("%d %b %Y")
 
     return {
-        "Address": data["address"] if "address" in data else "",
-        "Country": data["addressCountry"] if "addressCountry" in data else "",
-        "Support Website": data["supportWebsite"] if "supportWebsite" in data else "",
-        "Company Website": data["companyWebsite"] if "companyWebsite" in data else "",
-        "Contact": data["contact"] if "contact" in data else "",
-        "Source": data["source"] if "source" in data else "",
-        "Source Date": format_date() if "sourceDate" in data else "",
+        "Address": data.get("address"),
+        "Country": data.get("addressCountry"),
+        "Support Website": data.get("supportWebsite"),
+        "Company Website": data.get("companyWebsite"),
+        "Contact": data.get("contact"),
+        "Source": data.get("source"),
+        "Source Date": format_date() if "sourceDate" in data else None,
     }
 
 
@@ -160,12 +173,6 @@ def run():
     with open("site/home", "w") as home:
         home.write(create_home())
 
-    with open("site/search", "w") as search:
-        search.write(create_search())
-
-    with open("site/submission-received", "w") as search:
-        search.write(create_search())
-
     all_json_files = {}
     all_actors = {}
     json_by_id = {}
@@ -186,13 +193,6 @@ def run():
                 all_json_files[puid] = loaded_json
                 json_by_id[loaded_json["fileFormatID"]] = loaded_json
 
-    actor_select = [{"text": "", "value": 0}]
-    for actor_json in all_actors.values():
-        actor_select.append(
-            {"text": actor_json["name"], "value": actor_json["actorId"]}
-        )
-
-    actor_select = sorted(actor_select, key=lambda x: x["text"])
 
     for puid, json_data in all_json_files.items():
         with open(f"site/{puid}", "w") as output:

@@ -18,7 +18,7 @@ def create_table():
     try:
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS indexes")
-        cursor.execute("CREATE TABLE IF NOT EXISTS indexes (path, name, field)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS indexes (path, name, extensions, field)")
         conn.commit()
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
@@ -26,13 +26,13 @@ def create_table():
         conn.close()
 
 
-def insert_into_indexes(path_value: str, field_name: str, field_value: str):
+def insert_into_indexes(path_value: str, field_name: str, extensions: str, field_value: str):
     conn = sqlite3.connect("indexes")
     try:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO indexes (path, name, field) VALUES (?, ?, ?)",
-            (path_value, field_name, field_value),
+            "INSERT INTO indexes (path, name, extensions, field) VALUES (?, ?, ?, ?)",
+            (path_value, field_name, extensions, field_value),
         )
 
         conn.commit()
@@ -48,7 +48,8 @@ def run():
 
         with open(f"{path}/signatures/{file_path}", "r") as file:
             data = json.load(file)
-            format_name = data["formatName"]
+            version = ' ' + data['version'] if 'version' in data and data['version'] else ''
+            format_name = data["formatName"] + version
             puid = [
                 idf["identifierText"]
                 for idf in data["identifiers"]
@@ -60,11 +61,11 @@ def run():
             file_extension_list = [
                 x for x in external_signatures if x["signatureType"] == "File extension"
             ]
-            file_extension = "".join(
-                [fe["externalSignature"] for fe in file_extension_list]
-            )
+            extension_names = [fe["externalSignature"] for fe in file_extension_list]
+            file_extension = "".join(extension_names)
+            file_extensions_delimited = ", ".join(extension_names)
             field = "".join([format_name, file_extension])
-            insert_into_indexes(puid, format_name, field)
+            insert_into_indexes(puid, format_name, file_extensions_delimited, field)
 
 
 run()
