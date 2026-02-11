@@ -74,7 +74,8 @@
       <table class="tna-table">
         <thead class="tna-table__head">
           <tr class="tna-table__row">
-          <tr class="tna-table__row">
+            <th class="tna-table__header"></th>
+            <th class="tna-table__header"></th>
           </tr>
         </thead>
         <tbody class="tna-table__body">
@@ -83,7 +84,7 @@
               {% if value is defined and value is not none %}
               <tr>
                 <td class="tna-table__cell">{{ key }}</td>
-                <td class="tna-table__cell">{{ value }}</td>
+                <td class="tna-table__cell break-words">{{ value }}</td>
               </tr>
               {% endif %}
             {% endfor %}
