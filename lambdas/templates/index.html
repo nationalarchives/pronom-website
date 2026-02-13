@@ -5,10 +5,11 @@
 {%- from "components/header/macro.html" import tnaHeader -%}
 
 {%- set pageTitle = pageTitle or 'PRONOM' -%}
+{%- set theme = 'system' -%}
 {%- set themeAccent = 'blue' -%}
-{%- set htmlAttributes = {
+{# {%- set htmlAttributes = {
   'data-tna-cookies-domain': 'd21gi86t6uhf68.cloudfront.net'
-} -%}
+} -%} #}
 
 {% block headIcons %}
   <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/favicon.ico" type="image/x-icon">
@@ -33,11 +34,9 @@
 {% endblock %}
 
 {% block cookies %}
-  {#
   {{ tnaCookieBanner({
     cookiesUrl: 'https://www.nationalarchives.gov.uk/cookies/'
   }) | indent(6) }}
-  #}
 {% endblock %}
 
 {% block header %}
@@ -65,6 +64,8 @@
 
 {% block footer %}
   {{ tnaFooter({
+    'themeSelector': True,
+    'currentTheme': theme,
     'defaultContent': True,
     'defaultContentBaseUrl': 'https://www.nationalarchives.gov.uk',
     'navigation': [],

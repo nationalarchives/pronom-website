@@ -1,10 +1,32 @@
 {%- extends 'index.html' -%}
 
 {%- from "components/accordion/macro.html" import tnaAccordion -%}
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 {%- from "components/button/macro.html" import tnaButton -%}
 {%- from "components/sidebar/macro.html" import tnaSidebar -%}
 
 {%- set pageTitle = name -%}
+
+{% block beforeContent %}
+  <div class="tna-!--padding-top-s">
+    <div class="tna-container">
+      <div class="tna-column tna-column--full">
+        {{ tnaBreadcrumbs({
+          'items': [
+            {
+              'text': 'The National Archives',
+              'href': 'https://www.nationalarchives.gov.uk/'
+            },
+            {
+              'text': 'PRONOM',
+              'href': '/'
+            }
+          ]
+        }) | indent(6) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
 
 {% block content %}
   <div class="tna-container tna-!--margin-bottom-l">
@@ -71,58 +93,43 @@
         <h1 class="tna-hgroup__title">{{ pageTitle }}</h1>
       </hgroup>
       <h2 class="tna-heading-l" id="summary">Summary</h2>
-      <table class="tna-table">
-        <thead class="tna-table__head">
-          <tr class="tna-table__row">
-            <th class="tna-table__header"></th>
-            <th class="tna-table__header"></th>
-          </tr>
-        </thead>
-        <tbody class="tna-table__body">
-          {% for result in summary.results %}
-            {% for key, value in result.items() %}
-              {% if value is defined and value is not none %}
-              <tr>
-                <td class="tna-table__cell">{{ key }}</td>
-                <td class="tna-table__cell break-words">{{ value }}</td>
-              </tr>
-              {% endif %}
-            {% endfor %}
+
+      <dl class="tna-dl tna-dl--lined">
+        {% for result in summary.results %}
+          {% for key, value in result.items() %}
+            {% if value is defined and value is not none %}
+              <dt>{{ key }}</dt>
+              <dd>{{ value }}</dd>
+            {% endif %}
           {% endfor %}
-          {% if summary.extensions is defined and summary.extensions is not none %}
-              <tr>
-                <td class="tna-table__cell">File extensions</td>
-                <td class="tna-table__cell">{{ summary.extensions }}</td>
-              </tr>
-            {% endif %}
-          {% if summary.source is defined and summary.source is not none %}
-              <tr>
-                <td class="tna-table__cell">Source</td>
-                <td class="tna-table__cell"><a href="/actor/{{ summary.source.actorId }}">{{ summary.source.name }}</a></td>
-              </tr>
-            {% endif %}
-            {% if summary.developedBy %}
-              <tr>
-                <td class="tna-table__cell">Developed by</td>
-                <td class="tna-table__cell"><a href="/actor/{{ summary.developedBy.actorId }}">{{ summary.developedBy.name }}</a></td>
-              </tr>
-            {% endif %}
-            {% if summary.supportedBy %}
-              <tr>
-                <td class="tna-table__cell">Supported by</td>
-                <td class="tna-table__cell"><a href="/actor/{{ summary.supportedBy.actorId }}">{{ summary.supportedBy.name }}</a></td>
-              </tr>
-            {% endif %}
-        </tbody>
-      </table>
+        {% endfor %}
+        {% if summary.extensions is defined and summary.extensions is not none %}
+          <dt>File extensions</dt>
+          <dd>{{ summary.extensions }}</dd>
+          {% endif %}
+        {% if summary.source is defined and summary.source is not none %}
+          <dt>Source</dt>
+          <dd><a href="/actor/{{ summary.source.actorId }}">{{ summary.source.name }}</a></dd>
+        {% endif %}
+        {% if summary.developedBy %}
+          <dt>Developed by</dt>
+          <dd><a href="/actor/{{ summary.developedBy.actorId }}">{{ summary.developedBy.name }}</a></dd>
+        {% endif %}
+        {% if summary.supportedBy %}
+          <dt>Supported by</dt>
+          <dd><a href="/actor/{{ summary.supportedBy.actorId }}">{{ summary.supportedBy.name }}</a></dd>
+        {% endif %}
+      </dl>
 
       {% if summary.relationships %}
       <h2 class="tna-heading-l" id="relationships">Relationships</h2>
-      <dl class="tna-dl tna-dl--plain">
-        {% for relationship in summary.relationships %}
+      <dl class="tna-dl tna-dl--zebra tna-dl--stacked">
+        {%- for relationship in summary.relationships %}
+          {%- if loop.first or loop.previtem.type != relationship.type %}
           <dt>{{ relationship.type }}</dt>
+          {%- endif %}
           <dd><a href="/{{ relationship.puid }}">{{ relationship.name }}</a></dd>
-        {% endfor %}
+        {%- endfor %}
       </dl>
       {% endif %}
 
@@ -132,7 +139,7 @@
         <div class="tna-aside tna-background-tint" id="internal-signatures-{{ signature.signatureID }}">
           <h3 class="tna-heading-m">{{ signature.name }}</h3>
           {% if signature.description or signature.note %}
-          <dl class="tna-dl tna-dl--plain tna-dl--stacked">
+          <dl class="tna-dl tna-dl--stacked">
             {% if signature.description %}
             <dt id="signature-description-{{ signature.signatureID }}">Description</dt>
             <dd>{{ signature.description }}</dd>
@@ -147,7 +154,7 @@
             <h4 class="tna-heading-s">Byte sequences</h4>
             {% for byte_sequence in signature.byteSequences %}
             {{ '<hr class="tna-!--margin-vertical-s">'|safe if not loop.first and signature.byteSequences|length > 1 else '' }}
-            <dl class="tna-dl tna-dl--plain tna-!--margin-top-s">
+            <dl class="tna-dl tna-dl--right-weighted tna-!--margin-top-s">
               <dt>Min Frag Length</dt>
               <dd>{{ byte_sequence.positionType }}</dd>
               <dt>Offset</dt>

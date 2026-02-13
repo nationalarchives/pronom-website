@@ -1,5 +1,6 @@
 {%- extends 'index.html' -%}
 
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 {%- from "components/search-field/macro.html" import tnaSearchField -%}
 
 {%- set pageTitle = 'Search results' -%}
@@ -14,38 +15,50 @@
   {{ super() }}
 {% endblock %}
 
+{% block beforeContent %}
+  <div class="tna-!--padding-vertical-s tna-background-accent-light">
+    <div class="tna-container">
+      <div class="tna-column tna-column--full">
+        {{ tnaBreadcrumbs({
+          'items': [
+            {
+              'text': 'The National Archives',
+              'href': 'https://www.nationalarchives.gov.uk/'
+            },
+            {
+              'text': 'PRONOM',
+              'href': '/'
+            }
+          ]
+        }) | indent(6) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
 {% block content %}
-  <div class="tna-!--padding-top-s tna-!--padding-bottom-m tna-background-accent-light">
+  <div class="tna-!--padding-top-xs tna-!--padding-bottom-m tna-background-accent-light">
     <div class="tna-container">
       <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
         <form action="/results" method="get">
-          <div class="tna-form-item">
-            <div class="tna-form-item__header">
-              <h2 class="tna-form-item__label tna-heading-l">
-                <label for="search">
-                  Search results
-                </label>
-              </h2>
-            </div>
-            <div class="tna-form-item__body">
-              <p>Input a file format name or file extension</p>
-              <div class="tna-search-field">
-                <input type="search" id="search" class="tna-search-field__input" name="q" value="{{ search_term }}" spellcheck="false" placeholder="Input your search term...">
-                <button class="tna-button tna-search-field__button" type="submit" title="Search">
-                  Search
-                </button>
-              </div>
-            </div>
-          </div>
+          {{ tnaSearchField({
+            'label': pageTitle,
+            'headingLevel': 1,
+            'headingSize': 'l',
+            'id': 'search',
+            'name': 'q',
+            'value': search_term if search_term else '',
+            'hint': 'Input a file format name or file extension'
+          }) }}
         </form>
       </div>
     </div>
   </div>
   <div class="tna-container tna-section">
-    <div class="tna-column tna-column--full-medium" id="search-results">
+    <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny" id="search-results">
       {% if data|length == 0 %}
         <div class="tna-aside tna-aside--tight tna-background-accent-light">
-          <h3 class="tna-heading-m">No results found</h3>
+          <h2 class="tna-heading-m">No results found</h2>
           <p>You can improve your search results by:</p>
           <ul class="tna-ol">
             <li>Double checking your spelling</li>
@@ -54,7 +67,7 @@
         </div>
 
       {% else %}
-      <h3 class="tna-heading-l">Showing {{ data|length }} result{{ 's' if data|length > 1 }} for &quot;{{ search_term }}&quot;</h3>
+      <p>Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
       <table class="tna-table">
         <thead class="tna-table__head">
           <tr class="tna-table__row">
@@ -66,7 +79,7 @@
         <tbody class="tna-table__body">
           {% for result in data %}
             <tr class="tna-table__row">
-              <td class="tna-table__cell"><a href="{{ result.puid }}">{{ result.puid }}</a></td>
+              <th class="tna-table__header"><a href="{{ result.puid }}">{{ result.puid }}</a></th>
               <td class="tna-table__cell">{{ result.name }}</td>
               <td class="tna-table__cell">{{ result.extensions }}</td>
             </tr>

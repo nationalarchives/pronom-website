@@ -1,7 +1,6 @@
 FROM ghcr.io/nationalarchives/tna-python-dev:latest AS build
 COPY . .
 RUN tna-build
-RUN . tna-nvm && npm install
 RUN mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit
 RUN cp styles/main.css node_modules/@nationalarchives/frontend/nationalarchives/all.css node_modules/@nationalarchives/frontend/nationalarchives/all.css.map node_modules/@nationalarchives/frontend/nationalarchives/all.js node_modules/@nationalarchives/frontend/nationalarchives/all.js.map node_modules/@nationalarchives/frontend/nationalarchives/font-awesome.css node_modules/@nationalarchives/frontend/nationalarchives/font-awesome.css.map node_modules/@nationalarchives/frontend/nationalarchives/ie.css node_modules/@nationalarchives/frontend/nationalarchives/ie.css.map node_modules/@nationalarchives/frontend/nationalarchives/print.css node_modules/@nationalarchives/frontend/nationalarchives/print.css.map node_modules/@nationalarchives/frontend/nationalarchives/assets/images/favicon.ico node_modules/@nationalarchives/frontend/nationalarchives/assets/fonts/fa-solid-900.woff2 site
 RUN sed -i -e 's/\/assets\/fonts/\//g' site/font-awesome.css
