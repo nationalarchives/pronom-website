@@ -8,7 +8,7 @@ S3_URL="s3://$ENVIRONMENT-pronom-website"
 
 docker compose up -d --build
 docker compose cp nginx:/usr/share/nginx/html/ .
-docker compose exec pronom poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
+docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
 docker compose cp pronom:/app/indexes .
 
 
@@ -20,7 +20,7 @@ aws s3 cp fa-solid-900.woff2 $S3_URL
 cd ..
 
 LATEST_SIGNATURE_FILE=$(aws s3 ls "s3://$ENVIRONMENT-pronom-website/signatures/" | sort -t'V' -k2,2n | tail -1 | awk '{split($0,a," "); print a[4]}')
-docker compose exec pronom poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
+docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 docker compose cp pronom:/app/version .
 
 cd lambdas/results
