@@ -43,7 +43,7 @@
         <form action="/results" method="get">
           {{ tnaSearchField({
             'label': pageTitle,
-            'headingLevel': 2 if (data|length) == 0 else 1,
+            'headingLevel': 1,
             'headingSize': 'l',
             'id': 'search',
             'name': 'q',
@@ -56,16 +56,35 @@
   <div class="tna-container tna-section">
     <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny" id="search-results">
       {% if data|length == 0 %}
-        <h1 class="tna-heading-xl">No results found</h1>
-        <p>Try widening your search term.</p>
+        <div class="tna-aside tna-aside--tight tna-background-accent-light">
+          <h2 class="tna-heading-m">No results found</h2>
+          <p>You can improve your search results by:</p>
+          <ul class="tna-ol">
+            <li>Double checking your spelling</li>
+            <li>Using fewer keywords</li>
+          </ul>
+        </div>
+
       {% else %}
-      <p>Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
-      <dl class="tna-dl tna-!--margin-top-s">
-        {% for key, value in data.items() %}
-          <dt><a href="{{ key }}">{{ key }}</a></dt>
-          <dd>{{ value }}</dd>
-        {% endfor %}
-      </dl>
+      <h2 class="tna-heading-l">Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</h3>
+      <table class="tna-table">
+        <thead class="tna-table__head">
+          <tr class="tna-table__row">
+            <th class="tna-table__header">PUID</th>
+            <th class="tna-table__header">Name</th>
+            <th class="tna-table__header">File Extensions</th>
+          </tr>
+        </thead>
+        <tbody class="tna-table__body">
+          {% for result in data %}
+            <tr class="tna-table__row">
+              <th class="tna-table__header"><a href="{{ result.puid }}">{{ result.puid }}</a></th>
+              <td class="tna-table__cell">{{ result.name }}</td>
+              <td class="tna-table__cell">{{ result.extensions }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       {% endif %}
     </div>
   </div>

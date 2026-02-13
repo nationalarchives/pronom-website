@@ -15,29 +15,36 @@ class ResultsTest(unittest.TestCase):
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS indexes")
-        cursor.execute("CREATE TABLE indexes (path, name, field)")
-        insert_sql = "INSERT INTO indexes (path, name, field) VALUES (?, ?, ?)"
-        cursor.execute(
-            insert_sql,
-            ("fmt/123", "Test Name", "testsearchstring"),
-        )
+        cursor.execute("CREATE TABLE indexes (path, name, extensions, field)")
+        insert_sql = "INSERT INTO indexes (path, name, extensions, field) VALUES (?, ?, ?, ?)"
+        for i in range(1, 1001):
+            cursor.execute(
+                insert_sql,
+                (f"fmt/{i}", f"Test Name {i}", f"ext{i}", "testsearchstring"),
+            )
         conn.commit()
 
     def tearDown(self):
         os.remove(db_name)
 
+
     def test_search_found(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "search"}}, None
         )
-        self.assertTrue('<dt><a href="fmt/123">fmt/123</a></dt>' in response["body"])
+        for i in range(1, 1001):
+            self.assertTrue(f'<td class="tna-table__cell"><a href="fmt/{i}">fmt/{i}</a></td>' in response["body"])
+            self.assertTrue(f'<td class="tna-table__cell">ext{i}</td>' in response["body"])
+            self.assertTrue(f'<td class="tna-table__cell">Test Name {i}</td>' in response["body"])
+
+
 
     def test_search_not_found(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "invalid"}}, None
         )
         self.assertTrue(
-            '<h1 class="tna-heading-xl">No results found</h1>' in response["body"]
+            '<h3 class="tna-heading-m">No results found</h3>' in response["body"]
         )
 
     def test_search_existing_fmt(self):
@@ -49,8 +56,8 @@ class ResultsTest(unittest.TestCase):
 
     def test_search_not_existing_fmt(self):
         response = results.lambda_handler(
-            {"queryStringParameters": {"q": "fmt/321"}}, None
+            {"queryStringParameters": {"q": "fmt/3210"}}, None
         )
         self.assertTrue(
-            '<h1 class="tna-heading-xl">No results found</h1>' in response["body"]
+            '<h3 class="tna-heading-m">No results found</h3>' in response["body"]
         )

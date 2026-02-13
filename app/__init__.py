@@ -12,8 +12,9 @@ def healthcheck():
 @app.route("/results")
 def search():
     query_string = request.args.get("q", "")
+    page = request.args.get("page", "")
     response = results.lambda_handler(
-        {"queryStringParameters": {"q": query_string}}, None
+        {"queryStringParameters": {"q": query_string, "page": page}}, None
     )
     if "body" in response:
         return response["body"]

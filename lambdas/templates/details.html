@@ -34,7 +34,17 @@
       {%- set ns = namespace(sidebar_items=[{
           'text': 'Summary',
           'href': '#summary'
-        }], sidebar_container_signatures=[], sidebar_containers=[]) %}
+        }], sidebar_container_signatures=[], sidebar_containers=[], sidebar_relationships=[]) %}
+
+      {%- if summary.relationships %}
+        {% set ns.sidebar_items = ns.sidebar_items + [
+          {
+            'text': 'Relationships',
+            'href': '#relationships',
+            'children': []
+          }
+        ] %}
+      {%- endif %}
 
       {%- if signatures %}
         {%- for signature in signatures %}
@@ -83,31 +93,54 @@
         <h1 class="tna-hgroup__title">{{ pageTitle }}</h1>
       </hgroup>
       <h2 class="tna-heading-l" id="summary">Summary</h2>
-      {% for result in summary.results %}
-        <dl class="tna-dl">
-          {% for key, value in result.items() %}
-            {% if value is defined and value is not none %}
-              <dt>{{ key }}</dt>
-              <dd>{{ value }}</dd>
-            {% endif %}
+      <table class="tna-table">
+        <thead class="tna-table__head">
+          <tr class="tna-table__row">
+            <th class="tna-table__header"></th>
+            <th class="tna-table__header"></th>
+          </tr>
+        </thead>
+        <tbody class="tna-table__body">
+          {% for result in summary.results %}
+            {% for key, value in result.items() %}
+              {% if value is defined and value is not none %}
+              <tr>
+                <td class="tna-table__cell">{{ key }}</td>
+                <td class="tna-table__cell break-words">{{ value }}</td>
+              </tr>
+              {% endif %}
+            {% endfor %}
           {% endfor %}
-          {% if source is defined and source is not none %}
-            <dt>Source</dt>
-            <dd><a href="/actor/{{ source.actorId }}">{{ source.name }}</a></dd>
-          {% endif %}
-          {% if result.developedBy %}
-            <dt>Developed by</dt>
-            <dd><a href="/actor/{{ result.developedBy.actorId }}">{{ developedBy.name }}</a></dd>
-          {% endif %}
-          {% if result.supportedBy %}
-            <dt>Supported by</dt>
-            <dd><a href="/actor/{{ result.supportedBy.actorId }}">{{ supportedBy.name }}</a></dd>
-          {% endif %}
-        </dl>
-      {% endfor %}
+          {% if summary.extensions is defined and summary.extensions is not none %}
+              <tr>
+                <td class="tna-table__cell">File extensions</td>
+                <td class="tna-table__cell">{{ summary.extensions }}</td>
+              </tr>
+            {% endif %}
+          {% if summary.source is defined and summary.source is not none %}
+              <tr>
+                <td class="tna-table__cell">Source</td>
+                <td class="tna-table__cell"><a href="/actor/{{ summary.source.actorId }}">{{ summary.source.name }}</a></td>
+              </tr>
+            {% endif %}
+            {% if summary.developedBy %}
+              <tr>
+                <td class="tna-table__cell">Developed by</td>
+                <td class="tna-table__cell"><a href="/actor/{{ summary.developedBy.actorId }}">{{ summary.developedBy.name }}</a></td>
+              </tr>
+            {% endif %}
+            {% if summary.supportedBy %}
+              <tr>
+                <td class="tna-table__cell">Supported by</td>
+                <td class="tna-table__cell"><a href="/actor/{{ summary.supportedBy.actorId }}">{{ summary.supportedBy.name }}</a></td>
+              </tr>
+            {% endif %}
+        </tbody>
+      </table>
+
       {% if summary.relationships %}
       <h2 class="tna-heading-l" id="relationships">Relationships</h2>
-      <dl class="tna-dl">
+      <dl class="tna-dl tna-dl--plain">
         {% for relationship in summary.relationships %}
           <dt>{{ relationship.type }}</dt>
           <dd><a href="/{{ relationship.puid }}">{{ relationship.name }}</a></dd>
@@ -144,7 +177,7 @@
               <dt>Max offset</dt>
               <dd>{{ byte_sequence.maxOffset }}</dd>
               <dt>Byte Sequence</dt>
-              <dd>{{ byte_sequence.byteSequence }}</dd>
+              <dd><code>{{ byte_sequence.byteSequence }}</code></dd>
               <dt>Endianness</dt>
               <dd>{{ byte_sequence.endianness }}</dd>
             </dl>
@@ -176,7 +209,7 @@
                         <dt>Position</dt><dd>{{ sub_sequence.position }}</dd>
                         <dt>Sub sequence min offset</dt><dd>{{ sub_sequence.subSeqMinOffset }}</dd>
                         <dt>Sub sequence max offset</dt><dd>{{ sub_sequence.subSeqMaxOffset }}</dd>
-                        <dt>Sequence</dt><dd>{{ sub_sequence.sequence }}</dd>
+                        <dt>Sequence</dt><dd><code>{{ sub_sequence.sequence }}</code></dd>
                         {% if 'leftFragment' in sub_sequence %}
                           <dt>Left fragment</dt><dd>Max offset {{ sub_sequence.leftFragment.maxOffset }} Min offset {{ sub_sequence.leftFragment.minOffset }} Position {{ sub_sequence.leftFragment.position }}</dd>
                         {% endif %}
