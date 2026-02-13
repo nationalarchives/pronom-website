@@ -123,11 +123,13 @@
 
       {% if summary.relationships %}
       <h2 class="tna-heading-l" id="relationships">Relationships</h2>
-      <dl class="tna-dl">
-        {% for relationship in summary.relationships %}
+      <dl class="tna-dl tna-dl--zebra tna-dl--stacked">
+        {%- for relationship in summary.relationships %}
+          {%- if loop.first or loop.previtem.type != relationship.type %}
           <dt>{{ relationship.type }}</dt>
+          {%- endif %}
           <dd><a href="/{{ relationship.puid }}">{{ relationship.name }}</a></dd>
-        {% endfor %}
+        {%- endfor %}
       </dl>
       {% endif %}
 
