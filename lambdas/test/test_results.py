@@ -35,7 +35,7 @@ class ResultsTest(unittest.TestCase):
         )
         for i in range(1, 1001):
             self.assertTrue(
-                f'<td class="tna-table__cell"><a href="fmt/{i}">fmt/{i}</a></td>'
+                f'<thd class="tna-table__header"><a href="fmt/{i}">fmt/{i}</a></th>'
                 in response["body"]
             )
             self.assertTrue(
@@ -50,7 +50,7 @@ class ResultsTest(unittest.TestCase):
             {"queryStringParameters": {"q": "invalid"}}, None
         )
         self.assertTrue(
-            '<h3 class="tna-heading-m">No results found</h3>' in response["body"]
+            '<h2 class="tna-heading-m">No results found</h2>' in response["body"]
         )
 
     def test_search_existing_fmt(self):
@@ -65,5 +65,5 @@ class ResultsTest(unittest.TestCase):
             {"queryStringParameters": {"q": "fmt/3210"}}, None
         )
         self.assertTrue(
-            '<h3 class="tna-heading-m">No results found</h3>' in response["body"]
+            '<h2 class="tna-heading-m">No results found</h2>' in response["body"]
         )
