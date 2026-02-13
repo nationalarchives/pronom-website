@@ -35,7 +35,7 @@ class ResultsTest(unittest.TestCase):
         )
         for i in range(1, 1001):
             self.assertTrue(
-                f'<thd class="tna-table__header"><a href="fmt/{i}">fmt/{i}</a></th>'
+                f'<th class="tna-table__header"><a href="fmt/{i}">fmt/{i}</a></th>'
                 in response["body"]
             )
             self.assertTrue(
