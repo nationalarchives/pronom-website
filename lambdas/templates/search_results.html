@@ -47,7 +47,8 @@
             'headingSize': 'l',
             'id': 'search',
             'name': 'q',
-            'value': search_term if search_term else ''
+            'value': search_term if search_term else '',
+            'hint': 'Input a file format name or file extension'
           }) }}
         </form>
       </div>
@@ -66,7 +67,7 @@
         </div>
 
       {% else %}
-      <h2 class="tna-heading-l">Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</h3>
+      <p>Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
       <table class="tna-table">
         <thead class="tna-table__head">
           <tr class="tna-table__row">
