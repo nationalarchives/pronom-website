@@ -16,7 +16,9 @@ class ResultsTest(unittest.TestCase):
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS indexes")
         cursor.execute("CREATE TABLE indexes (path, name, extensions, field)")
-        insert_sql = "INSERT INTO indexes (path, name, extensions, field) VALUES (?, ?, ?, ?)"
+        insert_sql = (
+            "INSERT INTO indexes (path, name, extensions, field) VALUES (?, ?, ?, ?)"
+        )
         for i in range(1, 1001):
             cursor.execute(
                 insert_sql,
@@ -27,17 +29,21 @@ class ResultsTest(unittest.TestCase):
     def tearDown(self):
         os.remove(db_name)
 
-
     def test_search_found(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "search"}}, None
         )
         for i in range(1, 1001):
-            self.assertTrue(f'<td class="tna-table__cell"><a href="fmt/{i}">fmt/{i}</a></td>' in response["body"])
-            self.assertTrue(f'<td class="tna-table__cell">ext{i}</td>' in response["body"])
-            self.assertTrue(f'<td class="tna-table__cell">Test Name {i}</td>' in response["body"])
-
-
+            self.assertTrue(
+                f'<td class="tna-table__cell"><a href="fmt/{i}">fmt/{i}</a></td>'
+                in response["body"]
+            )
+            self.assertTrue(
+                f'<td class="tna-table__cell">ext{i}</td>' in response["body"]
+            )
+            self.assertTrue(
+                f'<td class="tna-table__cell">Test Name {i}</td>' in response["body"]
+            )
 
     def test_search_not_found(self):
         response = results.lambda_handler(

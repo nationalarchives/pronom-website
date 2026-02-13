@@ -1,4 +1,3 @@
-import math
 import os
 import re
 import sqlite3
@@ -33,20 +32,20 @@ def puid_exists(puid):
 
 def search(search_string):
     def sort_key(s: str):
-        prefix, num = s[0].rsplit('/', 1)
+        prefix, num = s[0].rsplit("/", 1)
         return prefix, int(num)
 
     db_name = os.getenv("DB_NAME", "indexes")
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
     cur.execute(
-        "select path, name, extensions from indexes where field like ?", (f"%{search_string}%",)
+        "select path, name, extensions from indexes where field like ?",
+        (f"%{search_string}%",),
     )
     rows = cur.fetchall()
     cur.close()
     rows.sort(key=sort_key)
     return rows
-
 
 
 def lambda_handler(event, _):
@@ -57,7 +56,7 @@ def lambda_handler(event, _):
     ):
         return {"statusCode": 302, "headers": {"Location": search_term}}
     rows = search(search_term)
-    data = [{'puid': row[0], 'name': row[1], 'extensions': row[2]} for row in rows]
+    data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]
     search_results = env.get_template("search_results.html")
     body = search_results.render(data=data, search_term=search_term)
 
