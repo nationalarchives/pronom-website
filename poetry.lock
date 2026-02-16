@@ -82,14 +82,14 @@ files = [
 
 [[package]]
 name = "fastcore"
-version = "1.12.12"
+version = "1.12.14"
 description = "Python supercharged for fastai development"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "fastcore-1.12.12-py3-none-any.whl", hash = "sha256:bb1a3a3accd62a72bad56af974e0617af078316be5bb5dcc8763b8244c197fa8"},
-    {file = "fastcore-1.12.12.tar.gz", hash = "sha256:a113d70630e7aa4e28ceebc4311f1c7c2dc0b748cc138ab7f5c53e475ff438bc"},
+    {file = "fastcore-1.12.14-py3-none-any.whl", hash = "sha256:19e5adcee3af6f357af4f66954e17f335f208bb9cb422dcdef03d2e9d586eca3"},
+    {file = "fastcore-1.12.14.tar.gz", hash = "sha256:09190c46360c57dbba5e6b991df4b5fd6d2720ea4b4959309151d7fe6b2bf520"},
 ]
 
 [package.extras]
@@ -402,4 +402,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "2be93d7654855b3bf01d16060277fc70b3fc70e8bcdec89292ccf36ad3667841"
+content-hash = "8ce8b446fa067324480aeae322c1e8892a10c1fc8d3243435a81035741377e3c"
