@@ -2,7 +2,6 @@
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 {%- from "components/card/macro.html" import tnaCard -%}
-{%- from "components/search-field/macro.html" import tnaSearchField -%}
 
 {% block beforeContent %}
   <div class="tna-!--padding-vertical-s tna-background-accent-light">
@@ -36,17 +35,24 @@
   <div class="tna-container">
     <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
       <form action="/results" method="get">
-        {{ tnaSearchField({
-          'label': 'Search',
-          'headingLevel': 2,
-          'headingSize': 'm',
-          'id': 'search',
-          'name': 'q',
-          'hint': 'Input a file format name or file extension'
-        }) }}
-        <p class="tna-!--no-margin-top">
-          <small>See the list of <a href="/signature-list">DROID Signature Files</a></small>
-        </p>
+        <div class="tna-form-item">
+          <div class="tna-form-item__header">
+            <h2 class="tna-form-item__label tna-heading-l">
+              <label for="search">
+                Search PRONOM
+              </label>
+            </h2>
+          </div>
+          <div class="tna-form-item__body">
+            <p>Input a file format name or file extension</p>
+            <div class="tna-search-field">
+              <input type="search" id="search" class="tna-search-field__input" name="q" value="" spellcheck="false" placeholder="Input your search term...">
+              <button class="tna-button tna-search-field__button" type="submit" title="Search">
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   </div>
