@@ -20,6 +20,7 @@ services:
       - ./package.json:/app/package.json
       - ./package-lock.json:/app/package-lock.json
       - ./app:/app/app
+      - ./.github:/app/.github
       - ./lambdas:/app/lambdas
       - ./tests:/app/tests
     restart: unless-stopped

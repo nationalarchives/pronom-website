@@ -53,21 +53,26 @@ def get_summary(data):
         "Note": str_for_attr("formatNote"),
     }
 
+
 def get_relationships(json_data, json_by_id):
     relationships = json_data["relationships"]
     relationship_summary = []
     for relationship in relationships:
         relationship_json = json_by_id[relationship["relatedFormatID"]]
-        relationship_puid  =  [
-                idf["identifierText"]
-                for idf in relationship_json["identifiers"]
-                if idf["identifierType"] == "PUID"
-            ][0]
-        relationship_version = f" {relationship_json["version"]}" if relationship_json.get("version") else ""
+        relationship_puid = [
+            idf["identifierText"]
+            for idf in relationship_json["identifiers"]
+            if idf["identifierType"] == "PUID"
+        ][0]
+        relationship_version = (
+            f" {relationship_json["version"]}"
+            if relationship_json.get("version")
+            else ""
+        )
         summary = {
             "type": relationship["relationshipType"],
             "puid": relationship_puid,
-            "name": relationship["relatedFormatName"] + relationship_version
+            "name": relationship["relatedFormatName"] + relationship_version,
         }
         relationship_summary.append(summary)
     return relationship_summary
@@ -82,6 +87,7 @@ def get_file_extensions(json_data):
     ]
     extension_names = [fe["externalSignature"] for fe in file_extension_list]
     return ", ".join(extension_names) if extension_names else None
+
 
 def create_detail(json_data, all_actors, json_by_id):
     details_template = env.get_template("details.html")
@@ -192,7 +198,6 @@ def run():
                 loaded_json = json.load(sig_json)
                 all_json_files[puid] = loaded_json
                 json_by_id[loaded_json["fileFormatID"]] = loaded_json
-
 
     for puid, json_data in all_json_files.items():
         with open(f"site/{puid}", "w") as output:
