@@ -67,7 +67,7 @@
         </div>
 
       {% else %}
-      <p>Showing {{ data|length }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
+      <p>Showing {{ data|length|commafy }} result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
       <table class="tna-table">
         <thead class="tna-table__head">
           <tr class="tna-table__row">
