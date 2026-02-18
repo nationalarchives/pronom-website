@@ -1,18 +1,21 @@
 import * as cdk from "aws-cdk-lib";
-import { Construct } from "constructs";
-import { CloudFrontToS3 } from "@aws-solutions-constructs/aws-cloudfront-s3";
-import { Bucket, BucketProps } from "aws-cdk-lib/aws-s3";
+import {Duration} from "aws-cdk-lib";
+import {Construct} from "constructs";
+import {CloudFrontToS3} from "@aws-solutions-constructs/aws-cloudfront-s3";
+import {Bucket, BucketProps} from "aws-cdk-lib/aws-s3";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cf from "aws-cdk-lib/aws-cloudfront";
 import {
   AllowedMethods,
-  OriginRequestPolicy,
+  HeadersFrameOption,
+  HeadersReferrerPolicy,
+  OriginRequestPolicy, ResponseCustomHeader,
+  ResponseSecurityHeadersBehavior
 } from "aws-cdk-lib/aws-cloudfront";
 import * as agw from "aws-cdk-lib/aws-apigateway";
-import { WafwebaclToApiGateway } from "@aws-solutions-constructs/aws-wafwebacl-apigateway";
-import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
-import { StringParameter } from "aws-cdk-lib/aws-ssm";
+import {WafwebaclToApiGateway} from "@aws-solutions-constructs/aws-wafwebacl-apigateway";
+import {StringParameter} from "aws-cdk-lib/aws-ssm";
 import * as wafv2 from "aws-cdk-lib/aws-wafv2";
 
 export class InfrastructureStack extends cdk.Stack {
@@ -29,13 +32,34 @@ export class InfrastructureStack extends cdk.Stack {
       return { bucketName: `${environment}-pronom-website${suffix}` };
     };
 
-    const securityHeadersBehavior = {
+    const securityHeadersBehavior: ResponseSecurityHeadersBehavior = {
       contentSecurityPolicy: {
         contentSecurityPolicy:
           "default-src 'self'; base-uri 'none'; object-src 'none'; font-src 'self' https://fonts.gstatic.com https://use.typekit.net; style-src 'self' https://www.nationalarchives.gov.uk https://fonts.googleapis.com https://p.typekit.net https://use.typekit.net; script-src 'self' https://www.nationalarchives.gov.uk",
         override: true,
       },
+      strictTransportSecurity: {
+        accessControlMaxAge: Duration.days(365),
+        override: false
+      },
+      contentTypeOptions: {
+        override: false
+      },
+      frameOptions: {
+        frameOption: HeadersFrameOption.DENY,
+        override: false
+      },
+      referrerPolicy: {
+        referrerPolicy: HeadersReferrerPolicy.STRICT_ORIGIN,
+        override: false
+      }
     };
+
+    const permissionsPolicyHeader: ResponseCustomHeader = {
+      header: 'Permissions-Policy',
+      value: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
+      override: false
+    }
 
     const responseHeadersPolicy = new cf.ResponseHeadersPolicy(
       this,
@@ -44,6 +68,9 @@ export class InfrastructureStack extends cdk.Stack {
         responseHeadersPolicyName: "CspHeadersPolicy",
         comment: "Adds strict Content-Security-Policy for CloudFront responses",
         securityHeadersBehavior,
+        customHeadersBehavior: {
+          customHeaders: [permissionsPolicyHeader]
+        }
       },
     );
 
@@ -68,7 +95,12 @@ export class InfrastructureStack extends cdk.Stack {
         ),
         cloudFrontDistributionProps: { defaultRootObject: "home", errorResponses },
         insertHttpSecurityHeaders: false,
-        responseHeadersPolicyProps: { securityHeadersBehavior },
+        responseHeadersPolicyProps: {
+          securityHeadersBehavior,
+          customHeadersBehavior: {
+            customHeaders: [permissionsPolicyHeader]
+          }
+        }
       },
     );
 
