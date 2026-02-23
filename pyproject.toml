@@ -15,7 +15,7 @@ jinja2 = "^3.1.6"
 boto3 = "^1.42.46"
 ghapi = "^1.0.10"
 fastcore = "^1.12.12"
-pycountry = "^24.6.1"
+pycountry = "^26.2.16"
 
 [tool.poetry.group.dev]
 optional = true
