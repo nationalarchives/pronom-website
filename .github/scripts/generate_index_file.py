@@ -18,7 +18,9 @@ def create_table():
     try:
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS indexes")
-        cursor.execute("CREATE TABLE IF NOT EXISTS indexes (path, name, extensions, field)")
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS indexes (path, name, extensions, field)"
+        )
         conn.commit()
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
@@ -26,7 +28,9 @@ def create_table():
         conn.close()
 
 
-def insert_into_indexes(path_value: str, field_name: str, extensions: str, field_value: str):
+def insert_into_indexes(
+    path_value: str, field_name: str, extensions: str, field_value: str
+):
     conn = sqlite3.connect("indexes")
     try:
         cursor = conn.cursor()
@@ -48,7 +52,9 @@ def run():
 
         with open(f"{path}/signatures/{file_path}", "r") as file:
             data = json.load(file)
-            version = ' ' + data['version'] if 'version' in data and data['version'] else ''
+            version = (
+                " " + data["version"] if "version" in data and data["version"] else ""
+            )
             format_name = data["formatName"] + version
             puid = [
                 idf["identifierText"]

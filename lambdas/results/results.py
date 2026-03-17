@@ -20,6 +20,8 @@ env = Environment(
     autoescape=select_autoescape(),
 )
 
+env.filters["commafy"] = lambda x: f"{x:,d}"
+
 
 def puid_exists(puid):
     db_name = os.getenv("DB_NAME", "indexes")
