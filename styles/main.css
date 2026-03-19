@@ -1,3 +1,7 @@
 .break-words {
     word-break: break-word;
 }
+
+.tna-card--small-body {
+    font-size: 1rem;
+}

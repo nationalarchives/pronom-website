@@ -14,18 +14,18 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.42.69"
+version = "1.42.71"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "boto3-1.42.69-py3-none-any.whl", hash = "sha256:6823a4b59aa578c7d98124280a9b6d83cea04bdb02525cbaa79370e5b6f7f631"},
-    {file = "boto3-1.42.69.tar.gz", hash = "sha256:e59846f4ff467b23bae4751948298db554dbdda0d72b09028d2cacbeff27e1ad"},
+    {file = "boto3-1.42.71-py3-none-any.whl", hash = "sha256:a89fae01c4bc948671e99440ddc0f10bc73cc72d83218656057f730df0898eab"},
+    {file = "boto3-1.42.71.tar.gz", hash = "sha256:500edd2699a3f479053bbfb407b06c231d1ff1e574f7c90d269d605a6a1f8160"},
 ]
 
 [package.dependencies]
-botocore = ">=1.42.69,<1.43.0"
+botocore = ">=1.42.71,<1.43.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.16.0,<0.17.0"
 
@@ -34,14 +34,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.42.69"
+version = "1.42.71"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "botocore-1.42.69-py3-none-any.whl", hash = "sha256:ef0e3d860a5d7bffc0ccb4911781c4c27d538557ed9a616ba1926c762d72e5f6"},
-    {file = "botocore-1.42.69.tar.gz", hash = "sha256:0934f2d90403c5c8c2cba83e754a39d77edcad5885d04a79363edff3e814f55e"},
+    {file = "botocore-1.42.71-py3-none-any.whl", hash = "sha256:e6b7c611eeacbfa6a5a08cd56889b7a63eced48e99f8db9b270eeaf2c0b62796"},
+    {file = "botocore-1.42.71.tar.gz", hash = "sha256:6b3796c76edeb78afee325a54e23508bbd57624faea1e4aeb8f6e9c1e1e79a0f"},
 ]
 
 [package.dependencies]
@@ -337,18 +337,21 @@ files = [
 
 [[package]]
 name = "tna-frontend-jinja"
-version = "0.35.1"
+version = "0.37.0"
 description = "TNA Frontend Jinja templates"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tna_frontend_jinja-0.35.1-py3-none-any.whl", hash = "sha256:260d21ccf6abb95e7ae200ea7133932b19f8c325221fbdbb6bc2af12cdc47fa2"},
-    {file = "tna_frontend_jinja-0.35.1.tar.gz", hash = "sha256:950612a777171b166806fcd853d1099d3935630d006300019d34218c95e4c3b1"},
+    {file = "tna_frontend_jinja-0.37.0-py3-none-any.whl", hash = "sha256:1b0be73ddb2da451b9df5ac5974fc30f5c010d2693d8b1c273d55c876fe94318"},
+    {file = "tna_frontend_jinja-0.37.0.tar.gz", hash = "sha256:c259bddfc48de4c97199f2d53d787dec38103d41495b91e547171c3bd49fc10e"},
 ]
 
 [package.dependencies]
-jinja2 = "*"
+jinja2 = ">=3"
+
+[package.extras]
+wtforms = ["flask-wtf[email]"]
 
 [[package]]
 name = "urllib3"
@@ -389,4 +392,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "85219c80bea6a63dd47e9654fff6880e374198bf293a0d398bd888e2c09ad9fc"
+content-hash = "c1e1f574bed9c0b569eee440acf9a602bef251a8cc5f1ce13552252a67a48705"
