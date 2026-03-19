@@ -35,15 +35,10 @@ class ResultsTest(unittest.TestCase):
         )
         for i in range(1, 1001):
             self.assertTrue(
-                f'<th class="tna-table__header"><a href="fmt/{i}">fmt/{i}</a></th>'
+                f'<a href="fmt/{i}" class="tna-card__heading-link">Test Name {i}</a>'
                 in response["body"]
             )
-            self.assertTrue(
-                f'<td class="tna-table__cell">ext{i}</td>' in response["body"]
-            )
-            self.assertTrue(
-                f'<td class="tna-table__cell">Test Name {i}</td>' in response["body"]
-            )
+            self.assertTrue(f"<dd>ext{i}</dd>" in response["body"])
 
     def test_search_not_found(self):
         response = results.lambda_handler(
