@@ -43,4 +43,4 @@ cd infrastructure || exit
 npm ci
 npx cdk deploy --all -c environment="$ENVIRONMENT" --require-approval never
 aws lambda update-function-configuration --function-name $ENVIRONMENT-pronom-soap --environment "Variables={DOWNLOAD_URL=https://d21gi86t6uhf68.cloudfront.net/signatures/$LATEST_SIGNATURE_FILE}" | cat > /dev/null
-aws cloudfront create-invalidation --distribution-id d21gi86t6uhf68 --paths "*"
+# aws cloudfront create-invalidation --distribution-id d21gi86t6uhf68 --paths "*"
