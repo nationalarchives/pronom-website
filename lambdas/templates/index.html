@@ -4,7 +4,7 @@
 {%- from "components/footer/macro.html" import tnaFooter -%}
 {%- from "components/header/macro.html" import tnaHeader -%}
 
-{%- set pageTitle = pageTitle or 'PRONOM' -%}
+{%- set siteTitle = 'PRONOM - The National Archives' -%}
 {%- set theme = 'system' -%}
 {%- set themeAccent = 'blue' -%}
 {# {%- set htmlAttributes = {
@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block head %}
-<meta name="description" content="PRONOM - The National Archives">
+<meta name="description" content="An online database of digital file formats">
 {% endblock %}
 
 {% block stylesheets %}
@@ -35,7 +35,7 @@
 
 {% block cookies %}
   {{ tnaCookieBanner({
-    cookiesUrl: 'https://www.nationalarchives.gov.uk/cookies/'
+    'cookiesUrl': 'https://www.nationalarchives.gov.uk/cookies/'
   }) | indent(6) }}
 {% endblock %}
 
@@ -45,12 +45,6 @@
       'strapline': 'PRONOM',
       'href': '/'
     },
-    'navigation': [
-      {
-        'text': 'DROID Signature Files',
-        'href': '/signature-list'
-      }
-    ],
     'phaseBanner': {
       'phase': 'Alpha',
       'message': 'This service is still in development. Visit <a href="https://www.nationalarchives.gov.uk/pronom/">PRONOM</a> for the current live version.'

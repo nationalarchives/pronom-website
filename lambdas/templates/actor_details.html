@@ -11,11 +11,7 @@
         {{ tnaBreadcrumbs({
           'items': [
             {
-              'text': 'The National Archives',
-              'href': 'https://www.nationalarchives.gov.uk/'
-            },
-            {
-              'text': 'PRONOM',
+              'text': 'Home',
               'href': '/'
             }
           ]
@@ -36,7 +32,7 @@
       {% for key, value in results.items() %}
         {% if value is defined and value is not none %}
           <dt>{{ key }}</dt>
-          <dd>{{ value }}</dd>
+          <dd>{{ value|urlize(nofollow=True) }}</dd>
         {% endif %}
       {% endfor %}
     </dl>
