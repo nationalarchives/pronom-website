@@ -2,7 +2,7 @@
 {% from "components/button/macro.html" import tnaButton %}
 {% from "components/select/macro.html" import tnaSelect %}
 
-<form action="/submissions" method="POST">
+<form action="/submissions" method="post" novalidate>
   <input type="hidden" name="submissionType" value="{{ change_type }}-actor"/>
   {% if actor.actorId is defined and actor.actorId is not none %}
     <input type="hidden" name="actorId" value="{{ actor.actorId }}"/>

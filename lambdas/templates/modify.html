@@ -2,7 +2,7 @@
 {% from "components/button/macro.html" import tnaButton %}
 {% from "components/select/macro.html" import tnaSelect %}
 
-<form action="/submissions" method="POST">
+<form action="/submissions" method="post" novalidate>
   <input type="hidden" name="submissionType" value="{{ change_type }}-format">
   {% if change_type == 'add' %}
     <h2 class="tna-heading-l">Add a new signature</h2>
