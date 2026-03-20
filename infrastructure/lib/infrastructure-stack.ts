@@ -125,15 +125,6 @@ export class InfrastructureStack extends cdk.Stack {
 
     this.rateLimitRule = rateLimitRule;
 
-    const parameterArn: string =
-      StringParameter.fromSecureStringParameterAttributes(
-        this,
-        "github-token",
-        {
-          parameterName: "/github/token",
-        },
-      ).parameterArn;
-
     const createLambda: (name: string, fileName: string) => lambda.Function = (
       name,
       fileName,
@@ -143,6 +134,7 @@ export class InfrastructureStack extends cdk.Stack {
         runtime: lambda.Runtime.PYTHON_3_13,
         handler: `${fileName}.lambda_handler`,
         code: lambda.Code.fromAsset(`${fileName}.zip`),
+        timeout: Duration.minutes(1)
       });
     };
 
