@@ -47,6 +47,7 @@
                     "route53:*",
                     "acm:*",
                     "cloudfront:*",
+                    "cloudformation:*",
                     "cloudwatch:*",
                     "events:*",
                     "apigateway:*",
