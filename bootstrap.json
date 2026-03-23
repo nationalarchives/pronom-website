@@ -54,20 +54,10 @@
                     "lambda:*",
                     "shield:*",
                     "wafv2:*",
+                    "s3:*",
                     "ssm:GetParameter"
                   ],
                   "Resource": "*"
-                },
-                {
-                  "Sid": "",
-                  "Effect": "Allow",
-                  "Action": [
-                    "s3:*"
-                  ],
-                  "Resource": [
-                    "arn:aws:s3:::prod-pronom-website",
-                    "arn:aws:s3:::prod-pronom-website/*"
-                  ]
                 },
                 {
                   "Sid": "",
