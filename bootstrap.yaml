@@ -1,2 +1,3 @@
-template-file-path: bootstrap.json
+template-file-path: bootstrap.yaml
+parameters: {}
 tags: {}
