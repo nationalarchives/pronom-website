@@ -4,7 +4,7 @@ import {Construct} from "constructs";
 import {CfnDelivery, CfnDeliveryDestination, CfnDeliverySource, LogGroup} from "aws-cdk-lib/aws-logs";
 import {Stack} from "aws-cdk-lib";
 
-export class CloudfrontAccessLogsStack extends cdk.Stack {
+class CloudfrontAccessLogsStack extends cdk.Stack {
     constructor(
         scope: Construct,
         id: string,
@@ -44,6 +44,6 @@ export class CloudfrontAccessLogsStack extends cdk.Stack {
             }
         ).node.addDependency(distributionDeliverySource);
     }
-
-
 }
+
+export default CloudfrontAccessLogsStack
