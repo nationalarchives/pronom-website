@@ -120,10 +120,12 @@
 
       {%- if summary.relationships %}
         <h2 class="tna-heading-l" id="relationships">Relationships</h2>
-        <dl class="tna-dl">
-          {%- for relationship in summary.relationships %}
-            <dt>{{ relationship.type }}</dt>
-            <dd><a href="/{{ relationship.puid }}">{{ relationship.name }}</a></dd>
+        <dl class="tna-dl tna-dl--lined">
+          {%- for type, relationships in summary.relationships|groupby("type") %}
+            <dt>{{ type }}</dt>
+            {%- for relationship in relationships %}
+              <dd><a href="/{{ relationship.puid }}">{{ relationship.name }}</a></dd>
+            {%- endfor %}
           {%- endfor %}
         </dl>
       {%- endif %}
@@ -150,11 +152,9 @@
 
             {%- if 'byteSequences' in signature %}
               <h4 class="tna-heading-s">Byte sequences</h4>
-
+              
               {%- for byte_sequence in signature.byteSequences %}
-                {{ '<hr class="tna-!--margin-vertical-s">'|safe if not loop.first and signature.byteSequences|length > 1 else '' }}
-
-                <dl class="tna-dl tna-dl--lined tna-dl--right-weighted tna-!--margin-top-s">
+                <dl class="tna-dl tna-dl--lined tna-dl--right-weighted">
                   <dt>Min Frag Length</dt>
                   <dd>{{ byte_sequence.positionType }}</dd>
                   <dt>Offset</dt>
