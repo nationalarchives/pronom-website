@@ -53,7 +53,8 @@
                     "logs:*",
                     "lambda:*",
                     "shield:*",
-                    "wafv2:*"
+                    "wafv2:*",
+                    "ssm:GetParameter"
                   ],
                   "Resource": "*"
                 },
