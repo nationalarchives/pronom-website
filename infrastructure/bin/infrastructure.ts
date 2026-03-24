@@ -2,6 +2,7 @@
 import * as cdk from "aws-cdk-lib";
 import { InfrastructureStack } from "../lib/infrastructure-stack";
 import { CloudFrontWAFStack } from "../lib/cloudfront-waf";
+import { CloudfrontAccessLogsStack } from "../lib/cloudfront-access-logs";
 
 const londonProps: cdk.StackProps = {
   env: {
@@ -32,3 +33,10 @@ new CloudFrontWAFStack(
   infrastructure.rateLimitRule,
   virginiaProps,
 );
+
+new CloudfrontAccessLogsStack(
+    app,
+    "cloudfront-access-logs",
+    infrastructure.cloudFrontDistribution,
+    virginiaProps
+)

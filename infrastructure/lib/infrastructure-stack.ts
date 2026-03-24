@@ -1,5 +1,5 @@
 import * as cdk from "aws-cdk-lib";
-import {Duration} from "aws-cdk-lib";
+import {Duration, Stack} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {CloudFrontToS3} from "@aws-solutions-constructs/aws-cloudfront-s3";
 import {Bucket, BucketProps} from "aws-cdk-lib/aws-s3";
@@ -15,8 +15,8 @@ import {
 } from "aws-cdk-lib/aws-cloudfront";
 import * as agw from "aws-cdk-lib/aws-apigateway";
 import {WafwebaclToApiGateway} from "@aws-solutions-constructs/aws-wafwebacl-apigateway";
-import {StringParameter} from "aws-cdk-lib/aws-ssm";
 import * as wafv2 from "aws-cdk-lib/aws-wafv2";
+import { ServicePrincipal } from "aws-cdk-lib/aws-iam";
 
 export class InfrastructureStack extends cdk.Stack {
   public readonly cloudFrontDistribution: cf.Distribution;
@@ -28,9 +28,6 @@ export class InfrastructureStack extends cdk.Stack {
     const environment: string = tryEnvironment
       ? (tryEnvironment as string)
       : "intg";
-    const bucketProps: (suffix: string) => BucketProps = (suffix) => {
-      return { bucketName: `${environment}-pronom-website${suffix}` };
-    };
 
     const securityHeadersBehavior: ResponseSecurityHeadersBehavior = {
       contentSecurityPolicy: {
@@ -87,13 +84,9 @@ export class InfrastructureStack extends cdk.Stack {
       this,
       "pronom-website",
       {
-        bucketProps: { versioned: false, ...bucketProps("") },
-        loggingBucketProps: bucketProps("-logs"),
-        cloudFrontLoggingBucketProps: bucketProps("-cloudfront-logs"),
-        cloudFrontLoggingBucketAccessLogBucketProps: bucketProps(
-          "-cloudfront-logs-access-logs",
-        ),
-        cloudFrontDistributionProps: { defaultRootObject: "home", errorResponses },
+        bucketProps: { versioned: false, bucketName: `${environment}-pronom-website`},
+        logCloudFrontAccessLog: false,
+        cloudFrontDistributionProps: { defaultRootObject: "home", errorResponses, enableLogging: false },
         insertHttpSecurityHeaders: false,
         responseHeadersPolicyProps: {
           securityHeadersBehavior,
@@ -142,6 +135,13 @@ export class InfrastructureStack extends cdk.Stack {
       "search-results",
       "results",
     );
+
+    searchResults.addPermission("AllowCloudFrontInvokeFunction", {
+      principal: new ServicePrincipal("cloudfront.amazonaws.com"),
+      action: "lambda:InvokeFunction",
+      sourceArn: cloudfrontToS3.cloudFrontWebDistribution.distributionArn,
+    });
+
 
     const soap: lambda.Function = createLambda("soap", "soap");
 
