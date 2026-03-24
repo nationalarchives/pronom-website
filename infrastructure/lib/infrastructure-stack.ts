@@ -1,8 +1,8 @@
 import * as cdk from "aws-cdk-lib";
-import {Duration, Stack} from "aws-cdk-lib";
+import {Duration} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {CloudFrontToS3} from "@aws-solutions-constructs/aws-cloudfront-s3";
-import {Bucket, BucketProps} from "aws-cdk-lib/aws-s3";
+import {Bucket} from "aws-cdk-lib/aws-s3";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cf from "aws-cdk-lib/aws-cloudfront";
@@ -16,7 +16,11 @@ import {
 import * as agw from "aws-cdk-lib/aws-apigateway";
 import {WafwebaclToApiGateway} from "@aws-solutions-constructs/aws-wafwebacl-apigateway";
 import * as wafv2 from "aws-cdk-lib/aws-wafv2";
-import { ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { ServicePrincipal, OpenIdConnectProvider } from "aws-cdk-lib/aws-iam";
+import {AaaaRecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
+import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
+import { LambdaInvoke } from "aws-cdk-lib/aws-scheduler-targets";
+import {Schedule, ScheduleExpression, ScheduleTargetInput} from "aws-cdk-lib/aws-scheduler";
 
 export class InfrastructureStack extends cdk.Stack {
   public readonly cloudFrontDistribution: cf.Distribution;
@@ -80,6 +84,8 @@ export class InfrastructureStack extends cdk.Stack {
       }
     })
 
+    const zone = HostedZone.fromHostedZoneAttributes(this, "hostedZoneLookup", {zoneName: "pronom.nationalarchives.gov.uk", hostedZoneId: "Z0207922GVVLB5378323"})
+
     const cloudfrontToS3: CloudFrontToS3 = new CloudFrontToS3(
       this,
       "pronom-website",
@@ -96,6 +102,19 @@ export class InfrastructureStack extends cdk.Stack {
         }
       },
     );
+
+    new AaaaRecord(this, 'Alias', {
+      zone,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfrontToS3.cloudFrontWebDistribution)),
+    });
+
+    // new Certificate(this, 'Certificate', {
+    //   domainName: 'test.example.com',
+    //   subjectAlternativeNames: ['cool.example.com', 'test.example.net'],
+    //   validation: CertificateValidation.fromDnsMultiZone({
+    //     'pronom.example.com': zone
+    //   }),
+    // });
 
     const rateLimitRule: wafv2.CfnWebACL.RuleProperty = {
       name: "RateLimit15000",
@@ -142,6 +161,11 @@ export class InfrastructureStack extends cdk.Stack {
       sourceArn: cloudfrontToS3.cloudFrontWebDistribution.distributionArn,
     });
 
+    const target = new LambdaInvoke(searchResults, {input: ScheduleTargetInput.fromObject({})})
+
+    const schedule = ScheduleExpression.rate(Duration.minutes(5))
+
+    new Schedule(this, "keep-warm-scheduler", {schedule, target})
 
     const soap: lambda.Function = createLambda("soap", "soap");
 
@@ -191,6 +215,8 @@ export class InfrastructureStack extends cdk.Stack {
         rules: [rateLimitRule],
       },
     });
+
+    new OpenIdConnectProvider(this, "github-identity-provider", {url: "https://token.actions.githubusercontent.com", clientIds: ["sts.amazonaws.com"]})
 
     this.cloudFrontDistribution = cloudfrontToS3.cloudFrontWebDistribution;
   }
