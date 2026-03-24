@@ -17,16 +17,17 @@ import * as agw from "aws-cdk-lib/aws-apigateway";
 import {WafwebaclToApiGateway} from "@aws-solutions-constructs/aws-wafwebacl-apigateway";
 import * as wafv2 from "aws-cdk-lib/aws-wafv2";
 import { ServicePrincipal, OpenIdConnectProvider } from "aws-cdk-lib/aws-iam";
-import {AaaaRecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
-import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { LambdaInvoke } from "aws-cdk-lib/aws-scheduler-targets";
 import {Schedule, ScheduleExpression, ScheduleTargetInput} from "aws-cdk-lib/aws-scheduler";
+import {AaaaRecord, IHostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
+import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
+import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 
 export class InfrastructureStack extends cdk.Stack {
   public readonly cloudFrontDistribution: cf.Distribution;
   public readonly rateLimitRule: wafv2.CfnWebACL.RuleProperty;
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, zone: IHostedZone, certificate: Certificate, props?: cdk.StackProps) {
     super(scope, id, props);
     const tryEnvironment = this.node.tryGetContext("environment");
     const environment: string = tryEnvironment
@@ -84,15 +85,13 @@ export class InfrastructureStack extends cdk.Stack {
       }
     })
 
-    const zone = HostedZone.fromHostedZoneAttributes(this, "hostedZoneLookup", {zoneName: "pronom.nationalarchives.gov.uk", hostedZoneId: "Z0207922GVVLB5378323"})
-
     const cloudfrontToS3: CloudFrontToS3 = new CloudFrontToS3(
       this,
       "pronom-website",
       {
         bucketProps: { versioned: false, bucketName: `${environment}-pronom-website`},
         logCloudFrontAccessLog: false,
-        cloudFrontDistributionProps: { defaultRootObject: "home", errorResponses, enableLogging: false },
+        cloudFrontDistributionProps: { defaultRootObject: "home", errorResponses, enableLogging: false, domainNames: ["pronom.nationalarchives.gov.uk"], certificate },
         insertHttpSecurityHeaders: false,
         responseHeadersPolicyProps: {
           securityHeadersBehavior,
@@ -107,14 +106,6 @@ export class InfrastructureStack extends cdk.Stack {
       zone,
       target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfrontToS3.cloudFrontWebDistribution)),
     });
-
-    // new Certificate(this, 'Certificate', {
-    //   domainName: 'test.example.com',
-    //   subjectAlternativeNames: ['cool.example.com', 'test.example.net'],
-    //   validation: CertificateValidation.fromDnsMultiZone({
-    //     'pronom.example.com': zone
-    //   }),
-    // });
 
     const rateLimitRule: wafv2.CfnWebACL.RuleProperty = {
       name: "RateLimit15000",
