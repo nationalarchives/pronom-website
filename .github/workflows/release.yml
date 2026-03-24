@@ -28,4 +28,4 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/PRONOMInfrastructureRole
           aws-region: eu-west-2
           role-session-name: DeployPRONOM
-      - run: .github/scripts/release.sh intg
+      - run: .github/scripts/release.sh prod
