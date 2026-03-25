@@ -52,14 +52,16 @@ def search(search_string):
 
 def lambda_handler(event, _):
     query_params = event.get("queryStringParameters", {})
-    search_term = query_params.get("q") if query_params else None
-    if re.search(r"^(x-)?fmt\/\d{1,5}$", search_term) is not None and puid_exists(
-        search_term
-    ):
-        return {"statusCode": 302, "headers": {"Location": search_term}}
-    rows = search(search_term)
-    data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]
-    search_results = env.get_template("search_results.html")
-    body = search_results.render(data=data, search_term=search_term)
+    if query_params:
+        search_term = query_params.get("q") if query_params else None
+        if re.search(r"^(x-)?fmt\/\d{1,5}$", search_term) is not None and puid_exists(
+            search_term
+        ):
+            return {"statusCode": 302, "headers": {"Location": search_term}}
+        rows = search(search_term)
+        data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]
+        search_results = env.get_template("search_results.html")
+        body = search_results.render(data=data, search_term=search_term)
 
-    return {"statusCode": 200, "body": body, "headers": {"Content-Type": "text/html"}}
+        return {"statusCode": 200, "body": body, "headers": {"Content-Type": "text/html"}}
+    return  {"statusCode": 200}

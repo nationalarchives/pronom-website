@@ -1,0 +1,107 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "PRONOMInfrastructureRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "PRONOMInfrastructureRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": {
+                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+                }
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringLike": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": [
+                    "repo:nationalarchives/pronom-website:ref:refs/heads/main"
+                  ]
+                }
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {"Fn::Sub":  "arn:aws:iam::${AWS::AccountId}:root"}
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "PRONOMInfrastructurePolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Action": [
+                    "route53:*",
+                    "acm:*",
+                    "cloudfront:*",
+                    "cloudformation:*",
+                    "cloudwatch:*",
+                    "events:*",
+                    "apigateway:*",
+                    "logs:*",
+                    "lambda:*",
+                    "shield:*",
+                    "wafv2:*",
+                    "s3:*",
+                    "ssm:GetParameter"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Action": [
+                    "iam:AttachRolePolicy",
+                    "iam:CreatePolicy",
+                    "iam:CreateRole",
+                    "iam:DeletePolicy",
+                    "iam:DeleteRole",
+                    "iam:DetachRolePolicy",
+                    "iam:DeleteRolePolicy",
+                    "iam:GetPolicy",
+                    "iam:GetPolicyVersion",
+                    "iam:GetRole",
+                    "iam:GetRolePolicy",
+                    "iam:ListPolicyVersions",
+                    "iam:ListRolePolicies",
+                    "iam:ListAttachedRolePolicies",
+                    "iam:ListInstanceProfilesForRole",
+                    "iam:PassRole",
+                    "iam:PutRolePolicy",
+                    "iam:TagPolicy",
+                    "iam:TagRole",
+                    "iam:UntagRole",
+                    "iam:UpdateRoleDescription",
+                    "iam:UpdateAssumeRolePolicy"
+                  ],
+                  "Resource": [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                    {
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/*"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

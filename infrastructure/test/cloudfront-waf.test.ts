@@ -16,7 +16,7 @@ const infrastructureStack = new inf.InfrastructureStack(
   app,
   "TestInfrastructure",
 );
-const stack: cf.CloudFrontWAFStack = new cf.CloudFrontWAFStack(
+const stack: cf.default = new cf.default(
   app,
   "MyTestStack",
   infrastructureStack.cloudFrontDistribution,
