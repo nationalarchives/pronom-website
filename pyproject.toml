@@ -14,7 +14,7 @@ tna-frontend-jinja = "0.37.0"
 jinja2 = "^3.1.6"
 boto3 = "^1.42.74"
 ghapi = "^1.0.10"
-fastcore = "^1.12.16"
+fastcore = "^1.12.31"
 pycountry = "^24.6.1"
 
 [tool.poetry.group.dev]
