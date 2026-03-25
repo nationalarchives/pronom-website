@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib";
 import { InfrastructureStack } from "../lib/infrastructure-stack";
-import { CloudFrontWAFStack } from "../lib/cloudfront-waf";
+import CloudFrontWAFStack from "../lib/cloudfront-waf";
+import { CloudfrontAccessLogsStack } from "../lib/cloudfront-access-logs";
+import {DNSStack} from "../lib/cloudfront-dns";
 
 const londonProps: cdk.StackProps = {
   env: {
@@ -19,9 +21,13 @@ const virginiaProps: cdk.StackProps = {
 };
 const app: cdk.App = new cdk.App();
 
+const dns = new DNSStack(app, "website-dns", virginiaProps)
+
 const infrastructure = new InfrastructureStack(
   app,
   "pronom-website",
+  dns.zone,
+  dns.certificate,
   londonProps,
 );
 
@@ -32,3 +38,10 @@ new CloudFrontWAFStack(
   infrastructure.rateLimitRule,
   virginiaProps,
 );
+
+new CloudfrontAccessLogsStack(
+    app,
+    "cloudfront-access-logs",
+    infrastructure.cloudFrontDistribution,
+    virginiaProps
+)

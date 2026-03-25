@@ -2,7 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import {Duration} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {CloudFrontToS3} from "@aws-solutions-constructs/aws-cloudfront-s3";
-import {Bucket, BucketProps} from "aws-cdk-lib/aws-s3";
+import {Bucket} from "aws-cdk-lib/aws-s3";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cf from "aws-cdk-lib/aws-cloudfront";
@@ -15,22 +15,24 @@ import {
 } from "aws-cdk-lib/aws-cloudfront";
 import * as agw from "aws-cdk-lib/aws-apigateway";
 import {WafwebaclToApiGateway} from "@aws-solutions-constructs/aws-wafwebacl-apigateway";
-import {StringParameter} from "aws-cdk-lib/aws-ssm";
 import * as wafv2 from "aws-cdk-lib/aws-wafv2";
+import { ServicePrincipal, OpenIdConnectProvider } from "aws-cdk-lib/aws-iam";
+import { LambdaInvoke } from "aws-cdk-lib/aws-scheduler-targets";
+import {Schedule, ScheduleExpression, ScheduleTargetInput} from "aws-cdk-lib/aws-scheduler";
+import {AaaaRecord, IHostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
+import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
+import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 
 export class InfrastructureStack extends cdk.Stack {
   public readonly cloudFrontDistribution: cf.Distribution;
   public readonly rateLimitRule: wafv2.CfnWebACL.RuleProperty;
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, zone: IHostedZone, certificate: Certificate, props?: cdk.StackProps) {
     super(scope, id, props);
     const tryEnvironment = this.node.tryGetContext("environment");
     const environment: string = tryEnvironment
       ? (tryEnvironment as string)
       : "intg";
-    const bucketProps: (suffix: string) => BucketProps = (suffix) => {
-      return { bucketName: `${environment}-pronom-website${suffix}` };
-    };
 
     const securityHeadersBehavior: ResponseSecurityHeadersBehavior = {
       contentSecurityPolicy: {
@@ -87,13 +89,9 @@ export class InfrastructureStack extends cdk.Stack {
       this,
       "pronom-website",
       {
-        bucketProps: { versioned: false, ...bucketProps("") },
-        loggingBucketProps: bucketProps("-logs"),
-        cloudFrontLoggingBucketProps: bucketProps("-cloudfront-logs"),
-        cloudFrontLoggingBucketAccessLogBucketProps: bucketProps(
-          "-cloudfront-logs-access-logs",
-        ),
-        cloudFrontDistributionProps: { defaultRootObject: "home", errorResponses },
+        bucketProps: { versioned: false, bucketName: `${environment}-pronom-website`},
+        logCloudFrontAccessLog: false,
+        cloudFrontDistributionProps: { defaultRootObject: "home", errorResponses, enableLogging: false, domainNames: ["pronom.nationalarchives.gov.uk"], certificate },
         insertHttpSecurityHeaders: false,
         responseHeadersPolicyProps: {
           securityHeadersBehavior,
@@ -103,6 +101,11 @@ export class InfrastructureStack extends cdk.Stack {
         }
       },
     );
+
+    new AaaaRecord(this, 'Alias', {
+      zone,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfrontToS3.cloudFrontWebDistribution)),
+    });
 
     const rateLimitRule: wafv2.CfnWebACL.RuleProperty = {
       name: "RateLimit15000",
@@ -142,6 +145,18 @@ export class InfrastructureStack extends cdk.Stack {
       "search-results",
       "results",
     );
+
+    searchResults.addPermission("AllowCloudFrontInvokeFunction", {
+      principal: new ServicePrincipal("cloudfront.amazonaws.com"),
+      action: "lambda:InvokeFunction",
+      sourceArn: cloudfrontToS3.cloudFrontWebDistribution.distributionArn,
+    });
+
+    const target = new LambdaInvoke(searchResults, {input: ScheduleTargetInput.fromObject({})})
+
+    const schedule = ScheduleExpression.rate(Duration.minutes(5))
+
+    new Schedule(this, "keep-warm-scheduler", {schedule, target})
 
     const soap: lambda.Function = createLambda("soap", "soap");
 
@@ -191,6 +206,8 @@ export class InfrastructureStack extends cdk.Stack {
         rules: [rateLimitRule],
       },
     });
+
+    new OpenIdConnectProvider(this, "github-identity-provider", {url: "https://token.actions.githubusercontent.com", clientIds: ["sts.amazonaws.com"]})
 
     this.cloudFrontDistribution = cloudfrontToS3.cloudFrontWebDistribution;
   }
