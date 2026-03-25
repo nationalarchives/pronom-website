@@ -1,0 +1,88 @@
+{%- extends 'index.html' -%}
+
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+
+{%- set pageTitle = 'Accessibility' -%}
+
+{% block beforeContent %}
+  <div class="tna-!--padding-top-s tna-background-accent-light">
+    <div class="tna-container">
+      <div class="tna-column tna-column--full">
+        {{ tnaBreadcrumbs({
+          'items': [
+            {
+              'text': 'Home',
+              'href': '/'
+            }
+          ]
+        }) | indent(6) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="tna-section tna-background-accent-light">
+  <div class="tna-container">
+    <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+      <h1 class="tna-heading-xl">{{ pageTitle }}</h1>
+      <p class="tna-scene-setter">The National Archives is committed to making its website at pronom.nationalarchives.gov.uk accessible, in accordance with the Public Sector Bodies Accessibility Regulations.</p>
+    </div>
+  </div>
+</div>
+<div class="tna-container">
+  <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
+    <p>The Digital Archiving team at The National Archives (TNA) maintains the PRONOM service.</p>
+    <p>This page explains how the team works to ensure this site is accessible.</p>
+    <p>We mirror the <a href="https://design-system.service.gov.uk/community/accessibility-strategy/">GOV.UK accessibility strategy</a> to improve the accessibility of PRONOM.</p>
+    <h2 class="tna-heading-l">Accessibility statement for pronom.nationalarchives.gov.uk</h2>
+    <p>This statement applies to content published on <strong>pronom.nationalarchives.gov.uk</strong>.</p>
+    <p>This website is run by The National Archives Digital Archiving team. We want as many people as possible to be able to use this website. For example, that means you should be able to:</p>
+    <ul class="tna-ul">
+      <li>change colours, contrast levels and fonts using browser or device settings</li>
+      <li>zoom in up to 400% without problems</li>
+      <li>navigate most of the website using just a keyboard</li>
+      <li>navigate most of the website using just a mouse and on-screen keyboard</li>
+      <li>navigate most of the website using speech recognition software</li>
+      <li>listen to most of the website using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)</li>
+    </ul>
+    <p>We’ve also made the website text as simple as possible to understand.</p>
+    <p>AbilityNet has <a href="https://mcmw.abilitynet.org.uk/">advice on making your device easier to use</a> if you have a disability.</p>
+    <h3 class="tna-heading-m">Feedback and contact information</h3>
+    <p>The National Archives Digital Archiving team is always looking to improve the accessibility of this website. If you find any problems that are not listed on this page or think this website is not meeting accessibility requirements, email us at <a href="mailto:webmaster@nationalarchives.gov.uk">webmaster@nationalarchives.gov.uk</a>.</p>
+    <p>The National Archives Digital Archiving team will review your request and get back to you in 2 working days.</p>
+    <h3 class="tna-heading-m">Enforcement procedure</h3>
+    <p>The National Archives Digital Archiving team is committed to making its websites accessible, in accordance with the <a href="https://www.legislation.gov.uk/uksi/2018/952/contents">Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018</a>.</p>
+    <p>The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you contact us with a complaint and you’re not happy with our response, <a href="https://www.equalityadvisoryservice.com/">contact the Equality Advisory and Support Service (EASS)</a>.</p>
+    <h3 class="tna-heading-m">Compliance status</h3>
+    <p>The PRONOM website at <a href="https://pronom.nationalarchives.gov.uk/">pronom.nationalarchives.gov.uk</a> is partially compliant with the Web Content Accessibility Guidelines (WCAG) version 2.2 AA standard. Non-accessible content is documented in the next section.</p>
+    <h3 class="tna-heading-m">Non-accessible content</h3>
+    <h4 class="tna-heading-s">Non-compliance with the accessibility regulations</h4>
+    <!-- <p>These accessibility concerns have been classified as being non-compliant, due to a failure in one or more WCAG 2.2 Level A and AA criteria.</p> -->
+    <p>There is currently no known non-compliant content in the National Archives PRONOM website.</p>
+    <h4 class="tna-heading-s">Disproportionate burden</h4>
+    <p>We do not currently make any claims of disproportionate burden for any of our services.</p>
+    <h4 class="tna-heading-s">Content that’s not within the scope of the accessibility regulations</h4>
+    <p>The accessibility regulations apply to all portions of the National Archives PRONOM website.</p>
+    <p>We do not have any content within these products which we consider to be outside the scope of the accessibility regulations.</p>
+    <h4 class="tna-heading-s">Other identified and tracked accessibility concerns</h4>
+    <p>Above and beyond non-compliant content, we also track accessibility concerns which:</p>
+    <ul class="tna-ul">
+      <li>show strong evidence of being accessibility barriers</li>
+      <li>do not constitute a failure in one or more WCAG 2.2 Level AA criteria</li>
+      <li>are not classified as non-compliance with the accessibility regulations</li>
+      <li>are determined as worth featuring in this accessibility statement</li>
+    </ul>
+    <p>There are currently no known accessibility concerns in the National Archives PRONOM website which we have determined to be worth featuring in this accessibility statement.</p>
+    <h3 class="tna-heading-m">Testing our products for accessibility</h3>
+    <p>The <a href="https://pronom.nationalarchives.gov.uk/">National Archives PRONOM website</a> was last tested internally for accessibility issues on <time datetime="2026-03-25">25 March 2026</time>.</p>
+    <h3 class="tna-heading-m">How the National Archives Digital Archiving team makes their websites accessible</h3>
+    <p>The National Archives Digital Archiving team works to make sure the PRONOM website is accessible.</p>
+    <p>Where possible, the team aims to research components and patterns with a representative range of users, including those with disabilities.</p>
+    <p>We also test components to make sure they work with a broad range of browsers, devices and assistive technologies — including screen magnifiers, screen readers and speech recognition tools.</p>
+    <p>When we publish new content, we’ll continue to make sure that it meets accessibility standards.</p>
+    <h3 class="tna-heading-m">Preparation of this accessibility statement</h3>
+    <p>This statement was prepared on <time datetime="2026-03-25">25 March 2026</time>. It was last reviewed on <time datetime="2026-03-25">25 March 2026</time>.</p>
+  </div>
+</div>
+{% endblock %}

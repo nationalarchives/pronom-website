@@ -63,5 +63,9 @@ def lambda_handler(event, _):
         search_results = env.get_template("search_results.html")
         body = search_results.render(data=data, search_term=search_term)
 
-        return {"statusCode": 200, "body": body, "headers": {"Content-Type": "text/html"}}
-    return  {"statusCode": 200}
+        return {
+            "statusCode": 200,
+            "body": body,
+            "headers": {"Content-Type": "text/html"},
+        }
+    return {"statusCode": 200}

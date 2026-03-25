@@ -150,6 +150,10 @@ def create_search():
     return env.get_template("search.html").render()
 
 
+def create_accessibility():
+    return env.get_template("accessibility.html").render()
+
+
 path = sys.argv[1]
 
 
@@ -178,6 +182,9 @@ def run():
 
     with open("site/home", "w") as home:
         home.write(create_home())
+
+    with open("site/accessibility", "w") as accessibility:
+        accessibility.write(create_accessibility())
 
     all_json_files = {}
     all_actors = {}

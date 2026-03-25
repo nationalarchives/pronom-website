@@ -7,9 +7,9 @@
 {%- set siteTitle = 'PRONOM - The National Archives' -%}
 {%- set theme = 'system' -%}
 {%- set themeAccent = 'blue' -%}
-{# {%- set htmlAttributes = {
-  'data-tna-cookies-domain': 'd21gi86t6uhf68.cloudfront.net'
-} -%} #}
+{%- set htmlAttributes = {
+  'data-tna-cookies-domain': '.nationalarchives.gov.uk'
+} -%}
 
 {% block headIcons %}
   <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/favicon.ico" type="image/x-icon">
@@ -64,7 +64,20 @@
     'defaultContentBaseUrl': 'https://www.nationalarchives.gov.uk',
     'navigation': [],
     'showNewsletter': False,
-    'legal': [],
+    'legal': [
+      {
+        'text': 'Accessibility',
+        'href': '/accessibility'
+      },
+      {
+        'text': 'Terms and conditions',
+        'href': 'https://www.nationalarchives.gov.uk/legal/'
+      },
+      {
+        'text': 'Cookies',
+        'href': 'https://www.nationalarchives.gov.uk/cookies/'
+      }
+    ],
     'classes': 'tna-!--margin-top-xl'
   }) | indent(4) }}
 {% endblock %}
