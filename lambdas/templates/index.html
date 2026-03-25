@@ -17,6 +17,7 @@
 
 {% block head %}
 <meta name="description" content="An online database of digital file formats">
+<meta name="robots" content="none">
 {% endblock %}
 
 {% block stylesheets %}
@@ -46,8 +47,8 @@
       'href': '/'
     },
     'phaseBanner': {
-      'phase': 'Alpha',
-      'message': 'This service is still in development. Visit <a href="https://www.nationalarchives.gov.uk/pronom/">PRONOM</a> for the current live version.'
+      'phase': 'Beta',
+      'message': 'View the <a href="https://www.nationalarchives.gov.uk/pronom/">old PRONOM service</a>'
     }
   }) | indent(4) }}
 {% endblock %}

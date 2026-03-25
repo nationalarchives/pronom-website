@@ -6,4 +6,5 @@ module.exports = defineConfig({
     supportFile: false,
     baseUrl: "http://localhost:8081",
   },
+  allowCypressEnv: false
 });

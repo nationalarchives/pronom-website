@@ -3,7 +3,7 @@ import {Construct} from "constructs";
 import {HostedZone, IHostedZone} from "aws-cdk-lib/aws-route53";
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager";
 
-export class DNSStack extends cdk.Stack {
+class CertificateStack extends cdk.Stack {
     public readonly certificate: Certificate
     public readonly zone: IHostedZone
 
@@ -24,3 +24,4 @@ export class DNSStack extends cdk.Stack {
         this.zone = zone
     }
 }
+export default CertificateStack

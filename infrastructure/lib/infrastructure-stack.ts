@@ -19,7 +19,7 @@ import * as wafv2 from "aws-cdk-lib/aws-wafv2";
 import { ServicePrincipal, OpenIdConnectProvider } from "aws-cdk-lib/aws-iam";
 import { LambdaInvoke } from "aws-cdk-lib/aws-scheduler-targets";
 import {Schedule, ScheduleExpression, ScheduleTargetInput} from "aws-cdk-lib/aws-scheduler";
-import {AaaaRecord, IHostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
+import {AaaaRecord, ARecord, IHostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {CloudFrontTarget} from "aws-cdk-lib/aws-route53-targets";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 
@@ -103,6 +103,11 @@ export class InfrastructureStack extends cdk.Stack {
     );
 
     new AaaaRecord(this, 'Alias', {
+      zone,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfrontToS3.cloudFrontWebDistribution)),
+    });
+
+    new ARecord(this, 'AliasV4', {
       zone,
       target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfrontToS3.cloudFrontWebDistribution)),
     });

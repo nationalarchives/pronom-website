@@ -28,7 +28,9 @@
             {
               "Effect": "Allow",
               "Principal": {
-                "AWS": {"Fn::Sub":  "arn:aws:iam::${AWS::AccountId}:root"}
+                "AWS": {
+                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
+                }
               },
               "Action": "sts:AssumeRole"
             }
@@ -96,6 +98,61 @@
                       "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/*"
                     }
                   ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "PRONOMDeploySignatureRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "PRONOMSignatureRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": {
+                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+                }
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "StringLike": {
+                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                  "token.actions.githubusercontent.com:sub": [
+                    "repo:nationalarchives/pronom-signatures:ref:refs/heads/main"
+                  ]
+                }
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
+                }
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "PRONOMSignaturePolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject"
+                  ],
+                  "Resource": "arn:aws:s3:::prod-pronom-website"
                 }
               ]
             }

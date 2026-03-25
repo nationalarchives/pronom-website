@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["es5", "dom"],
+    "ignoreDeprecations": "6.0",
+    "target": "esnext",
+    "lib": ["esnext", "dom"],
     "types": ["cypress", "node"]
   },
   "include": ["**/*.ts"]
