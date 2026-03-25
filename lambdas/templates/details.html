@@ -91,29 +91,39 @@
         {%- for result in summary.results %}
           {%- for key, value in result.items() %}
             {%- if value is defined and value is not none %}
-              <dt>{{ key }}</dt>
+              <dt>
+                <span class="tna-dl__sticky-title">{{ key }}</span>
+              </dt>
               <dd class="break-words">{{ value }}</dd>
             {%- endif %}
           {%- endfor %}
         {%- endfor %}
 
         {%- if summary.extensions is defined and summary.extensions is not none %}
-          <dt>File extensions</dt>
+          <dt>
+            <span class="tna-dl__sticky-title">File extensions</span>
+          </dt>
           <dd>{{ summary.extensions }}</dd>
         {%- endif %}
 
         {%- if summary.source is defined and summary.source is not none %}
-          <dt>Source</dt>
+          <dt>
+            <span class="tna-dl__sticky-title">Source</span>
+          </dt>
           <dd><a href="/actor/{{ summary.source.actorId }}">{{ summary.source.name }}</a></dd>
         {%- endif %}
 
         {%- if summary.developedBy %}
-          <dt>Developed by</dt>
+          <dt>
+            <span class="tna-dl__sticky-title">Developed by</span>
+          </dt>
           <dd><a href="/actor/{{ summary.developedBy.actorId }}">{{ summary.developedBy.name }}</a></dd>
         {%- endif %}
 
         {%- if summary.supportedBy %}
-          <dt>Supported by</dt>
+          <dt>
+            <span class="tna-dl__sticky-title">Supported by</span>
+          </dt>
           <dd><a href="/actor/{{ summary.supportedBy.actorId }}">{{ summary.supportedBy.name }}</a></dd>
         {%- endif %}
       </dl>
@@ -122,10 +132,16 @@
         <h2 class="tna-heading-l" id="relationships">Relationships</h2>
         <dl class="tna-dl tna-dl--lined">
           {%- for type, relationships in summary.relationships|groupby("type") %}
-            <dt>{{ type }}</dt>
-            {%- for relationship in relationships %}
-              <dd><a href="/{{ relationship.puid }}">{{ relationship.name }}</a></dd>
-            {%- endfor %}
+            <dt>
+              <span class="tna-dl__sticky-title">{{ type }}</span>
+            </dt>
+            <dd>
+              <ul class="tna-ul">
+                {%- for relationship in relationships %}
+                <li><a href="/{{ relationship.puid }}">{{ relationship.name }}</a></li>
+                {%- endfor %}
+              </ul>
+            </dd>
           {%- endfor %}
         </dl>
       {%- endif %}

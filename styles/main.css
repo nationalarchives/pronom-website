@@ -5,3 +5,10 @@
 .tna-card--small-body {
     font-size: 1rem;
 }
+
+.tna-dl__sticky-title {
+    display: block;
+
+    position: sticky;
+    top: 0.5rem;
+}
