@@ -20,7 +20,7 @@
                 "StringLike": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
                   "token.actions.githubusercontent.com:sub": [
-                    "repo:nationalarchives/pronom-website:ref:refs/heads/main"
+                    "repo:nationalarchives/pronom-website:environment:production"
                   ]
                 }
               }
