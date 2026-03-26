@@ -23,7 +23,7 @@
     "@aws-solutions-constructs/aws-cloudfront-s3": "^2.99.0",
     "@aws-solutions-constructs/aws-wafwebacl-apigateway": "^2.99.0",
     "@aws-solutions-constructs/aws-wafwebacl-cloudfront": "^2.99.0",
-    "aws-cdk-lib": "2.238.0",
+    "aws-cdk-lib": "^2.244.0",
     "constructs": "^10.4.5"
   }
 }

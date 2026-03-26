@@ -161,7 +161,7 @@ path = sys.argv[1]
 
 def create_file_list():
     with request.urlopen(
-        "https://d21gi86t6uhf68.cloudfront.net/signatures.json"
+        "https://pronom.nationalarchives.gov.uk/signatures.json"
     ) as url:
         all_signatures = json.load(url)
 
