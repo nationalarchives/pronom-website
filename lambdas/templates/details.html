@@ -4,6 +4,11 @@
 {%- from "components/sidebar/macro.html" import tnaSidebar -%}
 
 {%- set pageTitle = name -%}
+{%- if id %}
+  {%- set old_url = 'https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=' ~ id -%}
+{%- elif puid %}
+  {%- set old_url = 'https://www.nationalarchives.gov.uk/PRONOM/' ~ puid -%}
+{%- endif %}
 
 {% block beforeContent %}
   <div class="tna-!--padding-top-s">

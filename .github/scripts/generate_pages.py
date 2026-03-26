@@ -106,6 +106,8 @@ def create_detail(json_data, all_actors, json_by_id):
     }
     signatures = json_data["internalSignatures"]
     return details_template.render(
+        id=json_data.get("fileFormatID"),
+        puid=summary.get("PUID"),
         name=summary["Name"],
         summary=summary_args,
         signatures=signatures,

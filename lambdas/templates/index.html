@@ -47,8 +47,10 @@
       'href': '/'
     },
     'phaseBanner': {
-      'phase': 'Beta',
-      'message': 'View the <a href="https://www.nationalarchives.gov.uk/pronom/">old PRONOM service</a>'
+      '_phase': 'Beta',
+      '_message': 'This is a new service. Help us improve it and <a href="#" target="_blank" rel="noreferrer nofollow noopener">give your feedback (opens in new tab)</a>.' ~ (' <a href="' ~ old_url ~ '">View this page on the current PRONOM service</a>.' if old_url else ''),
+      'phase': 'Private beta',
+      'message': 'This service is still in development.' ~ (' <a href="' ~ old_url ~ '">View this page on the current PRONOM service</a>.' if old_url else '')
     }
   }) | indent(4) }}
 {% endblock %}
