@@ -17,8 +17,8 @@ describe("PRONOM Home Spec", () => {
   it("submits a search if the search is not a puid", () => {
     const checkSearchLinks = (puid: string, name: string): void => {
       const fmt: Cypress.Chainable<JQuery<HTMLElement>> = cy
-          .get(`a[href='${puid}']`)
-          .last();
+        .get(`a[href='${puid}']`)
+        .last();
       fmt.should("have.text", name);
     };
     cy.get("#search").type("docx");
@@ -52,7 +52,10 @@ describe("PRONOM Home Spec", () => {
     cy.intercept("GET", "/results?q=*").as("results");
     cy.get("form[action='/results']").submit();
     cy.wait("@results").its("response.statusCode").should("eq", 200);
-    cy.get(".tna-aside > h2.tna-heading-m").should("have.text", "No results found");
+    cy.get(".tna-aside > h2.tna-heading-m").should(
+      "have.text",
+      "No results found",
+    );
   });
 
   it("returns no results if the search is a non-existent puid", () => {
@@ -60,6 +63,9 @@ describe("PRONOM Home Spec", () => {
     cy.intercept("GET", "/results?q=*").as("results");
     cy.get("form[action='/results']").submit();
     cy.wait("@results").its("response.statusCode").should("eq", 200);
-    cy.get(".tna-aside > h2.tna-heading-m").should("have.text", "No results found");
+    cy.get(".tna-aside > h2.tna-heading-m").should(
+      "have.text",
+      "No results found",
+    );
   });
 });
