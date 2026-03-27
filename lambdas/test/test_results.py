@@ -55,6 +55,13 @@ class ResultsTest(unittest.TestCase):
         self.assertEqual(response["statusCode"], 302)
         self.assertEqual(response["headers"]["Location"], "fmt/123")
 
+    def test_search_existing_fmt_upper_case(self):
+        response = results.lambda_handler(
+            {"queryStringParameters": {"q": "FMT/123"}}, None
+        )
+        self.assertEqual(response["statusCode"], 302)
+        self.assertEqual(response["headers"]["Location"], "fmt/123")
+
     def test_search_not_existing_fmt(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "fmt/3210"}}, None

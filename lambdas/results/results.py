@@ -54,10 +54,10 @@ def lambda_handler(event, _):
     query_params = event.get("queryStringParameters", {})
     if query_params:
         search_term = query_params.get("q") if query_params else None
-        if re.search(r"^(x-)?fmt\/\d{1,5}$", search_term) is not None and puid_exists(
-            search_term
+        if re.search(r"^(x-)?fmt\/\d{1,5}$", search_term.lower()) is not None and puid_exists(
+            search_term.lower()
         ):
-            return {"statusCode": 302, "headers": {"Location": search_term}}
+            return {"statusCode": 302, "headers": {"Location": search_term.lower()}}
         rows = search(search_term)
         data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]
         search_results = env.get_template("search_results.html")
