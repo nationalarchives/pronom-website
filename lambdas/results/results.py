@@ -1,6 +1,7 @@
 import os
 import re
 import sqlite3
+from contextlib import closing
 
 from jinja2 import (
     ChoiceLoader,
@@ -25,10 +26,10 @@ env.filters["commafy"] = lambda x: f"{x:,d}"
 
 def puid_exists(puid):
     db_name = os.getenv("DB_NAME", "indexes")
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    cursor.execute("SELECT path from indexes where path = ?", (puid,))
-    rows = cursor.fetchall()
+    with closing(sqlite3.connect(db_name)) as conn:
+        with closing(conn.cursor()) as cur:
+            cur.execute("SELECT path from indexes where path = ?", (puid,))
+            rows = cur.fetchall()
     return len(rows) > 0
 
 
@@ -38,15 +39,14 @@ def search(search_string):
         return prefix, int(num)
 
     db_name = os.getenv("DB_NAME", "indexes")
-    conn = sqlite3.connect(db_name)
-    cur = conn.cursor()
-    cur.execute(
-        "select path, name, extensions from indexes where field like ?",
-        (f"%{search_string}%",),
-    )
-    rows = cur.fetchall()
-    cur.close()
-    rows.sort(key=sort_key)
+    with closing(sqlite3.connect(db_name)) as conn:
+        with closing(conn.cursor()) as cur:
+            cur.execute(
+                "select path, name, extensions from indexes where field like ?",
+                (f"%{search_string}%",),
+            )
+            rows = cur.fetchall()
+            rows.sort(key=sort_key)
     return rows
 
 
@@ -54,10 +54,10 @@ def lambda_handler(event, _):
     query_params = event.get("queryStringParameters", {})
     if query_params:
         search_term = query_params.get("q") if query_params else None
-        if re.search(r"^(x-)?fmt\/\d{1,5}$", search_term) is not None and puid_exists(
-            search_term
+        if re.search(r"^(x-)?fmt\/\d{1,5}$", search_term.lower()) is not None and puid_exists(
+            search_term.lower()
         ):
-            return {"statusCode": 302, "headers": {"Location": search_term}}
+            return {"statusCode": 302, "headers": {"Location": search_term.lower()}}
         rows = search(search_term)
         data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]
         search_results = env.get_template("search_results.html")
