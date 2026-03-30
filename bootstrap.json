@@ -152,7 +152,7 @@
                   "Action": [
                     "s3:PutObject"
                   ],
-                  "Resource": "arn:aws:s3:::prod-pronom-website"
+                  "Resource": "arn:aws:s3:::prod-pronom-website/*"
                 }
               ]
             }
