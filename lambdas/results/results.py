@@ -26,10 +26,10 @@ env.filters["commafy"] = lambda x: f"{x:,d}"
 
 def puid_exists(puid):
     db_name = os.getenv("DB_NAME", "indexes")
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    cursor.execute("SELECT path from indexes where path = ?", (puid,))
-    rows = cursor.fetchall()
+    with closing(sqlite3.connect(db_name)) as conn:
+        with closing(conn.cursor()) as cur:
+            cur.execute("SELECT path from indexes where path = ?", (puid,))
+            rows = cur.fetchall()
     return len(rows) > 0
 
 
