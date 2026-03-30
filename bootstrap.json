@@ -150,9 +150,13 @@
                   "Sid": "",
                   "Effect": "Allow",
                   "Action": [
-                    "s3:PutObject"
+                    "s3:PutObject",
+                    "s3:ListBucket"
                   ],
-                  "Resource": "arn:aws:s3:::prod-pronom-website"
+                  "Resource": [
+                   "arn:aws:s3:::prod-pronom-website/*",
+                   "arn:aws:s3:::prod-pronom-website"
+                  ]
                 }
               ]
             }
