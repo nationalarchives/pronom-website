@@ -1,6 +1,7 @@
 import os
 import re
 import sqlite3
+from contextlib import closing
 
 from jinja2 import (
     ChoiceLoader,
@@ -38,15 +39,14 @@ def search(search_string):
         return prefix, int(num)
 
     db_name = os.getenv("DB_NAME", "indexes")
-    conn = sqlite3.connect(db_name)
-    cur = conn.cursor()
-    cur.execute(
-        "select path, name, extensions from indexes where field like ?",
-        (f"%{search_string}%",),
-    )
-    rows = cur.fetchall()
-    cur.close()
-    rows.sort(key=sort_key)
+    with closing(sqlite3.connect(db_name)) as conn:
+        with closing(conn.cursor()) as cur:
+            cur.execute(
+                "select path, name, extensions from indexes where field like ?",
+                (f"%{search_string}%",),
+            )
+            rows = cur.fetchall()
+            rows.sort(key=sort_key)
     return rows
 
 
