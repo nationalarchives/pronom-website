@@ -2,7 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import {Duration} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {CloudFrontToS3} from "@aws-solutions-constructs/aws-cloudfront-s3";
-import {Bucket} from "aws-cdk-lib/aws-s3";
+import {Bucket, CfnBucketPolicy} from "aws-cdk-lib/aws-s3";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cf from "aws-cdk-lib/aws-cloudfront";
@@ -102,6 +102,33 @@ export class InfrastructureStack extends cdk.Stack {
       },
     );
 
+    const bucket: Bucket = cloudfrontToS3.s3Bucket!
+    const cfnBucketPolicy = bucket.policy?.node.defaultChild as CfnBucketPolicy
+
+    cfnBucketPolicy.addPropertyOverride('PolicyDocument', {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Deny',
+          Principal: { AWS: '*' },
+          Action: 's3:*',
+          Resource: [bucket.bucketArn, `${bucket.bucketArn}/*`],
+          Condition: { Bool: { 'aws:SecureTransport': 'false' } },
+        },
+        {
+          Effect: 'Allow',
+          Principal: { Service: 'cloudfront.amazonaws.com' },
+          Action: 's3:GetObject',
+          Resource: `${bucket.bucketArn}/*`,
+          Condition: {
+            StringEquals: {
+              'AWS:SourceArn': cloudfrontToS3.cloudFrontWebDistribution.distributionArn,
+            },
+          },
+        },
+      ],
+    });
+
     new AaaaRecord(this, 'Alias', {
       zone,
       target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfrontToS3.cloudFrontWebDistribution)),
@@ -184,16 +211,13 @@ export class InfrastructureStack extends cdk.Stack {
       },
     );
 
-    const bucket: Bucket | undefined = cloudfrontToS3.s3Bucket;
-    if (bucket != undefined) {
-      cloudfrontToS3.cloudFrontWebDistribution.addBehavior(
-        "/signature*",
-        origins.S3BucketOrigin.withOriginAccessControl(bucket),
-        {
-          cachePolicy: cf.CachePolicy.CACHING_DISABLED,
-        },
-      );
-    }
+    cloudfrontToS3.cloudFrontWebDistribution.addBehavior(
+      "/signature*",
+      origins.S3BucketOrigin.withOriginAccessControl(bucket),
+      {
+        cachePolicy: cf.CachePolicy.CACHING_DISABLED,
+      },
+    );
 
     cloudfrontToS3.cloudFrontWebDistribution.addBehavior(
       "/service.asmx",
