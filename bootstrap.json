@@ -55,6 +55,7 @@
                     "apigateway:*",
                     "logs:*",
                     "lambda:*",
+                    "scheduler:*",
                     "shield:*",
                     "wafv2:*",
                     "s3:*",
@@ -73,6 +74,7 @@
                     "iam:DeleteRole",
                     "iam:DetachRolePolicy",
                     "iam:DeleteRolePolicy",
+                    "iam:GetOpenIDConnectProvider",
                     "iam:GetPolicy",
                     "iam:GetPolicyVersion",
                     "iam:GetRole",
@@ -96,6 +98,9 @@
                     },
                     {
                       "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
                     }
                   ]
                 }
@@ -154,14 +159,77 @@
                     "s3:ListBucket"
                   ],
                   "Resource": [
-                   "arn:aws:s3:::prod-pronom-website/*",
-                   "arn:aws:s3:::prod-pronom-website"
+                    "arn:aws:s3:::prod-pronom-website/*",
+                    "arn:aws:s3:::prod-pronom-website"
                   ]
                 }
               ]
             }
           }
         ]
+      }
+    },
+    "ProdPronomSiteTerraformStateBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "prod-pronom-site-terraform-state",
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      }
+    },
+    "ProdPronomSiteTerraformStateBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ProdPronomSiteTerraformStateBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyInsecureTransport",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::prod-pronom-site-terraform-state"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::prod-pronom-site-terraform-state/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
       }
     }
   }
