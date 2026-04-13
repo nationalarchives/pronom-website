@@ -1,10 +1,31 @@
 resource "aws_wafv2_web_acl" "cloudfront" {
-  provider = aws.use1
-  name     = "${var.environment}-wafwebacl-pronom-website"
-  scope    = "CLOUDFRONT"
+  region = local.us_east_1
+  name   = "${var.environment}-wafwebacl-pronom-website"
+  scope  = "CLOUDFRONT"
 
   default_action {
     allow {}
+  }
+
+  rule {
+    name     = "AntiDDOS"
+    priority = 0
+    action {
+      block {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWS-AWSManagedRulesAntiDDoSRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AntiDDOS"
+      sampled_requests_enabled   = true
+    }
   }
 
   rule {
@@ -37,24 +58,24 @@ resource "aws_wafv2_web_acl" "cloudfront" {
 }
 
 resource "aws_cloudwatch_log_group" "waf_log_group" {
-  provider          = aws.use1
+  region            = local.us_east_1
   name              = "aws-waf-logs-pronom-site"
   retention_in_days = 90
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "cloudwatch_log_config" {
-  provider                = aws.use1
+  region                  = local.us_east_1
   log_destination_configs = [aws_cloudwatch_log_group.waf_log_group.arn]
   resource_arn            = aws_wafv2_web_acl.cloudfront.arn
 }
 
 resource "aws_cloudwatch_log_resource_policy" "cloudwatch_log_policy" {
-  provider        = aws.use1
-  policy_document = data.aws_iam_policy_document.example.json
+  region          = local.us_east_1
+  policy_document = data.aws_iam_policy_document.cloudwatch_log_policy_document.json
   policy_name     = "${var.environment}-cloudwatch-log-policy"
 }
 
-data "aws_iam_policy_document" "example" {
+data "aws_iam_policy_document" "cloudwatch_log_policy_document" {
   version = "2012-10-17"
   statement {
     effect = "Allow"
@@ -65,8 +86,11 @@ data "aws_iam_policy_document" "example" {
     actions   = ["logs:CreateLogStream", "logs:PutLogEvents"]
     resources = ["${aws_cloudwatch_log_group.waf_log_group.arn}:*"]
     condition {
-      test     = "ArnLike"
-      values   = ["arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"]
+      test = "ArnLike"
+      values = [
+        "arn:aws:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*",
+        "arn:aws:logs:${local.us_east_1}:${data.aws_caller_identity.current.account_id}:*",
+      ]
       variable = "aws:SourceArn"
     }
     condition {

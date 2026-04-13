@@ -52,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "lambda_soap" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_lambda_function" "results" {
+resource "aws_lambda_function" "search" {
   function_name = "${var.environment}-pronom-search"
   role          = aws_iam_role.lambda_results_execution.arn
   runtime       = local.python_runtime
@@ -91,18 +91,18 @@ resource "aws_lambda_function" "soap_edge" {
   handler                        = "index.handler"
   filename                       = data.archive_file.edge_lambda_code.output_path
   source_code_hash               = data.archive_file.edge_lambda_code.output_base64sha256
-  provider                       = aws.use1
+  region                         = local.us_east_1
   publish                        = true
   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
 }
 
 resource "aws_lambda_function_url" "results" {
-  function_name      = aws_lambda_function.results.function_name
+  function_name      = aws_lambda_function.search.qualified_arn
   authorization_type = "AWS_IAM"
 }
 
 resource "aws_lambda_function_url" "soap" {
-  function_name      = aws_lambda_function.soap.function_name
+  function_name      = aws_lambda_function.soap.qualified_arn
   authorization_type = "AWS_IAM"
 }
 
@@ -126,21 +126,21 @@ resource "aws_iam_role_policy" "scheduler_invoke_lambda" {
     Statement = [{
       Effect   = "Allow"
       Action   = ["lambda:InvokeFunction"]
-      Resource = aws_lambda_function.results.arn
+      Resource = aws_lambda_function.search.arn
     }]
   })
 }
 
-resource "aws_scheduler_schedule" "keep_warm" {
-  name       = "${var.environment}-pronom-keep-warm-schedule"
-  group_name = "default"
-
-  flexible_time_window { mode = "OFF" }
-  schedule_expression = "rate(5 minutes)"
-
-  target {
-    arn      = aws_lambda_function.results.arn
-    role_arn = aws_iam_role.scheduler_role.arn
-    input    = jsonencode({})
-  }
-}
+# resource "aws_scheduler_schedule" "keep_warm" {
+#   name       = "${var.environment}-pronom-keep-warm-schedule"
+#   group_name = "default"
+#
+#   flexible_time_window { mode = "OFF" }
+#   schedule_expression = "rate(5 minutes)"
+#
+#   target {
+#     arn      = aws_lambda_function.search.arn
+#     role_arn = aws_iam_role.scheduler_role.arn
+#     input    = jsonencode({})
+#   }
+# }

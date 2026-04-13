@@ -4,7 +4,7 @@ resource "aws_shield_subscription" "subscription" {
 
 resource "aws_shield_protection" "route53_shield_protection" {
   name         = "${local.domain_name}."
-  resource_arn = "arn:aws:route53:::hostedzone/Z0207922GVVLB5378323"
+  resource_arn = "arn:aws:route53:::hostedzone/${var.hosted_zone_id}"
 }
 
 resource "aws_shield_protection" "cloudfront_shield_protection" {
@@ -13,7 +13,7 @@ resource "aws_shield_protection" "cloudfront_shield_protection" {
 }
 
 resource "aws_iam_role" "shield_drt" {
-  name = "example-role"
+  name = "${var.environment}-shield-drt-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

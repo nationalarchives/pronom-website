@@ -14,4 +14,6 @@ locals {
   python_runtime = "python3.13"
 
   lambda_reserved_concurrent_executions = 100
+
+  us_east_1 = "us-east-1"
 }

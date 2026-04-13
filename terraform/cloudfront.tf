@@ -64,7 +64,7 @@ resource "aws_lambda_permission" "cloudfront_invoke_results" {
   for_each      = toset(["InvokeFunction", "InvokeFunctionUrl"])
   statement_id  = "AllowCloudFront${each.value}"
   action        = "lambda:${each.value}"
-  function_name = aws_lambda_function.results.function_name
+  function_name = aws_lambda_function.search.function_name
   principal     = "cloudfront.amazonaws.com"
   source_arn    = aws_cloudfront_distribution.site.arn
 }
@@ -217,19 +217,19 @@ resource "aws_cloudfront_distribution" "site" {
 resource "aws_cloudwatch_log_delivery_source" "access_logs_source" {
   name         = "${var.environment}-site-access-logs"
   log_type     = "ACCESS_LOGS"
-  provider     = aws.use1
+  region       = local.us_east_1
   resource_arn = aws_cloudfront_distribution.site.arn
 }
 
 resource "aws_cloudwatch_log_group" "site_access_logs" {
   name              = "${var.environment}-site-access-logs"
-  provider          = aws.use1
+  region            = local.us_east_1
   retention_in_days = 90
 }
 
 resource "aws_cloudwatch_log_delivery_destination" "cloudfront_logs_destination" {
   name          = "${var.environment}-site-logs-destination"
-  provider      = aws.use1
+  region        = local.us_east_1
   output_format = "json"
   delivery_destination_configuration {
     destination_resource_arn = aws_cloudwatch_log_group.site_access_logs.arn
@@ -237,7 +237,7 @@ resource "aws_cloudwatch_log_delivery_destination" "cloudfront_logs_destination"
 }
 
 resource "aws_cloudwatch_log_delivery" "access_logs_delivery" {
-  provider                 = aws.use1
+  region                   = local.us_east_1
   delivery_source_name     = aws_cloudwatch_log_delivery_source.access_logs_source.name
   delivery_destination_arn = aws_cloudwatch_log_delivery_destination.cloudfront_logs_destination.arn
 }

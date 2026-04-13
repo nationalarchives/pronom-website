@@ -3,7 +3,7 @@ data "aws_route53_zone" "zone" {
 }
 
 resource "aws_acm_certificate" "cf" {
-  provider          = aws.use1
+  region            = local.us_east_1
   domain_name       = local.domain_name
   validation_method = "DNS"
   lifecycle {
@@ -28,7 +28,7 @@ resource "aws_route53_record" "acm_validation" {
 }
 
 resource "aws_acm_certificate_validation" "cf" {
-  provider                = aws.use1
+  region                  = local.us_east_1
   certificate_arn         = aws_acm_certificate.cf.arn
   validation_record_fqdns = [for r in aws_route53_record.acm_validation : r.fqdn]
 }
