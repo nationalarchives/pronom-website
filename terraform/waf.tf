@@ -9,15 +9,26 @@ resource "aws_wafv2_web_acl" "cloudfront" {
 
   rule {
     name     = "AntiDDOS"
-    priority = 0
-    action {
-      block {}
+    priority = 2
+
+    override_action {
+      count {}
     }
 
     statement {
       managed_rule_group_statement {
-        name        = "AWS-AWSManagedRulesAntiDDoSRuleSet"
+        name        = "AWSManagedRulesAntiDDoSRuleSet"
         vendor_name = "AWS"
+
+        managed_rule_group_configs {
+          aws_managed_rules_anti_ddos_rule_set {
+            client_side_action_config {
+              challenge {
+                usage_of_action = "DISABLED"
+              }
+            }
+          }
+        }
       }
     }
 
