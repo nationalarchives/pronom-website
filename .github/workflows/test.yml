@@ -18,7 +18,9 @@ jobs:
           (cd terraform && terraform fmt -check --recursive)
           docker compose up --detach --wait --wait-timeout 120
           docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
-          npm --prefix tests --ignore-scripts ci
+          cd tests
+          npm --ignore-scripts ci
           npx cypress install
           npx cypress run
+          cd ..
           docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
