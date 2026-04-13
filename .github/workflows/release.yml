@@ -32,3 +32,6 @@ jobs:
           aws-region: eu-west-2
           role-session-name: DeployPRONOM
       - run: .github/scripts/release.sh prod
+        env:
+          ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
+          REGION: eu-west-2
