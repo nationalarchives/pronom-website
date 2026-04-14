@@ -67,6 +67,12 @@ resource "aws_lambda_function" "search" {
   source_code_hash               = filebase64sha256("${path.module}/results.zip")
 }
 
+resource "aws_lambda_alias" "search_alias" {
+  name             = "production"
+  function_name    = aws_lambda_function.search.arn
+  function_version = aws_lambda_function.search.version
+}
+
 resource "aws_lambda_function" "soap" {
   function_name                  = "${var.environment}-pronom-soap-endpoint"
   role                           = aws_iam_role.lambda_soap_execution.arn
@@ -97,7 +103,7 @@ resource "aws_lambda_function" "soap_edge" {
 }
 
 resource "aws_lambda_function_url" "results" {
-  function_name      = aws_lambda_function.search.qualified_arn
+  function_name      = aws_lambda_alias.search_alias.arn
   authorization_type = "AWS_IAM"
 }
 
