@@ -83,7 +83,9 @@ resource "aws_lambda_function" "soap" {
   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
   source_code_hash               = filebase64sha256("${path.module}/soap.zip")
   environment {
-    DOWNLOAD_URL = "https://pronom.nationalarchives.gov.uk/signatures/${var.latest_signature_version}"
+    variables = {
+      DOWNLOAD_URL = "https://pronom.nationalarchives.gov.uk/signatures/${var.latest_signature_version}"
+    }
   }
 }
 
