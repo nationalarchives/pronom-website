@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "site" {
-  bucket           = format("${local.bucket_name}-%s-%s-an", data.aws_caller_identity.current.account_id, data.aws_region.current.name)
+  bucket           = format("${local.bucket_name}-%s-%s-an", data.aws_caller_identity.current.account_id, data.aws_region.current.region)
   bucket_namespace = "account-regional"
 }
 

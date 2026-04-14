@@ -1,4 +1,4 @@
-resource "aws_iam_role" "lambda_results_execution" {
+resource "aws_iam_role" "lambda_search_execution" {
   name = "${var.environment}-pronom-lambda-results-execution"
 
   assume_role_policy = jsonencode({
@@ -43,7 +43,7 @@ resource "aws_iam_role_policy_attachment" "edge_lambda_basic" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_results" {
-  role       = aws_iam_role.lambda_results_execution.name
+  role       = aws_iam_role.lambda_search_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
@@ -54,7 +54,7 @@ resource "aws_iam_role_policy_attachment" "lambda_soap" {
 
 resource "aws_lambda_function" "search" {
   function_name = "${var.environment}-pronom-search"
-  role          = aws_iam_role.lambda_results_execution.arn
+  role          = aws_iam_role.lambda_search_execution.arn
   runtime       = local.python_runtime
   handler       = "results.lambda_handler"
   filename      = "${path.module}/results.zip"
