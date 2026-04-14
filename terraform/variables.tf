@@ -8,3 +8,5 @@ variable "hosted_zone_id" {
   type        = string
   default     = "Z0207922GVVLB5378323"
 }
+
+variable "latest_signature_version" {}

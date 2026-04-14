@@ -41,6 +41,5 @@ zip -q soap.zip version
 cp ./*.zip terraform
 cd terraform || exit
 terraform init
-terraform apply --auto-approve
-aws lambda update-function-configuration --function-name $ENVIRONMENT-pronom-soap-endpoint --environment "Variables={DOWNLOAD_URL=https://pronom.nationalarchives.gov.uk/signatures/$LATEST_SIGNATURE_FILE}" | cat > /dev/null
+TF_VAR_latest_signature_version=$LATEST_SIGNATURE_FILE terraform apply --auto-approve
  aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"
