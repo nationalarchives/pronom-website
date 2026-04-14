@@ -82,6 +82,9 @@ resource "aws_lambda_function" "soap" {
   timeout                        = 60
   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
   source_code_hash               = filebase64sha256("${path.module}/soap.zip")
+  environment {
+    DOWNLOAD_URL = "https://pronom.nationalarchives.gov.uk/signatures/${var.latest_signature_version}"
+  }
 }
 
 data "archive_file" "edge_lambda_code" {
