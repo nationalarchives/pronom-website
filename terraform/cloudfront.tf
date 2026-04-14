@@ -64,7 +64,7 @@ resource "aws_lambda_permission" "cloudfront_invoke_results" {
   for_each      = toset(["InvokeFunction", "InvokeFunctionUrl"])
   statement_id  = "AllowCloudFront${each.value}"
   action        = "lambda:${each.value}"
-  function_name = aws_lambda_function.search.function_name
+  function_name = aws_lambda_alias.search_alias.arn
   principal     = "cloudfront.amazonaws.com"
   source_arn    = aws_cloudfront_distribution.site.arn
 }
