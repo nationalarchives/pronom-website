@@ -33,7 +33,7 @@ soap_response_suffix = """
 
 def lambda_handler(event, context):
     print(event)
-    method = event["httpMethod"]
+    method = event['requestContext']['http']['method']
     if method == "GET":
         if "queryStringParameters" in event and event["queryStringParameters"]:
             query_params = {
