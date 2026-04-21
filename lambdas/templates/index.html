@@ -41,6 +41,11 @@
 {% endblock %}
 
 {% block header %}
+  {%- if old_url -%}
+    {%- set phase_banner_message %}This service is still in development. <a href="{{ old_url }}">View this page on the current PRONOM service</a>.{% endset -%}
+  {%- else -%}
+    {%- set phase_banner_message = 'This service is still in development.' -%}
+  {%- endif -%}
   {{ tnaHeader({
     'logo': {
       'strapline': 'PRONOM',
@@ -50,7 +55,7 @@
       '_phase': 'Beta',
       '_message': 'This is a new service. Help us improve it and <a href="#" target="_blank" rel="noreferrer nofollow noopener">give your feedback (opens in new tab)</a>.' ~ (' <a href="' ~ old_url ~ '">View this page on the current PRONOM service</a>.' if old_url else ''),
       'phase': 'Private beta',
-      'message': 'This service is still in development.' ~ (' <a href="' ~ old_url ~ '">View this page on the current PRONOM service</a>.' if old_url else '')
+      'message': phase_banner_message
     }
   }) | indent(4) }}
 {% endblock %}
