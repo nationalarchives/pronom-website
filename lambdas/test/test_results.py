@@ -14,16 +14,19 @@ class ResultsTest(unittest.TestCase):
     def setUp(self):
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
-        cursor.execute("DROP TABLE IF EXISTS indexes")
-        cursor.execute("CREATE TABLE indexes (path, name, extensions, field)")
+        cursor.execute("DROP TABLE IF EXISTS formats")
+        cursor.execute("DROP TABLE IF EXISTS extensions")
+        cursor.execute("CREATE TABLE formats (id, path, name, field)")
+        cursor.execute("CREATE TABLE extensions (name, format_id)")
         insert_sql = (
-            "INSERT INTO indexes (path, name, extensions, field) VALUES (?, ?, ?, ?)"
+            "INSERT INTO formats (id, path, name, field) VALUES (?, ?, ?, ?)"
         )
         for i in range(1, 1001):
             cursor.execute(
                 insert_sql,
-                (f"fmt/{i}", f"Test Name {i}", f"ext{i}", "testsearchstring"),
+                (str(i), f"fmt/{i}", f"Test Name {i}", "testsearchstring"),
             )
+            cursor.execute("INSERT INTO extensions (name, format_id) VALUES (?, ?)", (f"ext{i}", str(i)))
         conn.commit()
 
     def tearDown(self):
@@ -40,6 +43,7 @@ class ResultsTest(unittest.TestCase):
             )
             self.assertTrue(f"<dd>ext{i}</dd>" in response["body"])
 
+
     def test_search_not_found(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "invalid"}}, None
@@ -47,6 +51,14 @@ class ResultsTest(unittest.TestCase):
         self.assertTrue(
             '<h2 class="tna-heading-m">No results found</h2>' in response["body"]
         )
+
+    def test_search_file_extension(self):
+        response = results.lambda_handler(
+            {"queryStringParameters": {"q": ".ext1"}}, None
+        )
+        self.assertEqual(response["statusCode"], 200)
+        self.assertTrue(f"<dd>ext1</dd>" in response["body"])
+
 
     def test_search_existing_fmt(self):
         response = results.lambda_handler(
