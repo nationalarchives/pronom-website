@@ -57,7 +57,15 @@ class ResultsTest(unittest.TestCase):
             {"queryStringParameters": {"q": ".ext1"}}, None
         )
         self.assertEqual(response["statusCode"], 200)
-        self.assertTrue(f"<dd>ext1</dd>" in response["body"])
+        self.assertTrue("<dd>ext1</dd>" in response["body"])
+
+
+    def test_search_single_dot(self):
+        response = results.lambda_handler(
+            {"queryStringParameters": {"q": "."}}, None
+        )
+        self.assertEqual(response["statusCode"], 200)
+        self.assertTrue("No results found" in response["body"])
 
 
     def test_search_existing_fmt(self):

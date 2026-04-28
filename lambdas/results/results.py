@@ -45,6 +45,8 @@ def search(search_string):
             group_by = "group by path, f.name"
             if search_string.startswith(".") and len(search_string) > 1:
                 cur.execute(f"{base_query} where id in (select format_id from extensions where name = ?) {group_by}", (search_string[1:],))
+            elif search_string.strip() == ".":
+                return []
             else:
                 cur.execute(
                     f"{base_query} where field like ? {group_by}",
