@@ -51,7 +51,7 @@ def insert_into_database(
             )
         conn.commit()
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred inserting rows: {e}")
     finally:
         conn.close()
 

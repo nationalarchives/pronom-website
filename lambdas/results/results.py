@@ -43,7 +43,7 @@ def search(search_string):
         with closing(conn.cursor()) as cur:
             base_query = "select path, f.name, group_concat(e.name, ', ') from formats f join extensions e on e.format_id = f.id"
             group_by = "group by path, f.name"
-            if search_string.startswith("."):
+            if search_string.startswith(".") and len(search_string) > 1:
                 cur.execute(f"{base_query} where id in (select format_id from extensions where name = ?) {group_by}", (search_string[1:],))
             else:
                 cur.execute(

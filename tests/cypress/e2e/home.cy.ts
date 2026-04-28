@@ -35,7 +35,7 @@ describe("PRONOM Home Spec", () => {
     checkSearchLinks("fmt/1568", "ISDOCX Information System Document 5.x");
   });
 
-  it("submits a an extension search if the search starts with a dot", () => {
+  it("submits an extension search if the search starts with a dot", () => {
     const checkSearchLinks = (puid: string, name: string): void => {
       const fmt: Cypress.Chainable<JQuery<HTMLElement>> = cy
           .get(`a[href='${puid}']`)
