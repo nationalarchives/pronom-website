@@ -28,7 +28,7 @@ def puid_exists(puid):
     db_name = os.getenv("DB_NAME", "indexes")
     with closing(sqlite3.connect(db_name)) as conn:
         with closing(conn.cursor()) as cur:
-            cur.execute("SELECT path from indexes where path = ?", (puid,))
+            cur.execute("SELECT path from formats where path = ?", (puid,))
             rows = cur.fetchall()
     return len(rows) > 0
 
@@ -41,10 +41,17 @@ def search(search_string):
     db_name = os.getenv("DB_NAME", "indexes")
     with closing(sqlite3.connect(db_name)) as conn:
         with closing(conn.cursor()) as cur:
-            cur.execute(
-                "select path, name, extensions from indexes where field like ?",
-                (f"%{search_string}%",),
-            )
+            base_query = "select path, f.name, group_concat(e.name, ', ') from formats f join extensions e on e.format_id = f.id"
+            group_by = "group by path, f.name"
+            if search_string.startswith(".") and len(search_string) > 1:
+                cur.execute(f"{base_query} where id in (select format_id from extensions where name = ?) {group_by}", (search_string[1:],))
+            elif search_string.strip() == ".":
+                return []
+            else:
+                cur.execute(
+                    f"{base_query} where field like ? {group_by}",
+                    (f"%{search_string}%",),
+                )
             rows = cur.fetchall()
             rows.sort(key=sort_key)
     return rows
