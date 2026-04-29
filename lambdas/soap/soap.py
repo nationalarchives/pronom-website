@@ -1,7 +1,3 @@
-import os
-import urllib.request
-
-
 def response(contents, content_type="xml"):
     return {
         "statusCode": 200,
@@ -29,6 +25,18 @@ soap_response_suffix = """
   </soap:Body>
 </soap:Envelope>
 """
+
+
+def get_signature_file(headers):
+    with open('signature-file.xml', "r") as sig_file:
+        sig_file_response = sig_file.read()
+    if 'range' in headers:
+        range_bytes = headers["range"].split("=")[1]
+        range_start = int(range_bytes.split("-")[0])
+        range_end = int(range_bytes.split("-")[1])
+        return sig_file_response[range_start:range_end]
+    else:
+        return sig_file_response
 
 
 def lambda_handler(event, context):
@@ -61,18 +69,18 @@ def lambda_handler(event, context):
             with open("version") as version_file:
                 return response(version_file.read())
         elif "http://pronom.nationalarchives.gov.uk:getSignatureFileV1In" in action:
-            ff_signature_xml = (
-                urllib.request.urlopen(os.environ["DOWNLOAD_URL"])
-                .read()
-                .decode("utf-8")
-            )
-            xml_without_declaration = ff_signature_xml.replace(
-                '<?xml version="1.0" encoding="UTF-8"?>', ""
-            )
-            response_xml = (
-                soap_response_prefix + xml_without_declaration + soap_response_suffix
-            )
-            print(len(response_xml))
-            return response(response_xml)
+            ff_signature_xml = get_signature_file(headers)
+            if len(ff_signature_xml) > 1:
+                xml_without_declaration = ff_signature_xml.replace(
+                    '<?xml version="1.0" encoding="UTF-8"?>', ""
+                )
+                response_xml = (
+                    soap_response_prefix + xml_without_declaration + soap_response_suffix
+                )
+                print(f"Returning response of size {len(response_xml)}")
+                return response(response_xml)
+            else:
+                print(f"Returning response of size {len(ff_signature_xml)}")
+                return response(ff_signature_xml)
         else:
             return {"statusCode": 404}
