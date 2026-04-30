@@ -42,9 +42,9 @@
 
 {% block header %}
   {%- if old_url -%}
-    {%- set phase_banner_message %}This service is still in development - <a href="https://www.smartsurvey.co.uk/s/pronom/">give us your feedback</a> or <a href="{{ old_url }}">view this page on the current PRONOM service</a>.{% endset -%}
+    {%- set phase_banner_message %}This service is still in development. <a href="https://www.smartsurvey.co.uk/s/pronom/">Give us your feedback</a> or <a href="{{ old_url }}">view this page on the current PRONOM service</a>.{% endset -%}
   {%- else -%}
-    {%- set phase_banner_message %}This service is still in development. - <a href="https://www.smartsurvey.co.uk/s/pronom/">give us your feedback</a> {% endset -%}
+    {%- set phase_banner_message %}This service is still in development. <a href="https://www.smartsurvey.co.uk/s/pronom/">Give us your feedback</a>.{% endset -%}
   {%- endif -%}
   {{ tnaHeader({
     'logo': {
