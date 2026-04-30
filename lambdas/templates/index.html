@@ -41,11 +41,9 @@
 {% endblock %}
 
 {% block header %}
-  {%- if old_url -%}
-    {%- set phase_banner_message %}This service is still in development. <a href="https://www.smartsurvey.co.uk/s/pronom/">Give us your feedback</a> or <a href="{{ old_url }}">view this page on the current PRONOM service</a>.{% endset -%}
-  {%- else -%}
-    {%- set phase_banner_message %}This service is still in development. <a href="https://www.smartsurvey.co.uk/s/pronom/">Give us your feedback</a>.{% endset -%}
-  {%- endif -%}
+  {%- set phase_banner_message -%}
+    This service is still in development. <a href="https://www.smartsurvey.co.uk/s/pronom/">Give us your feedback</a>{%- if old_url %} or <a href="{{ old_url }}">view this page on the current PRONOM service</a>{%- endif -%}.
+  {%- endset -%}
   {{ tnaHeader({
     'logo': {
       'strapline': 'PRONOM',
