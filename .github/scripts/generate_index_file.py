@@ -2,6 +2,7 @@ import json
 import os
 import sqlite3
 import sys
+import uuid
 
 path = sys.argv[1]
 
@@ -17,9 +18,13 @@ def create_table():
     conn = sqlite3.connect("indexes")
     try:
         cursor = conn.cursor()
-        cursor.execute("DROP TABLE IF EXISTS indexes")
+        cursor.execute("DROP TABLE IF EXISTS formats")
+        cursor.execute("DROP TABLE IF EXISTS extensions")
         cursor.execute(
-            "CREATE TABLE IF NOT EXISTS indexes (path, name, extensions, field)"
+            "CREATE TABLE IF NOT EXISTS formats (id, path, name, field)"
+        )
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS extensions (name, format_id)"
         )
         conn.commit()
     except sqlite3.Error as e:
@@ -28,20 +33,25 @@ def create_table():
         conn.close()
 
 
-def insert_into_indexes(
-    path_value: str, field_name: str, extensions: str, field_value: str
+def insert_into_database(
+    path_value: str, field_name: str, extension_names: str, field_value: str
 ):
     conn = sqlite3.connect("indexes")
     try:
+        format_id = str(uuid.uuid4())
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO indexes (path, name, extensions, field) VALUES (?, ?, ?, ?)",
-            (path_value, field_name, extensions, field_value),
+            "INSERT INTO formats (id, path, name, field) VALUES (?, ?, ?, ?)",
+            (format_id, path_value, field_name, field_value),
         )
-
+        for extension_name in extension_names:
+            cursor.execute(
+                "INSERT INTO extensions (name, format_id) VALUES (?, ?)",
+                (extension_name, format_id),
+            )
         conn.commit()
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred inserting rows: {e}")
     finally:
         conn.close()
 
@@ -69,9 +79,8 @@ def run():
             ]
             extension_names = [fe["externalSignature"] for fe in file_extension_list]
             file_extension = "".join(extension_names)
-            file_extensions_delimited = ", ".join(extension_names)
             field = "".join([format_name, file_extension])
-            insert_into_indexes(puid, format_name, file_extensions_delimited, field)
+            insert_into_database(puid, format_name, extension_names, field)
 
 
 run()

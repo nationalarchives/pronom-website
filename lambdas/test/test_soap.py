@@ -19,6 +19,8 @@ class SoapTest(unittest.TestCase):
             return mock_open(
                 read_data="Test signature file version description"
             ).return_value
+        elif file == "signature-file.xml":
+            return mock_open(read_data="Test String").return_value
         else:
             return mock_open(read_data="Test wsdl").return_value
 
@@ -32,12 +34,8 @@ class SoapTest(unittest.TestCase):
         )
         self.assertEqual(response["statusCode"], 404)
 
-    @patch("urllib.request.urlopen")
-    def test_return_downloaded_file(self, mock_urlopen):
-        os.environ["DOWNLOAD_URL"] = "http://example.com/test"
-        mock_response = Mock()
-        mock_response.read.return_value = b"Test String"
-        mock_urlopen.return_value = mock_response
+    @patch("builtins.open", side_effect=open_mock_file)
+    def test_return_downloaded_file(self, _):
         action = "http://pronom.nationalarchives.gov.uk:getSignatureFileV1In"
         response = soap.lambda_handler(
             {"requestContext": {"http": {"method": "POST"}}, "headers": {"soapaction": action}}, None
@@ -54,6 +52,18 @@ Test String
   </soap:Body>
 </soap:Envelope>
 """
+        self.assertEqual(response["statusCode"], 200)
+        self.assertEqual(response["body"], expected_body)
+        self.assertEqual(response["headers"]["Content-Type"], "text/xml")
+
+    @patch("builtins.open", side_effect=open_mock_file)
+    def test_return_downloaded_file_with_range(self, _):
+        action = "http://pronom.nationalarchives.gov.uk:getSignatureFileV1In"
+        response = soap.lambda_handler(
+            {"requestContext": {"http": {"method": "POST"}}, "headers": {"range": "bytes=0-1", "soapaction": action}}, None
+        )
+
+        expected_body = "T"
         self.assertEqual(response["statusCode"], 200)
         self.assertEqual(response["body"], expected_body)
         self.assertEqual(response["headers"]["Content-Type"], "text/xml")
