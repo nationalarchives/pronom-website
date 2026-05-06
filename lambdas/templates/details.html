@@ -99,7 +99,7 @@
               <dt>
                 <span class="tna-dl__sticky-title">{{ key }}</span>
               </dt>
-              <dd class="break-words">{{ value }}</dd>
+              <dd class="break-words">{{ value|urlize(nofollow=True) }}</dd>
             {%- endif %}
           {%- endfor %}
         {%- endfor %}
@@ -108,7 +108,9 @@
           <dt>
             <span class="tna-dl__sticky-title">File extensions</span>
           </dt>
-          <dd>{{ summary.extensions }}</dd>
+          <dd>
+            <code>{{ summary.extensions }}</code>
+          </dd>
         {%- endif %}
 
         {%- if summary.source is defined and summary.source is not none %}

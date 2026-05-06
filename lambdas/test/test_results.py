@@ -18,15 +18,16 @@ class ResultsTest(unittest.TestCase):
         cursor.execute("DROP TABLE IF EXISTS extensions")
         cursor.execute("CREATE TABLE formats (id, path, name, field)")
         cursor.execute("CREATE TABLE extensions (name, format_id)")
-        insert_sql = (
-            "INSERT INTO formats (id, path, name, field) VALUES (?, ?, ?, ?)"
-        )
+        insert_sql = "INSERT INTO formats (id, path, name, field) VALUES (?, ?, ?, ?)"
         for i in range(1, 1001):
             cursor.execute(
                 insert_sql,
                 (str(i), f"fmt/{i}", f"Test Name {i}", "testsearchstring"),
             )
-            cursor.execute("INSERT INTO extensions (name, format_id) VALUES (?, ?)", (f"ext{i}", str(i)))
+            cursor.execute(
+                "INSERT INTO extensions (name, format_id) VALUES (?, ?)",
+                (f"ext{i}", str(i)),
+            )
         conn.commit()
 
     def tearDown(self):
@@ -43,7 +44,6 @@ class ResultsTest(unittest.TestCase):
             )
             self.assertTrue(f"<dd>ext{i}</dd>" in response["body"])
 
-
     def test_search_not_found(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "invalid"}}, None
@@ -59,14 +59,10 @@ class ResultsTest(unittest.TestCase):
         self.assertEqual(response["statusCode"], 200)
         self.assertTrue("<dd>ext1</dd>" in response["body"])
 
-
     def test_search_single_dot(self):
-        response = results.lambda_handler(
-            {"queryStringParameters": {"q": "."}}, None
-        )
+        response = results.lambda_handler({"queryStringParameters": {"q": "."}}, None)
         self.assertEqual(response["statusCode"], 200)
         self.assertTrue("No results found" in response["body"])
-
 
     def test_search_existing_fmt(self):
         response = results.lambda_handler(
