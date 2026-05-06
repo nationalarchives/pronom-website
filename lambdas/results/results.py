@@ -44,7 +44,10 @@ def search(search_string):
             base_query = "select path, f.name, group_concat(e.name, ', ') from formats f join extensions e on e.format_id = f.id"
             group_by = "group by path, f.name"
             if search_string.startswith(".") and len(search_string) > 1:
-                cur.execute(f"{base_query} where id in (select format_id from extensions where name = ?) {group_by}", (search_string[1:],))
+                cur.execute(
+                    f"{base_query} where id in (select format_id from extensions where name = ?) {group_by}",
+                    (search_string[1:],),
+                )
             elif search_string.strip() == ".":
                 return []
             else:
@@ -61,9 +64,9 @@ def lambda_handler(event, _):
     query_params = event.get("queryStringParameters", {})
     if query_params:
         search_term = query_params.get("q") if query_params else None
-        if re.search(r"^(x-)?fmt\/\d{1,5}$", search_term.lower()) is not None and puid_exists(
-            search_term.lower()
-        ):
+        if re.search(
+            r"^(x-)?fmt\/\d{1,5}$", search_term.lower()
+        ) is not None and puid_exists(search_term.lower()):
             return {"statusCode": 302, "headers": {"Location": search_term.lower()}}
         rows = search(search_term)
         data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]

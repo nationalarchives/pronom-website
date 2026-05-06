@@ -20,12 +20,8 @@ def create_table():
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS formats")
         cursor.execute("DROP TABLE IF EXISTS extensions")
-        cursor.execute(
-            "CREATE TABLE IF NOT EXISTS formats (id, path, name, field)"
-        )
-        cursor.execute(
-            "CREATE TABLE IF NOT EXISTS extensions (name, format_id)"
-        )
+        cursor.execute("CREATE TABLE IF NOT EXISTS formats (id, path, name, field)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS extensions (name, format_id)")
         conn.commit()
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
