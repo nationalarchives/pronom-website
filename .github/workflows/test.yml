@@ -3,9 +3,7 @@ name: Test
 on:
   push:
 
-permissions:
-  id-token: write
-  contents: read
+permissions: {}
 
 jobs:
   test:
