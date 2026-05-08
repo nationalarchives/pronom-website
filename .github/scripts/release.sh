@@ -9,7 +9,7 @@ S3_URL="s3://$ENVIRONMENT-pronom-site-$ACCOUNT_NUMBER-$REGION-an"
 docker compose up -d --build
 docker compose cp nginx:/usr/share/nginx/html/ .
 docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
-docker compose cp app:/app/indexes .
+docker compose cp app:/home/app/indexes .
 
 
 cd html
@@ -29,7 +29,7 @@ pip install --target=package .
 cd package || exit
 zip -q -r ../../../results.zip .
 cd ../../../ || exit
-zip -q ./results.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html  indexes
+zip -q ./results.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html indexes
 
 python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 cd lambdas || exit

@@ -15,7 +15,7 @@ json_files = get_json_files("fmt") + get_json_files("x-fmt")
 
 
 def create_table():
-    conn = sqlite3.connect("indexes")
+    conn = sqlite3.connect("/home/app/indexes")
     try:
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS formats")
@@ -32,7 +32,7 @@ def create_table():
 def insert_into_database(
     path_value: str, field_name: str, extension_names: str, field_value: str
 ):
-    conn = sqlite3.connect("indexes")
+    conn = sqlite3.connect("/home/app/indexes")
     try:
         format_id = str(uuid.uuid4())
         cursor = conn.cursor()
