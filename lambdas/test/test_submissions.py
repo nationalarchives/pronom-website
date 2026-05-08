@@ -6,6 +6,7 @@ from base64 import b64decode
 from unittest.mock import patch
 
 from fastcore.net import HTTPError
+
 from lambdas.submissions import submissions
 
 

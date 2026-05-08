@@ -1,4 +1,5 @@
 from flask import Flask, redirect, request
+
 from lambdas.results import results
 
 app = Flask(__name__)
