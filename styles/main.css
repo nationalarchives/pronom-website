@@ -1,14 +1,18 @@
 .break-words {
-    word-break: break-word;
+  word-break: break-word;
 }
 
 .tna-card--small-body {
-    font-size: 1rem;
+  font-size: 1rem;
 }
 
 .tna-dl__sticky-title {
-    display: block;
+  display: block;
 
-    position: sticky;
-    top: 0.5rem;
+  position: sticky;
+  top: 0.5rem;
+}
+
+.tna-dl > dd {
+  grid-column-end: 4;
 }

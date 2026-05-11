@@ -15,17 +15,13 @@ json_files = get_json_files("fmt") + get_json_files("x-fmt")
 
 
 def create_table():
-    conn = sqlite3.connect("indexes")
+    conn = sqlite3.connect("/home/app/indexes")
     try:
         cursor = conn.cursor()
         cursor.execute("DROP TABLE IF EXISTS formats")
         cursor.execute("DROP TABLE IF EXISTS extensions")
-        cursor.execute(
-            "CREATE TABLE IF NOT EXISTS formats (id, path, name, field)"
-        )
-        cursor.execute(
-            "CREATE TABLE IF NOT EXISTS extensions (name, format_id)"
-        )
+        cursor.execute("CREATE TABLE IF NOT EXISTS formats (id, path, name, field)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS extensions (name, format_id)")
         conn.commit()
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
@@ -36,7 +32,7 @@ def create_table():
 def insert_into_database(
     path_value: str, field_name: str, extension_names: str, field_value: str
 ):
-    conn = sqlite3.connect("indexes")
+    conn = sqlite3.connect("/home/app/indexes")
     try:
         format_id = str(uuid.uuid4())
         cursor = conn.cursor()

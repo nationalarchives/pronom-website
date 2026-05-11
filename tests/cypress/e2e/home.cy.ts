@@ -38,14 +38,14 @@ describe("PRONOM Home Spec", () => {
   it("submits an extension search if the search starts with a dot", () => {
     const checkSearchLinks = (puid: string, name: string): void => {
       const fmt: Cypress.Chainable<JQuery<HTMLElement>> = cy
-          .get(`a[href='${puid}']`)
-          .last();
+        .get(`a[href='${puid}']`)
+        .last();
       fmt.should("have.text", name);
     };
     cy.get("#search").type(".js");
     cy.get("form[action='/results']").submit();
-    cy.get(".tna-card__heading").should("have.length", 1)
-    cy.get("a[href='x-fmt/423']").should("have.text", "JavaScript file")
+    cy.get(".tna-card__heading").should("have.length", 1);
+    cy.get("a[href='x-fmt/423']").should("have.text", "JavaScript file");
   });
 
   it("redirects if the search is a valid puid", () => {

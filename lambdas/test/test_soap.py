@@ -1,6 +1,5 @@
-import os
 import unittest
-from unittest.mock import Mock, mock_open, patch
+from unittest.mock import mock_open, patch
 
 from lambdas.soap import soap
 
@@ -25,12 +24,18 @@ class SoapTest(unittest.TestCase):
             return mock_open(read_data="Test wsdl").return_value
 
     def test_return_404_if_header_missing(self):
-        response = soap.lambda_handler({"requestContext": {"http": {"method": "POST"}}, "headers": {}}, None)
+        response = soap.lambda_handler(
+            {"requestContext": {"http": {"method": "POST"}}, "headers": {}}, None
+        )
         self.assertEqual(response["statusCode"], 404)
 
     def test_return_404_if_header_invalid(self):
         response = soap.lambda_handler(
-            {"requestContext": {"http": {"method": "POST"}}, "headers": {"soapaction": "invalid"}}, None
+            {
+                "requestContext": {"http": {"method": "POST"}},
+                "headers": {"soapaction": "invalid"},
+            },
+            None,
         )
         self.assertEqual(response["statusCode"], 404)
 
@@ -38,7 +43,11 @@ class SoapTest(unittest.TestCase):
     def test_return_downloaded_file(self, _):
         action = "http://pronom.nationalarchives.gov.uk:getSignatureFileV1In"
         response = soap.lambda_handler(
-            {"requestContext": {"http": {"method": "POST"}}, "headers": {"soapaction": action}}, None
+            {
+                "requestContext": {"http": {"method": "POST"}},
+                "headers": {"soapaction": action},
+            },
+            None,
         )
 
         expected_body = """<?xml version="1.0" encoding="utf-8"?>
@@ -60,7 +69,11 @@ Test String
     def test_return_downloaded_file_with_range(self, _):
         action = "http://pronom.nationalarchives.gov.uk:getSignatureFileV1In"
         response = soap.lambda_handler(
-            {"requestContext": {"http": {"method": "POST"}}, "headers": {"range": "bytes=0-1", "soapaction": action}}, None
+            {
+                "requestContext": {"http": {"method": "POST"}},
+                "headers": {"range": "bytes=0-1", "soapaction": action},
+            },
+            None,
         )
 
         expected_body = "T"
@@ -72,7 +85,11 @@ Test String
     def test_return_version_file(self, _):
         action = "http://pronom.nationalarchives.gov.uk:getSignatureFileVersionV1In"
         response = soap.lambda_handler(
-            {"requestContext": {"http": {"method": "POST"}}, "headers": {"soapaction": action}}, None
+            {
+                "requestContext": {"http": {"method": "POST"}},
+                "headers": {"soapaction": action},
+            },
+            None,
         )
         self.assertEqual(response["body"], "Test version file content")
         self.assertEqual(response["headers"]["Content-Type"], "text/xml")
@@ -80,7 +97,9 @@ Test String
 
     @patch("builtins.open", side_effect=open_mock_file)
     def test_return_soap_description(self, _):
-        response = soap.lambda_handler({"requestContext": {"http": {"method": "GET"}}}, None)
+        response = soap.lambda_handler(
+            {"requestContext": {"http": {"method": "GET"}}}, None
+        )
         self.assertEqual(response["body"], "Test soap description")
         self.assertEqual(response["headers"]["Content-Type"], "text/html")
         self.assertEqual(response["statusCode"], 200)
@@ -109,7 +128,10 @@ Test String
 
     @patch("builtins.open", side_effect=open_mock_file)
     def test_return_wsdl(self, _):
-        event = {"requestContext": {"http": {"method": "GET"}}, "queryStringParameters": {"WSDL": ""}}
+        event = {
+            "requestContext": {"http": {"method": "GET"}},
+            "queryStringParameters": {"WSDL": ""},
+        }
         response = soap.lambda_handler(event, None)
         self.assertEqual(response["body"], "Test wsdl")
         self.assertEqual(response["headers"]["Content-Type"], "text/xml")

@@ -2,13 +2,13 @@ name: Test
 
 on:
   push:
-permissions:
-  id-token: write
-  contents: read
+
+permissions: {}
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Test changed-files
+    name: Test changed files
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
         with:
@@ -24,3 +24,12 @@ jobs:
           npx cypress run
           cd ..
           docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
+
+  check-formatting:
+    runs-on: ubuntu-latest
+    name: Check formatting
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          persist-credentials: false
+      - run: docker run --rm -v "$(pwd)":/app/ ghcr.io/nationalarchives/tna-python-dev:preview checkformat
