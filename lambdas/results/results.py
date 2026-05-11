@@ -25,7 +25,7 @@ env.filters["commafy"] = lambda x: f"{x:,d}"
 
 
 def puid_exists(puid):
-    db_name = os.getenv("DB_NAME", "/home/app/indexes")
+    db_name = os.getenv("DB_NAME", "indexes")
     with closing(sqlite3.connect(db_name)) as conn:
         with closing(conn.cursor()) as cur:
             cur.execute("SELECT path from formats where path = ?", (puid,))
@@ -38,7 +38,7 @@ def search(search_string):
         prefix, num = s[0].rsplit("/", 1)
         return prefix, int(num)
 
-    db_name = os.getenv("DB_NAME", "/home/app/indexes")
+    db_name = os.getenv("DB_NAME", "indexes")
     with closing(sqlite3.connect(db_name)) as conn:
         with closing(conn.cursor()) as cur:
             base_query = "select path, f.name, group_concat(e.name, ', ') from formats f join extensions e on e.format_id = f.id"
