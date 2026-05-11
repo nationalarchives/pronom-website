@@ -65,6 +65,11 @@ resource "aws_lambda_function" "search" {
   publish                        = true
   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
   source_code_hash               = filebase64sha256("${path.module}/results.zip")
+  environment {
+    variables = {
+      DB_NAME = "indexes"
+    }
+  }
 }
 
 resource "aws_lambda_alias" "search_alias" {
