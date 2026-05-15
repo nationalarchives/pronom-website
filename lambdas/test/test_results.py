@@ -10,7 +10,6 @@ db_name = "test_indexes"
 
 @mock.patch.dict(os.environ, {"DB_NAME": db_name})
 class ResultsTest(unittest.TestCase):
-
     def setUp(self):
         conn = sqlite3.connect(db_name)
         cursor = conn.cursor()
