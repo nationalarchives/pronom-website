@@ -38,7 +38,7 @@ class ResultsTest(unittest.TestCase):
         )
         for i in range(1, 1001):
             self.assertTrue(
-                f'<a href="fmt/{i}" class="tna-card__heading-link">Test Name {i}</a>'
+                f'<a href="fmt/{i}" class="pronom-results__item-heading">Test Name {i}</a>'
                 in response["body"]
             )
             self.assertTrue(f"<dd>ext{i}</dd>" in response["body"])
