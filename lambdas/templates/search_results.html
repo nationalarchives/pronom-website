@@ -1,7 +1,6 @@
 {%- extends 'index.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
-{%- from "components/card/macro.html" import tnaCard -%}
 {%- from "components/search-field/macro.html" import tnaSearchField -%}
 
 {%- set pageTitle = 'Search results' -%}
@@ -51,8 +50,8 @@
       </div>
     </div>
   </div>
-  <div class="tna-container tna-section">
-    <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny" id="search-results">
+  <div class="tna-container tna-section tna-!--padding-top-m">
+    <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny tna-!--padding-top-s" id="search-results">
       {% if data|length == 0 %}
         <div class="tna-aside tna-aside--tight tna-background-accent">
           <h2 class="tna-heading-m">No results found</h2>
@@ -62,32 +61,21 @@
             <li>Using fewer keywords</li>
           </ul>
         </div>
-
       {% else %}
-      <p>Showing <strong>{{ data|length|commafy }}</strong> result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
-      <ol class="tna-ol tna-ol--plain">
+      <h2 class="tna-visually-hidden">Search results</h2>
+      <p class="tna-!--no-margin-top">Showing <strong>{{ data|length|commafy }}</strong> result{{ 's' if data|length > 1 }}{% if search_term %} for &quot;{{ search_term }}&quot;{% endif %}</p>
+      <ol class="tna-ol tna-ol--plain pronom-results">
         {%- for result in data %}
-        {%- set card_body %}
-        <dl class="tna-dl tna-dl--right-weighted">
-          <dt>PUID</dt>
-          <dd>{{ result.puid }}</dd>
-          {%- if result.extensions %}
-          <dt>File extensions</dt>
-          <dd>{{ result.extensions }}</dd>
-          {%- endif %}
-        </dl>
-        {%- endset %}
-        <li class="tna-!--margin-bottom-s">
-          {{ tnaCard({
-            'title': result.name,
-            'headingLevel': 2,
-            'headingSize': 's',
-            'href': result.puid,
-            'body': card_body,
-            'fullAreaClick': True,
-            'style': 'tint',
-            'classes': 'tna-card--small-body'
-          }) }}
+        <li class="pronom-results__item">
+          <a href="{{ result.puid }}" class="pronom-results__item-heading">{{ result.name }}</a>
+          <dl class="pronom-results__item-details">
+            <dt>PUID</dt>
+            <dd>
+              <code>{{ result.puid }}</code>
+            </dd>
+            <dt>File extensions</dt>
+            <dd>{{ result.extensions }}</dd>
+          </dl>
         </li>
         {%- endfor %}
       </ol>
