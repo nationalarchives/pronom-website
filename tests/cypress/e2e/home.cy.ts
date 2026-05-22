@@ -44,7 +44,7 @@ describe("PRONOM Home Spec", () => {
     };
     cy.get("#search").type(".js");
     cy.get("form[action='/results']").submit();
-    cy.get(".tna-card__heading").should("have.length", 1);
+    cy.get(".pronom-results__item").should("have.length", 1);
     cy.get("a[href='x-fmt/423']").should("have.text", "JavaScript file");
   });
 

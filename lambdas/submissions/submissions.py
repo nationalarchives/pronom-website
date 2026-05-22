@@ -112,8 +112,8 @@ def edit_format(puid, body_json, json_files):
         "changeDescription",
     ]
     for key, value in body_json.items():
-        if format_json.get(key) != body_json[key] and key not in excluded_keys:
-            format_json[key] = body_json[key]
+        if format_json.get(key) != value and key not in excluded_keys:
+            format_json[key] = value
             changed = True
     return changed or supported_by_updated or developed_by_updated
 

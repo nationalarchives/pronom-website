@@ -1,0 +1,102 @@
+// Common utilities
+@use "@nationalarchives/frontend/nationalarchives/utilities";
+
+// Presentational components
+@use "@nationalarchives/frontend/nationalarchives/components/breadcrumbs";
+@use "@nationalarchives/frontend/nationalarchives/components/button";
+@use "@nationalarchives/frontend/nationalarchives/components/cookie-banner";
+@use "@nationalarchives/frontend/nationalarchives/components/footer";
+@use "@nationalarchives/frontend/nationalarchives/components/header";
+@use "@nationalarchives/frontend/nationalarchives/components/phase-banner";
+@use "@nationalarchives/frontend/nationalarchives/components/sidebar";
+@use "@nationalarchives/frontend/nationalarchives/components/skip-link";
+
+// Form components
+@use "@nationalarchives/frontend/nationalarchives/components/search-field";
+
+// Tools
+@use "@nationalarchives/frontend/nationalarchives/tools/a11y";
+@use "@nationalarchives/frontend/nationalarchives/tools/colour";
+@use "@nationalarchives/frontend/nationalarchives/tools/media";
+@use "@nationalarchives/frontend/nationalarchives/tools/spacing";
+
+.tna-dl {
+  > dt,
+  > dd {
+    overflow-wrap: anywhere;
+  }
+
+  &__sticky-title {
+    display: block;
+
+    position: sticky;
+    top: 0.5rem;
+  }
+}
+
+.pronom-results {
+  display: grid;
+  grid-template-columns: auto;
+  gap: 0 spacing.space(1.5);
+
+  list-style: none;
+
+  @include colour.colour-border("keyline-dark", 4px, solid, top);
+  @include colour.colour-border("keyline-dark", 4px, solid, bottom);
+
+  &__item {
+    padding: spacing.space(0.375) spacing.space(0.75);
+
+    grid-column: 1 / 4;
+
+    display: grid;
+    grid-template-columns: subgrid;
+
+    &:hover {
+      @include colour.colour-background("background-tint");
+    }
+
+    @include a11y.faux-full-outline("a");
+
+    & + & {
+      @include colour.colour-border("keyline", 1px, solid, top);
+    }
+  }
+
+  &__item-heading {
+    grid-column: 1 / 2;
+  }
+
+  &__item-details {
+    grid-column: 2 / 4;
+
+    display: grid;
+    grid-template-columns: subgrid;
+
+    dt {
+      width: 0;
+      height: 0;
+
+      overflow: hidden;
+
+      position: absolute;
+    }
+  }
+
+  @include media.on-mobile {
+    &__item-heading {
+      grid-column: 1 / 4;
+    }
+
+    &__item-details {
+      grid-column: 1 / 4;
+      grid-row: 2;
+    }
+  }
+
+  @include media.on-tiny {
+    &__item-details {
+      display: block;
+    }
+  }
+}
