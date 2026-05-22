@@ -65,7 +65,7 @@ def get_relationships(json_data, json_by_id):
             if idf["identifierType"] == "PUID"
         ][0]
         relationship_version = (
-            f" {relationship_json["version"]}"
+            f" {relationship_json['version']}"
             if relationship_json.get("version")
             else ""
         )
@@ -203,7 +203,7 @@ def run():
         for file in sig_files:
             json_path = f"{path}/signatures/{sub_dir}/{file}"
             with open(json_path, "r") as sig_json:
-                puid = f'{sub_dir}/{file.split(".")[0]}'
+                puid = f"{sub_dir}/{file.split('.')[0]}"
                 loaded_json = json.load(sig_json)
                 all_json_files[puid] = loaded_json
                 json_by_id[loaded_json["fileFormatID"]] = loaded_json

@@ -1,0 +1,21 @@
+@use "@nationalarchives/frontend/nationalarchives/print";
+
+a:not(
+  [href^="#"],
+  [href^="?"],
+  [href^="/"],
+  .tna-card__heading-link,
+  .tna-files-list__link,
+  .tna-skip-link,
+  #top
+) {
+  &::after {
+    content: " (" attr(href) ")";
+
+    font-size: 0.8em;
+    vertical-align: baseline;
+
+    font-style: italic;
+    word-break: break-all;
+  }
+}

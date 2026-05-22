@@ -11,7 +11,6 @@ from lambdas.submissions import submissions
 
 
 class SubmissionsTest(unittest.TestCase):
-
     @staticmethod
     def create_zip_file(signature, actor):
         in_memory_zip = io.BytesIO()

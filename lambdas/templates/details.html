@@ -99,7 +99,7 @@
               <dt>
                 <span class="tna-dl__sticky-title">{{ key }}</span>
               </dt>
-              <dd class="break-words">{{ value|urlize(nofollow=True) }}</dd>
+              <dd>{{ value|urlize(nofollow=True) }}</dd>
             {%- endif %}
           {%- endfor %}
         {%- endfor %}
@@ -185,7 +185,7 @@
                   <dt>Max offset</dt>
                   <dd>{{ byte_sequence.maxOffset }}</dd>
                   <dt>Byte Sequence</dt>
-                  <dd class="break-words"><code>{{ byte_sequence.byteSequence }}</code></dd>
+                  <dd><code>{{ byte_sequence.byteSequence }}</code></dd>
                   <dt>Endianness</dt>
                   <dd>{{ byte_sequence.endianness }}</dd>
                 </dl>

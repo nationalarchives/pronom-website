@@ -5,7 +5,6 @@ from lambdas.soap import soap
 
 
 class SoapTest(unittest.TestCase):
-
     @staticmethod
     def open_mock_file(file, *args, **kwargs):
         if file == "version":

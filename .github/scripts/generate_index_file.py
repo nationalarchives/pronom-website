@@ -55,7 +55,6 @@ def insert_into_database(
 def run():
     create_table()
     for file_path in json_files:
-
         with open(f"{path}/signatures/{file_path}", "r") as file:
             data = json.load(file)
             version = (

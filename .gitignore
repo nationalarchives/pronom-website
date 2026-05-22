@@ -16,3 +16,4 @@ signature-files
 version
 *.zip
 .terraform
+/styles
