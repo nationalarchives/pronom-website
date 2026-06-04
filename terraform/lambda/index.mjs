@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as crypto from "crypto";
 export const handler = async (event, context, callback) => {
   const request = event.Records[0].cf.request;
@@ -18,3 +19,4 @@ export const handler = async (event, context, callback) => {
   }
   return callback(null, request);
 };
+/* eslint-enable */

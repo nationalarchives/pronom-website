@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   window.TNAFrontend.initAll();
 
   const cookies = new window.TNAFrontend.Cookies();
@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
       document.documentElement.classList.add(`tna-template--${theme}-theme`);
     }
   };
-
-  setTheme(cookies.exists("theme") ? cookies.get("theme") : "system");
+  let theme = "system";
+  if (cookies.exists("theme")) {
+    theme = cookies.get("theme");
+  }
+  setTheme(theme);
 });
