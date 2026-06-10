@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
       document.documentElement.classList.add(`tna-template--${theme}-theme`);
     }
   };
-  let theme = "system";
   if (cookies.exists("theme")) {
-    theme = cookies.get("theme");
+    setTheme(cookies.get("theme"));
+  } else {
+    setTheme("system");
   }
-  setTheme(theme);
 });
