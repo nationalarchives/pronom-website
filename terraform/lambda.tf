@@ -108,12 +108,13 @@ resource "aws_lambda_function" "soap_edge" {
 }
 
 resource "aws_lambda_function_url" "results" {
-  function_name      = aws_lambda_alias.search_alias.arn
+  function_name      = aws_lambda_alias.search_alias.function_name
+  qualifier          = aws_lambda_alias.search_alias.name
   authorization_type = "AWS_IAM"
 }
 
 resource "aws_lambda_function_url" "soap" {
-  function_name      = aws_lambda_function.soap.qualified_arn
+  function_name      = aws_lambda_function.soap.arn
   authorization_type = "AWS_IAM"
 }
 
