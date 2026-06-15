@@ -42,5 +42,5 @@ zip -q soap.zip version signature-file.xml
 cp ./*.zip terraform
 cd terraform || exit
 terraform init
-TF_VAR_latest_signature_version=$LATEST_SIGNATURE_FILE terraform apply --auto-approve
+TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_signature_version=$LATEST_SIGNATURE_FILE terraform apply --auto-approve
 aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"
