@@ -156,8 +156,12 @@
                   "Effect": "Allow",
                   "Action": ["s3:PutObject", "s3:ListBucket"],
                   "Resource": [
-                    "arn:aws:s3:::prod-pronom-website/*",
-                    "arn:aws:s3:::prod-pronom-website"
+                    {
+                      "Fn::Sub": "arn:aws:s3:::prod-pronom-site-${AWS::AccountId}-eu-west-2-an"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::prod-pronom-site-${AWS::AccountId}-eu-west-2-an/*"
+                    }
                   ]
                 }
               ]
