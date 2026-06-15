@@ -87,7 +87,8 @@ def stream_to_s3(
 def list_files_from_s3(s3_client, bucket, prefixes: list[str]):
     all_keys = []
     for prefix in prefixes:
-        contents = s3_client.list_objects(Bucket=bucket, Prefix=prefix)["Contents"]
+        response = s3_client.list_objects(Bucket=bucket, Prefix=prefix)
+        contents = response.get("Contents", [])
         all_keys.extend([c["Key"] for c in contents])
     return all_keys
 

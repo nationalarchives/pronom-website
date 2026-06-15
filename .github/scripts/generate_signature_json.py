@@ -22,7 +22,7 @@ def filter_container_files(names: list[str]):
 
 def create_request(url):
     req = Request(url)
-    if "GITHUB_TOKEN" in os.environ:
+    if "GITHUB_TOKEN" in os.environ and os.environ["GITHUB_TOKEN"]:
         req.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
     req.add_header("Accept", "application/vnd.github+json")
     return req
