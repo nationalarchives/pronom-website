@@ -4,7 +4,6 @@ import re
 
 import urllib.request
 from datetime import datetime
-from json import JSONDecodeError
 from urllib.request import Request
 import boto3
 import sys
@@ -13,10 +12,7 @@ RELEASES_API_ENDPOINT = "https://api.github.com/repos/nationalarchives/pronom/re
 
 client = boto3.client('s3')
 
-environment = sys.argv[1]
-account_id = sys.argv[2]
-
-bucket_name = f'{environment}-pronom-site-{account_id}-eu-west-2-an'
+bucket_name = sys.argv[1]
 
 
 def filter_names(names: list[str], prefix: str):

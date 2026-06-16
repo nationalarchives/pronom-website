@@ -90,7 +90,11 @@ jobs:
         run: |
           cd terraform
           terraform init
-          TF_VAR_environment=test terraform destroy --auto-approve
+          terraform workspace select test
+          LATEST_SIGNATURE_FILE=$(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.name') terraform destroy --auto-approve
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TF_VAR_environment: test
 
   # release-prod:
   #   needs: 

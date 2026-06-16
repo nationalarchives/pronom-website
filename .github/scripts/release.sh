@@ -13,7 +13,7 @@ docker compose cp nginx:/usr/share/nginx/html/ .
 docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
 docker compose cp app:/home/app/indexes .
 
-LATEST_SIGNATURE_FILE=$(curl https://api.github.com/repos/nationalarchives/pronom/releases/latest | jq -r '.name')
+LATEST_SIGNATURE_FILE=$(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.name')
 docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 docker compose cp app:/app/version .
 
@@ -41,6 +41,7 @@ terraform workspace select test
 TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_signature_version=$LATEST_SIGNATURE_FILE terraform apply --auto-approve
 
 python .github/scripts/upload_signature_files.py $S3_BUCKET
+python .github/scripts/generate_signature_json.py $S3_BUCKET
 
 cd html
 aws s3 sync --content-type text/css  --exclude "*" --include "*.css" . $S3_URL
