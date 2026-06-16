@@ -2,6 +2,7 @@ locals {
   hosted_zone_arn = "arn:aws:route53:::hostedzone/${var.hosted_zone_id}"
 }
 resource "aws_shield_subscription" "subscription" {
+  count      = var.environment == "prod" ? 1 : 0
   auto_renew = "ENABLED"
 }
 

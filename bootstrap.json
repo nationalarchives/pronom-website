@@ -69,8 +69,10 @@
                   "Effect": "Allow",
                   "Action": [
                     "iam:AttachRolePolicy",
+                    "iam:CreateOpenIDConnectProvider",
                     "iam:CreatePolicy",
                     "iam:CreateRole",
+                    "iam:DeleteOpenIDConnectProvider",
                     "iam:DeletePolicy",
                     "iam:DeleteRole",
                     "iam:DetachRolePolicy",

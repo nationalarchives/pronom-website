@@ -88,7 +88,7 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
 }
 
 resource "aws_cloudfront_cache_policy" "cache_query_strings" {
-  name        = "CacheQueryStrings"
+  name        = "${tile(var.environment)}CacheQueryStrings"
   max_ttl     = 31536000
   min_ttl     = 1
   default_ttl = 86400
