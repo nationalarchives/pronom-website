@@ -8,7 +8,7 @@ locals {
   error_response_codes = [403, 404, 500, 502, 503, 504]
 
   domain_prefix = var.environment == "prod" ? "" : "test."
-  domain_name = "${local.domain_prefix}pronom.nationalarchives.gov.uk"
+  domain_name   = "${local.domain_prefix}pronom.nationalarchives.gov.uk"
 
   allowed_style_shas = [
     "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=", # This is the sha of the empty string which any Chromium browser tries to load when rendering XML files
