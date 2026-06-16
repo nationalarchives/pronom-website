@@ -13,7 +13,7 @@ docker compose cp nginx:/usr/share/nginx/html/ .
 docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
 docker compose cp app:/home/app/indexes .
 
-LATEST_SIGNATURE_FILE=$(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.name')
+LATEST_SIGNATURE_FILE=DROID_SignatureFile_$(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.name').xml
 docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 docker compose cp app:/app/version .
 
