@@ -7,6 +7,7 @@ resource "aws_shield_subscription" "subscription" {
 }
 
 resource "aws_shield_protection" "route53_shield_protection" {
+  count        = var.environment == "prod" ? 1 : 0
   name         = "${local.domain_name}."
   resource_arn = local.hosted_zone_arn
 }
