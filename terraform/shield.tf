@@ -42,7 +42,7 @@ resource "aws_shield_drt_access_role_arn_association" "shield_drt" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "alarms_shield_ddos_detected" {
-  for_each          = toset([local.hosted_zone_arn, aws_cloudfront_distribution.site.arn])
+  for_each          = { hosted_zone_arn : local.hosted_zone_arn, distribution_arn : aws_cloudfront_distribution.site.arn }
   alarm_description = "Indicates a DDoS event for a specific Amazon Resource Name (ARN)"
   alarm_name        = format("AWS/DDoSProtection DDoSDetected on Environment=%s, LB=%s", var.environment, each.key)
 
@@ -57,7 +57,7 @@ resource "aws_cloudwatch_metric_alarm" "alarms_shield_ddos_detected" {
       stat        = "Sum"
       period      = 60
       dimensions = {
-        ResourceArn = each.key
+        ResourceArn = each.value
       }
     }
   }
