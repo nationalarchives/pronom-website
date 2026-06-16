@@ -4,7 +4,7 @@ locals {
   s3_origin_name      = "s3-origin"
 }
 resource "aws_cloudfront_response_headers_policy" "security" {
-  name    = "ResponseHeadersPolicy"
+  name    = "${title(var.environment)}ResponseHeadersPolicy"
   comment = "Adds strict Content-Security-Policy for CloudFront responses"
 
   security_headers_config {
