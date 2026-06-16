@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - DR2-2829-Add-test-environment-for-PRONOM
+      - test-the-test-environment
 permissions:
   id-token: write
   contents: read
@@ -39,6 +39,7 @@ jobs:
           role-session-name: DeployPRONOMTest
       - run: .github/scripts/release.sh test
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
           REGION: eu-west-2
           
@@ -121,5 +122,6 @@ jobs:
   #         role-session-name: DeployPRONOM
   #     - run: .github/scripts/release.sh prod
   #       env:
+  #         GITHUB_TOKEN: ${{ github.token }}
   #         ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
   #         REGION: eu-west-2
