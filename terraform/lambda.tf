@@ -88,24 +88,66 @@ resource "aws_lambda_function" "soap" {
   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
   source_code_hash               = filebase64sha256("${path.module}/soap.zip")
 }
+module "soap_api_gateway" {
+  source = "git::https://github.com/nationalarchives/da-terraform-modules.git//apigateway"
 
-data "archive_file" "edge_lambda_code" {
-  type        = "zip"
-  source_file = "${path.module}/lambda/index.mjs"
-  output_path = "${path.module}/lambda/edge_function.zip"
+  api_name      ="${var.environment}-soap-api"
+  environment   = var.environment
+
+  api_definition = jsonencode({
+    swagger   = "2.0"
+
+
+    info = {
+      title = "${var.environment}--soap-api"
+      version = "1.0"
+    }
+
+    paths = {
+      "/service.asmx" = {
+        get = {
+          "x-amazon-apigateway-integration" = {
+            type  ="aws_proxy"
+            httpMethod = "POST"
+            uri       = "arn:aws:apigateway:${data.aws_region.current.region}:lambda:path/2015-03-31/functions/${aws_lambda_function.soap.arn}/invocations"
+          }
+        }
+        post = {
+          "x-amazon-apigateway-integration" = {
+            type  ="aws_proxy"
+            httpMethod = "POST"
+            uri       = "arn:aws:apigateway:${data.aws_region.current.region}:lambda:path/2015-03-31/functions/${aws_lambda_function.soap.arn}/invocations"
+          }
+        }
+      }
+    }
+  })
+}
+resource "aws_lambda_permission" "soap_api_gateway" {
+  statement_id  = "AllowSoapApiGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.soap.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${module.soap_api_gateway.api_execution_arn}/*/*"
 }
 
-resource "aws_lambda_function" "soap_edge" {
-  function_name                  = "${var.environment}-pronom-soap-edge"
-  role                           = aws_iam_role.edge_lambda_execution.arn
-  runtime                        = "nodejs22.x"
-  handler                        = "index.handler"
-  filename                       = data.archive_file.edge_lambda_code.output_path
-  source_code_hash               = data.archive_file.edge_lambda_code.output_base64sha256
-  region                         = local.us_east_1
-  publish                        = true
-  reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
-}
+# data "archive_file" "edge_lambda_code" {
+#   type        = "zip"
+#   source_file = "${path.module}/lambda/index.mjs"
+#   output_path = "${path.module}/lambda/edge_function.zip"
+# }
+
+# resource "aws_lambda_function" "soap_edge" {
+#   function_name                  = "${var.environment}-pronom-soap-edge"
+#   role                           = aws_iam_role.edge_lambda_execution.arn
+#   runtime                        = "nodejs22.x"
+#   handler                        = "index.handler"
+#   filename                       = data.archive_file.edge_lambda_code.output_path
+#   source_code_hash               = data.archive_file.edge_lambda_code.output_base64sha256
+#   region                         = local.us_east_1
+#   publish                        = true
+#   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
+# }
 
 resource "aws_lambda_function_url" "results" {
   function_name      = aws_lambda_alias.search_alias.function_name
@@ -113,10 +155,10 @@ resource "aws_lambda_function_url" "results" {
   authorization_type = "AWS_IAM"
 }
 
-resource "aws_lambda_function_url" "soap" {
-  function_name      = aws_lambda_function.soap.arn
-  authorization_type = "AWS_IAM"
-}
+# resource "aws_lambda_function_url" "soap" {
+#   function_name      = aws_lambda_function.soap.arn
+#   authorization_type = "AWS_IAM"
+# }
 
 resource "aws_iam_role" "scheduler_role" {
   name = "${var.environment}-pronom-keep-warm"

@@ -1,0 +1,1 @@
+{"errorMessage": "'requestContext'", "errorType": "KeyError", "requestId": "192c7798-3d53-42b9-bb55-b1b6ca2dc2c6", "stackTrace": ["  File \"/var/task/soap.py\", line 44, in lambda_handler\n    method = event[\"requestContext\"][\"http\"][\"method\"]\n"]}

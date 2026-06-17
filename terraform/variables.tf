@@ -1,6 +1,5 @@
 variable "environment" {
   type    = string
-  default = "prod"
 }
 
 variable "hosted_zone_id" {
