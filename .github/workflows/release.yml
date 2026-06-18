@@ -41,3 +41,4 @@ jobs:
         env:
           ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
           REGION: eu-west-2
+          GITHUB_TOKEN: ${{ github.token }}
