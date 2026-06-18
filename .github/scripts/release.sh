@@ -42,13 +42,12 @@ TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_signature_version=$LATEST_SIGNATUR
 cd ..
 
 python .github/scripts/upload_signature_files.py $S3_BUCKET
-python .github/scripts/generate_signature_json.py $S3_BUCKET
 
 cd html
 aws s3 sync --content-type text/css  --exclude "*" --include "*.css" . $S3_URL
 aws s3 sync --content-type text/javascript  --exclude "*" --include "*.js" . $S3_URL
 aws s3 sync --content-type text/html  --exclude "*.css" --exclude "*.js" --exclude "fa-solid-900.woff2" . $S3_URL
 aws s3 cp fa-solid-900.woff2 $S3_URL
+aws s3 cp signatures.json $S3_URL
 
 aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"
-

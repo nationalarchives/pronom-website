@@ -7,8 +7,10 @@ RUN cp -r styles/* site
 RUN cp node_modules/@nationalarchives/frontend/nationalarchives/all.js node_modules/@nationalarchives/frontend/nationalarchives/all.js.map node_modules/@nationalarchives/frontend/nationalarchives/assets/images/favicon.ico node_modules/@nationalarchives/frontend/nationalarchives/assets/fonts/fa-solid-900.woff2 site
 RUN cp lambdas/templates/site.js site
 RUN git clone https://github.com/nationalarchives/pronom-signatures/ /home/app/pronom-signatures
-RUN poetry run python .github/scripts/generate_pages.py /home/app/pronom-signatures && \
+RUN poetry run python .github/scripts/generate_signature_json.py && \
+    poetry run python .github/scripts/generate_pages.py /home/app/pronom-signatures && \
     poetry run python .github/scripts/generate_pronom_xml.py /home/app/pronom-signatures
+
 
 
 
