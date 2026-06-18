@@ -89,7 +89,7 @@ resource "aws_lambda_function" "soap" {
   source_code_hash               = filebase64sha256("${path.module}/soap.zip")
 }
 module "soap_api_gateway" {
-  source = "git::https://github.com/nationalarchives/da-terraform-modules.git//apigateway"
+  source = "git::https://github.com/nationalarchives/da-terraform-modules.git//apigateway?ref=main"
 
   api_name    = "${var.environment}-soap-api"
   environment = var.environment

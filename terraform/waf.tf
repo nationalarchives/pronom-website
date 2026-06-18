@@ -70,7 +70,7 @@ resource "aws_wafv2_web_acl" "cloudfront" {
 
 resource "aws_cloudwatch_log_group" "waf_log_group" {
   region            = local.us_east_1
-  name              = "aws-waf-logs-pronom-site"
+  name              = "aws-waf-logs-${var.environment}-pronom-site"
   retention_in_days = 90
 }
 
