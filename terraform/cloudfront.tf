@@ -70,15 +70,6 @@ resource "aws_lambda_permission" "cloudfront_invoke_results" {
   source_arn    = aws_cloudfront_distribution.site.arn
 }
 
-# resource "aws_lambda_permission" "api_gateway_invoke_soap" {
-#   for_each      = toset(["InvokeFunction", "InvokeFunctionUrl"])
-#   statement_id  = "AllowApiGateway${each.value}"
-#   action        = "lambda:${each.value}"
-#   function_name = aws_lambda_function.soap.function_name
-#   principal     = "apigateway.amazonaws.com"
-#   source_arn    = "${module.soap_api_gateway.api_execution_arn}/*/*"
-# }
-
 data "aws_cloudfront_cache_policy" "caching_optimised" {
   name = "Managed-CachingOptimized"
 }
@@ -197,20 +188,6 @@ resource "aws_cloudfront_distribution" "site" {
 
     cache_policy_id          = aws_cloudfront_cache_policy.cache_query_strings.id
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
-<<<<<<< HEAD
-    lambda_function_association {
-      event_type   = "origin-request"
-      include_body = true
-      lambda_arn   = aws_lambda_function.soap_edge.qualified_arn
-    }
-=======
-
-    # lambda_function_association {
-    #   event_type   = "origin-request"
-    #   include_body = true
-    #   lambda_arn   = aws_lambda_function.soap_edge.qualified_arn
-    # }
->>>>>>> 0f5a55b (Added API Gateway)
   }
 
   dynamic "custom_error_response" {
