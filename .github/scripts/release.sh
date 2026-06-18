@@ -37,7 +37,7 @@ zip -q soap.zip version signature-file.xml
 cp ./*.zip terraform
 cd terraform || exit
 terraform init
-terraform workspace select test
+terraform workspace select $ENVIRONMENT
 TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_signature_version=$LATEST_SIGNATURE_FILE terraform apply --auto-approve
 cd ..
 
