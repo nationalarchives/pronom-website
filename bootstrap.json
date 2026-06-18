@@ -95,10 +95,10 @@
                   "Resource": [
                     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
                     {
-                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/*"
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/prod-*"
                     },
                     {
-                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/*"
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/prod-*"
                     },
                     {
                       "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
