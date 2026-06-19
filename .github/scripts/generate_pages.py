@@ -1,8 +1,10 @@
+import csv
 import json
 import os
 import re
 import sys
 from datetime import datetime
+from pathlib import Path
 
 from jinja2 import (
     ChoiceLoader,
@@ -173,7 +175,31 @@ def create_file_list():
     )
 
 
+def create_release_page():
+    base_path = Path(path) / Path("changelogs")
+    releases = {}
+    items = []
+    for file in os.listdir(Path(path) / Path("changelogs")):
+        version = re.search("(V\d{2,4})", file).group()
+        items.append({"text": version, "href": f"#{version}"})
+        releases[version] = {
+            "New Records": [],
+            "New Signatures": [],
+            "Updated Records": [],
+        }
+        with open(base_path / Path(file)) as change_file:
+            reader = csv.reader(change_file)
+            for row in reader:
+                type_key = "New Signatures" if row[0] == "Signatures" else row[0]
+                releases[version][type_key].append({"puid": row[1], "description": row[2]})
+
+
+    return env.get_template("release_notes.html").render(releases=releases, items=items)
+
+
 def run():
+    with open("site/releases.html", "w") as release_notes:
+        release_notes.write(create_release_page())
     with open("site/error", "w") as error_page:
         error_page.write(env.get_template("error.html").render())
     with open("site/signature-list", "w") as signature_list:
