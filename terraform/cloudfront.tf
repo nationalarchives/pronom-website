@@ -4,7 +4,7 @@ locals {
   s3_origin_name      = "s3-origin"
 }
 resource "aws_cloudfront_response_headers_policy" "security" {
-  name    = "ResponseHeadersPolicy"
+  name    = "${title(var.environment)}-ResponseHeadersPolicy"
   comment = "Adds strict Content-Security-Policy for CloudFront responses"
 
   security_headers_config {
@@ -79,7 +79,7 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
 }
 
 resource "aws_cloudfront_cache_policy" "cache_query_strings" {
-  name        = "CacheQueryStrings"
+  name        = "${title(var.environment)}-CacheQueryStrings"
   max_ttl     = 31536000
   min_ttl     = 1
   default_ttl = 86400

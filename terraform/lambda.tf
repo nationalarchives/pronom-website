@@ -88,47 +88,14 @@ resource "aws_lambda_function" "soap" {
   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
   source_code_hash               = filebase64sha256("${path.module}/soap.zip")
 }
-module "soap_api_gateway" {
-  source = "git::https://github.com/nationalarchives/da-terraform-modules.git//apigateway?ref=main"
 
-  api_name    = "${var.environment}-soap-api"
-  environment = var.environment
-
-  api_definition = jsonencode({
-    swagger = "2.0"
-
-
-    info = {
-      title   = "${var.environment}--soap-api"
-      version = "1.0"
-    }
-
-    paths = {
-      "/service.asmx" = {
-        get = {
-          "x-amazon-apigateway-integration" = {
-            type       = "aws_proxy"
-            httpMethod = "POST"
-            uri        = "arn:aws:apigateway:${data.aws_region.current.region}:lambda:path/2015-03-31/functions/${aws_lambda_function.soap.arn}/invocations"
-          }
-        }
-        post = {
-          "x-amazon-apigateway-integration" = {
-            type       = "aws_proxy"
-            httpMethod = "POST"
-            uri        = "arn:aws:apigateway:${data.aws_region.current.region}:lambda:path/2015-03-31/functions/${aws_lambda_function.soap.arn}/invocations"
-          }
-        }
-      }
-    }
-  })
-}
 resource "aws_lambda_permission" "soap_api_gateway" {
-  statement_id  = "AllowSoapApiGatewayInvoke"
+  for_each      = toset(["GET", "POST"])
+  statement_id  = "AllowSoapApiGatewayInvoke${title(each.value)}"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.soap.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${module.soap_api_gateway.api_execution_arn}/*/*"
+  source_arn    = "${module.soap_api_gateway.api_execution_arn}/*/${each.value}/service.asmx"
 }
 
 
