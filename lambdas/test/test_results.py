@@ -41,7 +41,7 @@ class ResultsTest(unittest.TestCase):
                 f'<a href="fmt/{i}" class="pronom-results__item-heading">Test Name {i}</a>'
                 in response["body"]
             )
-            self.assertTrue(f"<dd>ext{i}</dd>" in response["body"])
+            self.assertTrue(f"<dd><code>ext{i}</code></dd>" in response["body"])
 
     def test_search_not_found(self):
         response = results.lambda_handler(
