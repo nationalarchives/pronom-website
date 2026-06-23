@@ -26,10 +26,14 @@ bucket_name = "tna-pronom-signatures-spike"
 
 
 def get_summary(data):
-    identifiers = {
-        identifier['identifierType']: identifier['identifierText']
-        for identifier in data["identifiers"]
-    } if "identifiers" in data else None
+    identifiers = (
+        {
+            identifier["identifierType"]: identifier["identifierText"]
+            for identifier in data["identifiers"]
+        }
+        if "identifiers" in data
+        else None
+    )
 
     format_types = data.get("formatTypes", None)
 
