@@ -84,6 +84,14 @@ def stream_to_s3(
         )
 
 
+def list_files_from_s3(s3_client, bucket, prefixes: list[str]):
+    all_keys = []
+    for prefix in prefixes:
+        contents = s3_client.list_objects(Bucket=bucket, Prefix=prefix)["Contents"]
+        all_keys.extend([c["Key"] for c in contents])
+    return all_keys
+
+
 def main():
     if len(sys.argv) != 2:
         print(
@@ -102,6 +110,11 @@ def main():
     session.headers.update(github_headers())
 
     count = 0
+    existing_count = 0
+
+    existing_signatures = list_files_from_s3(
+        s3_client, bucket, ["signatures/", "container-signatures/"]
+    )
 
     for release in iter_releases(owner, repo):
         assets = release.get("assets", [])
@@ -122,18 +135,23 @@ def main():
 
             s3_key = build_s3_key(prefix, asset_name)
 
-            print(f"Streaming {release.get('tag_name')} -> s3://{bucket}/{s3_key}")
-            stream_to_s3(
-                asset_url=asset_url,
-                bucket=bucket,
-                key=s3_key,
-                session=session,
-                s3_client=s3_client,
-                content_type=content_type,
-            )
-            count += 1
+            if s3_key not in existing_signatures:
+                print(f"Streaming {release.get('tag_name')} -> s3://{bucket}/{s3_key}")
+                stream_to_s3(
+                    asset_url=asset_url,
+                    bucket=bucket,
+                    key=s3_key,
+                    session=session,
+                    s3_client=s3_client,
+                    content_type=content_type,
+                )
+                count += 1
+            else:
+                print(f"Key {s3_key} already exists, skipping")
+                existing_count += 1
 
-    print(f"Uploaded {count} asset(s) to s3://{bucket}/{prefix}")
+    print(f"Uploaded {count} asset(s) to s3://{bucket}")
+    print(f"{existing_count} asset(s) skipped")
 
 
 if __name__ == "__main__":
