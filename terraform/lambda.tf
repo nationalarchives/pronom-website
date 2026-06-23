@@ -24,24 +24,6 @@ resource "aws_iam_role" "lambda_soap_execution" {
   })
 }
 
-resource "aws_iam_role" "edge_lambda_execution" {
-  name = "${var.environment}-pronom-edge-lambda-execution"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect    = "Allow"
-      Principal = { Service = ["lambda.amazonaws.com", "edgelambda.amazonaws.com"] }
-      Action    = "sts:AssumeRole"
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "edge_lambda_basic" {
-  role       = aws_iam_role.edge_lambda_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
 resource "aws_iam_role_policy_attachment" "lambda_results" {
   role       = aws_iam_role.lambda_search_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"

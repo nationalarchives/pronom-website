@@ -1,5 +1,5 @@
 module "soap_api_gateway" {
-  source = "git::https://github.com/nationalarchives/da-terraform-modules.git//apigateway"
+  source = "git::https://github.com/nationalarchives/da-terraform-modules.git//apigateway?ref=main"
 
   api_name    = "${var.environment}-soap-api"
   environment = var.environment
@@ -9,7 +9,7 @@ module "soap_api_gateway" {
 
 
     info = {
-      title   = "${var.environment}--soap-api"
+      title   = "${var.environment}-soap-api"
       version = "1.0"
     }
 
