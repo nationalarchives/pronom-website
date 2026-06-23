@@ -26,30 +26,22 @@ bucket_name = "tna-pronom-signatures-spike"
 
 
 def get_summary(data):
-    identifiers = ", ".join(
-        [
-            f"{identifier['identifierType']}: {identifier['identifierText']}"
-            for identifier in data["identifiers"]
-        ]
-    )
+    identifiers = {
+        identifier['identifierType']: identifier['identifierText']
+        for identifier in data["identifiers"]
+    } if "identifiers" in data else None
 
-    def str_for_attr(attr):
-        if attr in data:
-            if data[attr] == "":
-                return None
-            else:
-                return data[attr]
-        return None
+    format_types = data.get("formatTypes", None)
 
     return {
-        "Name": str_for_attr("formatName"),
-        "Version": str_for_attr("version"),
+        "Name": data.get("formatName", None),
+        "Version": data.get("version", None),
         "Identifiers": identifiers,
-        "Format Type": str_for_attr("formatTypes"),
-        "Family": str_for_attr("formatFamilies"),
-        "Disclosure": str_for_attr("formatDisclosure"),
-        "Description": str_for_attr("formatDescription"),
-        "Note": str_for_attr("formatNote"),
+        "Format Type": format_types.split(", ") if format_types else None,
+        "Family": data.get("formatFamilies", None),
+        "Disclosure": data.get("formatDisclosure", None),
+        "Description": data.get("formatDescription", None),
+        "Note": data.get("formatNote", None),
     }
 
 
@@ -85,7 +77,7 @@ def get_file_extensions(json_data):
         x for x in external_signatures if x["signatureType"] == "File extension"
     ]
     extension_names = [fe["externalSignature"] for fe in file_extension_list]
-    return ", ".join(extension_names) if extension_names else None
+    return [extension for extension in extension_names if extension]
 
 
 def create_detail(json_data, all_actors, json_by_id):

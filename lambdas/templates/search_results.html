@@ -74,7 +74,12 @@
               <code>{{ result.puid }}</code>
             </dd>
             <dt>File extensions</dt>
-            <dd>{{ result.extensions }}</dd>
+            <dd>
+            {%- for extension in result.extensions.split(',') | select %}
+              <code>{{ extension|trim }}</code>
+              {%- if not loop.last %}, {% endif %}
+            {%- endfor %}
+            </dd>
           </dl>
         </li>
         {%- endfor %}
