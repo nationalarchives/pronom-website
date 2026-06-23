@@ -37,18 +37,18 @@ class ResultsTest(unittest.TestCase):
             {"queryStringParameters": {"q": "search"}}, None
         )
         for i in range(1, 1001):
-            self.assertTrue(
-                f'<a href="fmt/{i}" class="pronom-results__item-heading">Test Name {i}</a>'
-                in response["body"]
+            self.assertIn(
+                f'<a href="fmt/{i}" class="pronom-results__item-heading">Test Name {i}</a>',
+                response["body"],
             )
-            self.assertTrue(f"<dd><code>ext{i}</code></dd>" in response["body"])
+            self.assertIn(f"<code>ext{i}</code>", response["body"])
 
     def test_search_not_found(self):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "invalid"}}, None
         )
-        self.assertTrue(
-            '<h2 class="tna-heading-m">No results found</h2>' in response["body"]
+        self.assertIn(
+            '<h2 class="tna-heading-m">No results found</h2>', response["body"]
         )
 
     def test_search_file_extension(self):
@@ -56,12 +56,12 @@ class ResultsTest(unittest.TestCase):
             {"queryStringParameters": {"q": ".ext1"}}, None
         )
         self.assertEqual(response["statusCode"], 200)
-        self.assertTrue("<dd>ext1</dd>" in response["body"])
+        self.assertIn("<code>ext1</code>", response["body"])
 
     def test_search_single_dot(self):
         response = results.lambda_handler({"queryStringParameters": {"q": "."}}, None)
         self.assertEqual(response["statusCode"], 200)
-        self.assertTrue("No results found" in response["body"])
+        self.assertIn("No results found", response["body"])
 
     def test_search_existing_fmt(self):
         response = results.lambda_handler(
@@ -81,6 +81,6 @@ class ResultsTest(unittest.TestCase):
         response = results.lambda_handler(
             {"queryStringParameters": {"q": "fmt/3210"}}, None
         )
-        self.assertTrue(
-            '<h2 class="tna-heading-m">No results found</h2>' in response["body"]
+        self.assertIn(
+            '<h2 class="tna-heading-m">No results found</h2>', response["body"]
         )
