@@ -41,7 +41,15 @@ def get_signature_file(headers):
 
 def lambda_handler(event, context):
     print(event)
-    method = event["requestContext"]["http"]["method"]
+    method = event.get("httpMethod")
+    if not method:
+        method = event.get("requestContext", {}).get("http", {}).get("method")
+    if not method:
+        return {
+            "statusCode": 400,
+            "body": "Missing HTTP method in Lambda event",
+            "headers": {"Content-Type": "text/plain"},
+        }
     if method == "GET":
         if "queryStringParameters" in event and event["queryStringParameters"]:
             query_params = {
@@ -68,7 +76,7 @@ def lambda_handler(event, context):
         ):
             with open("version") as version_file:
                 return response(version_file.read())
-        elif "http://pronom.nationalarchives.gov.uk:getSignatureFileV1In" in action:
+        if "http://pronom.nationalarchives.gov.uk:getSignatureFileV1In" in action:
             ff_signature_xml = get_signature_file(headers)
             if len(ff_signature_xml) > 1:
                 xml_without_declaration = ff_signature_xml.replace(
@@ -81,8 +89,6 @@ def lambda_handler(event, context):
                 )
                 print(f"Returning response of size {len(response_xml)}")
                 return response(response_xml)
-            else:
-                print(f"Returning response of size {len(ff_signature_xml)}")
-                return response(ff_signature_xml)
-        else:
-            return {"statusCode": 404}
+            print(f"Returning response of size {len(ff_signature_xml)}")
+            return response(ff_signature_xml)
+        return {"statusCode": 404}
