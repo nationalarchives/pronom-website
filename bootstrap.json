@@ -25,15 +25,6 @@
                 }
               }
             },
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
-                }
-              },
-              "Action": "sts:AssumeRole"
-            }
           ]
         },
         "Policies": [
@@ -220,57 +211,6 @@
                     "lambda:Invoke*"
                   ],
                   "Resource": "*"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "PRONOMDeploySignatureRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "RoleName": "PRONOMSignatureRole",
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Federated": {
-                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
-                }
-              },
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": {
-                "StringLike": {
-                  "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-                  "token.actions.githubusercontent.com:sub": [
-                    "repo:nationalarchives/pronom-signatures:environment:prod"
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        "Policies": [
-          {
-            "PolicyName": "PRONOMSignaturePolicy",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Sid": "",
-                  "Effect": "Allow",
-                  "Action": ["s3:PutObject", "s3:ListBucket"],
-                  "Resource": [
-                    {
-                      "Fn::Sub": "arn:aws:s3:::prod-pronom-site-${AWS::AccountId}-eu-west-2-an"
-                    },
-                    {
-                      "Fn::Sub": "arn:aws:s3:::prod-pronom-site-${AWS::AccountId}-eu-west-2-an/*"
-                    }
-                  ]
                 }
               ]
             }
