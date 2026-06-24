@@ -3,8 +3,10 @@ import json
 import os
 import re
 import sys
+import urllib
 from datetime import datetime
 from pathlib import Path
+from urllib.request import Request
 
 from jinja2 import (
     ChoiceLoader,
@@ -175,77 +177,116 @@ def create_file_list():
     )
 
 
-def create_release_page():
+def get_latest_release():
+    req = Request(
+        "https://api.github.com/repos/nationalarchives/pronom/releases/latest"
+    )
+    if "GITHUB_TOKEN" in os.environ:
+        req.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
+    req.add_header("Accept", "application/vnd.github+json")
+    with urllib.request.urlopen(req) as response:
+        return json.load(response)["name"]
+
+
+def ordinal(n: int) -> str:
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def format_date(date_str: str) -> str:
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    return f"{ordinal(dt.day)} {dt.strftime('%B %Y')}"
+
+
+def create_release_pages():
     base_path = Path(path) / Path("changelogs")
-    releases = {}
     items = []
+    latest_release = get_latest_release()
     for file in os.listdir(Path(path) / Path("changelogs")):
-        version = re.search("(V\d{2,4})", file).group()
-        items.append({"text": version, "href": f"#{version}"})
-        releases[version] = {
-            "New Records": [],
-            "New Signatures": [],
-            "Updated Records": [],
-        }
-        with open(base_path / Path(file)) as change_file:
-            reader = csv.reader(change_file)
-            for row in reader:
-                type_key = "New Signatures" if row[0] == "Signatures" else row[0]
-                releases[version][type_key].append({"puid": row[1], "description": row[2]})
-
-
-    return env.get_template("release_notes.html").render(releases=releases, items=items)
+        version = re.search(r"(v\d{2,4})", file).group()
+        date = re.search(r"\d{4}-\d{2}-\d{2}", file).group()
+        if int(version.lstrip("v")) <= int(latest_release.lstrip("V")):
+            items.append(
+                {
+                    "text": version,
+                    "date": format_date(date),
+                    "href": f"release/{version}",
+                }
+            )
+            release_item = {
+                "New Records": [],
+                "New Signatures": [],
+                "Updated Records": [],
+            }
+            with open(base_path / Path(file)) as change_file:
+                reader = csv.reader(change_file)
+                for row in reader:
+                    type_key = "New Signatures" if row[0] == "Signatures" else row[0]
+                    release_item[type_key].append(
+                        {"puid": row[1], "description": row[2]}
+                    )
+            with open(f"site/release/{version.lower()}", "w") as version_file:
+                version_file.write(
+                    env.get_template("release_notes.html").render(
+                        release_item=release_item, version=version
+                    )
+                )
+    return sorted(items, key=lambda item: int(item["text"].lstrip("v")), reverse=True)
 
 
 def run():
-    with open("site/releases.html", "w") as release_notes:
-        release_notes.write(create_release_page())
-    with open("site/error", "w") as error_page:
-        error_page.write(env.get_template("error.html").render())
-    with open("site/signature-list", "w") as signature_list:
-        signature_list.write(create_file_list())
-
-    with open("site/home", "w") as home:
-        home.write(create_home())
-
-    with open("site/accessibility", "w") as accessibility:
-        accessibility.write(create_accessibility())
-
-    all_json_files = {}
-    all_actors = {}
-    json_by_id = {}
-
-    for file in os.listdir(f"{path}/actors"):
-        with open(f"{path}/actors/{file}") as actor_file:
-            actor_json = json.load(actor_file)
-            actor_id = actor_json["actorId"]
-            all_actors[actor_id] = actor_json
-
-    for sub_dir in ["fmt", "x-fmt"]:
-        sig_files = os.listdir(f"{path}/signatures/{sub_dir}")
-        for file in sig_files:
-            json_path = f"{path}/signatures/{sub_dir}/{file}"
-            with open(json_path, "r") as sig_json:
-                puid = f"{sub_dir}/{file.split('.')[0]}"
-                loaded_json = json.load(sig_json)
-                all_json_files[puid] = loaded_json
-                json_by_id[loaded_json["fileFormatID"]] = loaded_json
-
-    for puid, json_data in all_json_files.items():
-        with open(f"site/{puid}", "w") as output:
-            output.write(create_detail(json_data, all_actors, json_by_id))
-
-    for actor_json in all_actors.values():
-        actor_id = actor_json["actorId"]
-        view_path = f"site/actor/{actor_id}"
-        with open(view_path, "w") as actor_page:
-            actor_details_template = env.get_template("actor_details.html")
-            actor = create_actor(actor_json)
-            name = actor_json["name"]
-            actor_details = actor_details_template.render(
-                results=actor, name=name, actorId=actor_id
-            )
-            actor_page.write(actor_details)
+    with open("site/releases", "w") as release_notes:
+        releases = create_release_pages()
+        release_notes.write(env.get_template("releases.html").render(releases=releases))
+    # with open("site/error", "w") as error_page:
+    #     error_page.write(env.get_template("error.html").render())
+    # with open("site/signature-list", "w") as signature_list:
+    #     signature_list.write(create_file_list())
+    #
+    # with open("site/home", "w") as home:
+    #     home.write(create_home())
+    #
+    # with open("site/accessibility", "w") as accessibility:
+    #     accessibility.write(create_accessibility())
+    #
+    # all_json_files = {}
+    # all_actors = {}
+    # json_by_id = {}
+    #
+    # for file in os.listdir(f"{path}/actors"):
+    #     with open(f"{path}/actors/{file}") as actor_file:
+    #         actor_json = json.load(actor_file)
+    #         actor_id = actor_json["actorId"]
+    #         all_actors[actor_id] = actor_json
+    #
+    # for sub_dir in ["fmt", "x-fmt"]:
+    #     sig_files = os.listdir(f"{path}/signatures/{sub_dir}")
+    #     for file in sig_files:
+    #         json_path = f"{path}/signatures/{sub_dir}/{file}"
+    #         with open(json_path, "r") as sig_json:
+    #             puid = f"{sub_dir}/{file.split('.')[0]}"
+    #             loaded_json = json.load(sig_json)
+    #             all_json_files[puid] = loaded_json
+    #             json_by_id[loaded_json["fileFormatID"]] = loaded_json
+    #
+    # for puid, json_data in all_json_files.items():
+    #     with open(f"site/{puid}", "w") as output:
+    #         output.write(create_detail(json_data, all_actors, json_by_id))
+    #
+    # for actor_json in all_actors.values():
+    #     actor_id = actor_json["actorId"]
+    #     view_path = f"site/actor/{actor_id}"
+    #     with open(view_path, "w") as actor_page:
+    #         actor_details_template = env.get_template("actor_details.html")
+    #         actor = create_actor(actor_json)
+    #         name = actor_json["name"]
+    #         actor_details = actor_details_template.render(
+    #             results=actor, name=name, actorId=actor_id
+    #         )
+    #         actor_page.write(actor_details)
 
 
 run()
