@@ -104,6 +104,14 @@
                       "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
                     }
                   ]
+                },
+                {
+                  "Sid": "DenyInvokeFunction",
+                  "Effect": "Deny",
+                  "Action": [
+                    "lambda:Invoke*"
+                  ],
+                  "Resource": "*"
                 }
               ]
             }
@@ -134,15 +142,6 @@
                   ]
                 }
               }
-            },
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
-                }
-              },
-              "Action": "sts:AssumeRole"
             }
           ]
         },
@@ -213,6 +212,14 @@
                       "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
                     }
                   ]
+                },
+                {
+                  "Sid": "DenyInvokeFunction",
+                  "Effect": "Deny",
+                  "Action": [
+                    "lambda:Invoke*"
+                  ],
+                  "Resource": "*"
                 }
               ]
             }
@@ -243,15 +250,6 @@
                   ]
                 }
               }
-            },
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
-                }
-              },
-              "Action": "sts:AssumeRole"
             }
           ]
         },
