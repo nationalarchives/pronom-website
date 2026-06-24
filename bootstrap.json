@@ -108,9 +108,7 @@
                 {
                   "Sid": "DenyInvokeFunction",
                   "Effect": "Deny",
-                  "Action": [
-                    "lambda:Invoke*"
-                  ],
+                  "Action": ["lambda:Invoke*"],
                   "Resource": "*"
                 }
               ]
@@ -216,9 +214,7 @@
                 {
                   "Sid": "DenyInvokeFunction",
                   "Effect": "Deny",
-                  "Action": [
-                    "lambda:Invoke*"
-                  ],
+                  "Action": ["lambda:Invoke*"],
                   "Resource": "*"
                 }
               ]
