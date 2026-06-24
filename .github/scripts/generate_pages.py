@@ -3,7 +3,6 @@ import os
 import re
 import sys
 from datetime import datetime
-from urllib import request
 
 from jinja2 import (
     ChoiceLoader,
@@ -160,10 +159,8 @@ path = sys.argv[1]
 
 
 def create_file_list():
-    with request.urlopen(
-        "https://pronom.nationalarchives.gov.uk/signatures.json"
-    ) as url:
-        all_signatures = json.load(url)
+    with open("site/signatures.json") as sig_json_file:
+        all_signatures = json.load(sig_json_file)
 
     signatures = sorted(
         all_signatures["signatures"],
