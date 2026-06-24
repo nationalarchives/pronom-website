@@ -1,6 +1,5 @@
 variable "environment" {
-  type    = string
-  default = "prod"
+  type = string
 }
 
 variable "hosted_zone_id" {
@@ -8,5 +7,3 @@ variable "hosted_zone_id" {
   type        = string
   default     = "Z0207922GVVLB5378323"
 }
-
-variable "latest_signature_version" {}

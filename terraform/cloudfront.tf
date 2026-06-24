@@ -4,7 +4,7 @@ locals {
   s3_origin_name      = "s3-origin"
 }
 resource "aws_cloudfront_response_headers_policy" "security" {
-  name    = "ResponseHeadersPolicy"
+  name    = "${title(var.environment)}-ResponseHeadersPolicy"
   comment = "Adds strict Content-Security-Policy for CloudFront responses"
 
   security_headers_config {
@@ -70,15 +70,6 @@ resource "aws_lambda_permission" "cloudfront_invoke_results" {
   source_arn    = aws_cloudfront_distribution.site.arn
 }
 
-resource "aws_lambda_permission" "cloudfront_invoke_soap" {
-  for_each      = toset(["InvokeFunction", "InvokeFunctionUrl"])
-  statement_id  = "AllowCloudFront${each.value}"
-  action        = "lambda:${each.value}"
-  function_name = aws_lambda_function.soap.function_name
-  principal     = "cloudfront.amazonaws.com"
-  source_arn    = aws_cloudfront_distribution.site.arn
-}
-
 data "aws_cloudfront_cache_policy" "caching_optimised" {
   name = "Managed-CachingOptimized"
 }
@@ -88,7 +79,7 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
 }
 
 resource "aws_cloudfront_cache_policy" "cache_query_strings" {
-  name        = "CacheQueryStrings"
+  name        = "${title(var.environment)}-CacheQueryStrings"
   max_ttl     = 31536000
   min_ttl     = 1
   default_ttl = 86400
@@ -149,9 +140,9 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   origin {
-    domain_name              = replace(replace(aws_lambda_function_url.soap.function_url, "https://", ""), "/", "")
-    origin_id                = local.soap_origin_name
-    origin_access_control_id = aws_cloudfront_origin_access_control.lambda_url.id
+    domain_name = replace(replace(module.soap_api_gateway.api_url, "https://", ""), "/${var.environment}", "")
+    origin_id   = local.soap_origin_name
+    origin_path = "/${var.environment}"
 
     custom_origin_config {
       http_port              = 80
@@ -197,11 +188,6 @@ resource "aws_cloudfront_distribution" "site" {
 
     cache_policy_id          = aws_cloudfront_cache_policy.cache_query_strings.id
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
-    lambda_function_association {
-      event_type   = "origin-request"
-      include_body = true
-      lambda_arn   = aws_lambda_function.soap_edge.qualified_arn
-    }
   }
 
   dynamic "custom_error_response" {

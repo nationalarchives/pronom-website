@@ -24,24 +24,6 @@ resource "aws_iam_role" "lambda_soap_execution" {
   })
 }
 
-resource "aws_iam_role" "edge_lambda_execution" {
-  name = "${var.environment}-pronom-edge-lambda-execution"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect    = "Allow"
-      Principal = { Service = ["lambda.amazonaws.com", "edgelambda.amazonaws.com"] }
-      Action    = "sts:AssumeRole"
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "edge_lambda_basic" {
-  role       = aws_iam_role.edge_lambda_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
 resource "aws_iam_role_policy_attachment" "lambda_results" {
   role       = aws_iam_role.lambda_search_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
@@ -89,32 +71,19 @@ resource "aws_lambda_function" "soap" {
   source_code_hash               = filebase64sha256("${path.module}/soap.zip")
 }
 
-data "archive_file" "edge_lambda_code" {
-  type        = "zip"
-  source_file = "${path.module}/lambda/index.mjs"
-  output_path = "${path.module}/lambda/edge_function.zip"
+resource "aws_lambda_permission" "soap_api_gateway" {
+  for_each      = toset(["GET", "POST"])
+  statement_id  = "AllowSoapApiGatewayInvoke${title(each.value)}"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.soap.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${module.soap_api_gateway.api_execution_arn}/*/${each.value}/service.asmx"
 }
 
-resource "aws_lambda_function" "soap_edge" {
-  function_name                  = "${var.environment}-pronom-soap-edge"
-  role                           = aws_iam_role.edge_lambda_execution.arn
-  runtime                        = "nodejs22.x"
-  handler                        = "index.handler"
-  filename                       = data.archive_file.edge_lambda_code.output_path
-  source_code_hash               = data.archive_file.edge_lambda_code.output_base64sha256
-  region                         = local.us_east_1
-  publish                        = true
-  reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
-}
 
 resource "aws_lambda_function_url" "results" {
   function_name      = aws_lambda_alias.search_alias.function_name
   qualifier          = aws_lambda_alias.search_alias.name
-  authorization_type = "AWS_IAM"
-}
-
-resource "aws_lambda_function_url" "soap" {
-  function_name      = aws_lambda_function.soap.arn
   authorization_type = "AWS_IAM"
 }
 
@@ -142,17 +111,3 @@ resource "aws_iam_role_policy" "scheduler_invoke_lambda" {
     }]
   })
 }
-
-# resource "aws_scheduler_schedule" "keep_warm" {
-#   name       = "${var.environment}-pronom-keep-warm-schedule"
-#   group_name = "default"
-#
-#   flexible_time_window { mode = "OFF" }
-#   schedule_expression = "rate(5 minutes)"
-#
-#   target {
-#     arn      = aws_lambda_function.search.arn
-#     role_arn = aws_iam_role.scheduler_role.arn
-#     input    = jsonencode({})
-#   }
-# }
