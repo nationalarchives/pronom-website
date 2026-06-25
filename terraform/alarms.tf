@@ -1,8 +1,13 @@
 locals {
   rule_name = "${var.environment}-eventbridge-alarm-state-change-alarm-only"
 }
+locals {
+  slack_token = try(data.aws_ssm_parameter.slack_token[0].value, "")
+}
+
 data "aws_ssm_parameter" "slack_token" {
-  name = "/${var.environment}/slack/token"
+  count = var.environment == "prod" ? 1 : 0
+  name  = "/${var.environment}/slack/token"
 }
 
 resource "aws_cloudwatch_event_connection" "api_connection" {
@@ -13,7 +18,7 @@ resource "aws_cloudwatch_event_connection" "api_connection" {
   auth_parameters {
     api_key {
       key   = "Authorization"
-      value = "Bearer ${data.aws_ssm_parameter.slack_token.value}"
+      value = "Bearer ${local.slack_token}"
     }
   }
 }
