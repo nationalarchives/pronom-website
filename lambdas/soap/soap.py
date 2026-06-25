@@ -66,17 +66,17 @@ def lambda_handler(event, context):
         else:
             return file_response("soap_description.html")
     else:
-        headers = event["headers"]
+        headers = {k.lower(): v for k, v in event["headers"].items()}
         if "soapaction" not in headers:
             return {"statusCode": 404}
-        action = headers["soapaction"]
+        action = headers["soapaction"].lower()
         if (
-            "http://pronom.nationalarchives.gov.uk:getSignatureFileVersionV1In"
+            "http://pronom.nationalarchives.gov.uk:getsignaturefileversionv1in"
             in action
         ):
             with open("version") as version_file:
                 return response(version_file.read())
-        if "http://pronom.nationalarchives.gov.uk:getSignatureFileV1In" in action:
+        if "http://pronom.nationalarchives.gov.uk:getsignaturefilev1in" in action:
             ff_signature_xml = get_signature_file(headers)
             if len(ff_signature_xml) > 1:
                 xml_without_declaration = ff_signature_xml.replace(

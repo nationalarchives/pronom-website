@@ -6,6 +6,20 @@ from lambdas.soap import soap
 
 class SoapTest(unittest.TestCase):
     @staticmethod
+    def expected_body():
+        return """<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <getSignatureFileV1Response xmlns="http://pronom.nationalarchives.gov.uk">
+      <SignatureFile>
+Test String
+      </SignatureFile>
+    </getSignatureFileV1Response>
+  </soap:Body>
+</soap:Envelope>
+"""
+
+    @staticmethod
     def open_mock_file(file, *args, **kwargs):
         if file == "version":
             return mock_open(read_data="Test version file content").return_value
@@ -49,19 +63,23 @@ class SoapTest(unittest.TestCase):
             None,
         )
 
-        expected_body = """<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <soap:Body>
-    <getSignatureFileV1Response xmlns="http://pronom.nationalarchives.gov.uk">
-      <SignatureFile>
-Test String
-      </SignatureFile>
-    </getSignatureFileV1Response>
-  </soap:Body>
-</soap:Envelope>
-"""
         self.assertEqual(response["statusCode"], 200)
-        self.assertEqual(response["body"], expected_body)
+        self.assertEqual(response["body"], self.expected_body())
+        self.assertEqual(response["headers"]["Content-Type"], "text/xml")
+
+    @patch("builtins.open", side_effect=open_mock_file)
+    def test_return_downloaded_file_with_different_case(self, _):
+        action = "http://pronom.nationalarchives.gov.uk:GetSignatureFilev1IN"
+        response = soap.lambda_handler(
+            {
+                "requestContext": {"http": {"method": "POST"}},
+                "headers": {"soapAction": action},
+            },
+            None,
+        )
+
+        self.assertEqual(response["statusCode"], 200)
+        self.assertEqual(response["body"], self.expected_body())
         self.assertEqual(response["headers"]["Content-Type"], "text/xml")
 
     @patch("builtins.open", side_effect=open_mock_file)
@@ -87,6 +105,20 @@ Test String
             {
                 "requestContext": {"http": {"method": "POST"}},
                 "headers": {"soapaction": action},
+            },
+            None,
+        )
+        self.assertEqual(response["body"], "Test version file content")
+        self.assertEqual(response["headers"]["Content-Type"], "text/xml")
+        self.assertEqual(response["statusCode"], 200)
+
+    @patch("builtins.open", side_effect=open_mock_file)
+    def test_return_version_file_with_different_case(self, _):
+        action = "http://pronom.nationalarchives.gov.uk:GetSignaturefileVersionv1IN"
+        response = soap.lambda_handler(
+            {
+                "requestContext": {"http": {"method": "POST"}},
+                "headers": {"SOAPAction": action},
             },
             None,
         )
