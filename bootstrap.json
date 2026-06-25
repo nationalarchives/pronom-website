@@ -1,10 +1,10 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "PRONOMInfrastructureRole": {
+    "ProdPRONOMInfrastructureRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
-        "RoleName": "PRONOMInfrastructureRole",
+        "RoleName": "ProdPRONOMInfrastructureRole",
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -24,21 +24,12 @@
                   ]
                 }
               }
-            },
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
-                }
-              },
-              "Action": "sts:AssumeRole"
             }
           ]
         },
         "Policies": [
           {
-            "PolicyName": "PRONOMInfrastructurePolicy",
+            "PolicyName": "ProdPRONOMInfrastructurePolicy",
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
@@ -69,8 +60,10 @@
                   "Effect": "Allow",
                   "Action": [
                     "iam:AttachRolePolicy",
+                    "iam:CreateOpenIDConnectProvider",
                     "iam:CreatePolicy",
                     "iam:CreateRole",
+                    "iam:DeleteOpenIDConnectProvider",
                     "iam:DeletePolicy",
                     "iam:DeleteRole",
                     "iam:DetachRolePolicy",
@@ -95,15 +88,21 @@
                   "Resource": [
                     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
                     {
-                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/*"
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/prod-*"
                     },
                     {
-                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/*"
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/prod-*"
                     },
                     {
                       "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
                     }
                   ]
+                },
+                {
+                  "Sid": "DenyInvokeFunction",
+                  "Effect": "Deny",
+                  "Action": ["lambda:Invoke*"],
+                  "Resource": "*"
                 }
               ]
             }
@@ -111,10 +110,10 @@
         ]
       }
     },
-    "PRONOMDeploySignatureRole": {
+    "TestPRONOMInfrastructureRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
-        "RoleName": "PRONOMSignatureRole",
+        "RoleName": "TestPRONOMInfrastructureRole",
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -130,40 +129,89 @@
                 "StringLike": {
                   "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
                   "token.actions.githubusercontent.com:sub": [
-                    "repo:nationalarchives/pronom-signatures:environment:prod"
+                    "repo:nationalarchives/pronom-website:environment:test"
                   ]
                 }
               }
-            },
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
-                }
-              },
-              "Action": "sts:AssumeRole"
             }
           ]
         },
         "Policies": [
           {
-            "PolicyName": "PRONOMSignaturePolicy",
+            "PolicyName": "TestPRONOMInfrastructurePolicy",
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
                 {
                   "Sid": "",
                   "Effect": "Allow",
-                  "Action": ["s3:PutObject", "s3:ListBucket"],
+                  "Action": [
+                    "acm:*",
+                    "apigateway:*",
+                    "cloudformation:*",
+                    "cloudfront:*",
+                    "cloudwatch:*",
+                    "events:*",
+                    "lambda:*",
+                    "logs:*",
+                    "route53:*",
+                    "s3:*",
+                    "scheduler:*",
+                    "secretsmanager:*",
+                    "shield:*",
+                    "ssm:GetParameter",
+                    "wafv2:*"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Action": [
+                    "iam:AttachRolePolicy",
+                    "iam:CreateOpenIDConnectProvider",
+                    "iam:CreatePolicy",
+                    "iam:CreateRole",
+                    "iam:DeleteOpenIDConnectProvider",
+                    "iam:DeletePolicy",
+                    "iam:DeleteRole",
+                    "iam:DetachRolePolicy",
+                    "iam:DeleteRolePolicy",
+                    "iam:GetOpenIDConnectProvider",
+                    "iam:GetPolicy",
+                    "iam:GetPolicyVersion",
+                    "iam:GetRole",
+                    "iam:GetRolePolicy",
+                    "iam:ListPolicyVersions",
+                    "iam:ListRolePolicies",
+                    "iam:ListAttachedRolePolicies",
+                    "iam:ListInstanceProfilesForRole",
+                    "iam:PassRole",
+                    "iam:PutRolePolicy",
+                    "iam:TagPolicy",
+                    "iam:TagRole",
+                    "iam:UntagRole",
+                    "iam:UpdateRoleDescription",
+                    "iam:UpdateAssumeRolePolicy"
+                  ],
                   "Resource": [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
                     {
-                      "Fn::Sub": "arn:aws:s3:::prod-pronom-site-${AWS::AccountId}-eu-west-2-an"
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/test-*"
                     },
                     {
-                      "Fn::Sub": "arn:aws:s3:::prod-pronom-site-${AWS::AccountId}-eu-west-2-an/*"
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/test-*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
                     }
                   ]
+                },
+                {
+                  "Sid": "DenyInvokeFunction",
+                  "Effect": "Deny",
+                  "Action": ["lambda:Invoke*"],
+                  "Resource": "*"
                 }
               ]
             }

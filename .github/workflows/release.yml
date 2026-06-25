@@ -9,16 +9,17 @@ on:
   push:
     branches:
       - main
-permissions:
-  id-token: write
-  contents: read
+permissions: {}
 jobs:
-  test:
+  release-test:
     runs-on: ubuntu-latest
-    name: Release
+    name: Release test
     environment:
-      name: production
-      url: https://pronom.nationalarchives.gov.uk/
+      name: test
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
         with:
@@ -34,11 +35,110 @@ jobs:
       - name: Configure AWS credentials for Lambda
         uses: aws-actions/configure-aws-credentials@acca2b1b2070338fb9fd1ca27ecee81d687e58e5 #v6.1.2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/PRONOMInfrastructureRole
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/TestPRONOMInfrastructureRole
+          aws-region: eu-west-2
+          role-session-name: DeployPRONOMTest
+      - run: .github/scripts/release.sh test
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
+          REGION: eu-west-2
+  e2e-tests:
+    needs: release-test
+    runs-on: ubuntu-latest
+    name: Run end-to-end tests against test environment
+    environment:
+      name: test
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@6a61c0375d66246de94630495909f12cf8dac84d
+        with:
+          node-version: 20
+      - name: Wait for domain to be available
+        run: while ! curl -s -o /dev/null -w "%{http_code}" https://test.pronom.nationalarchives.gov.uk | grep -q "^200$"; do sleep 60; done
+      - name: Install Cypress dependencies
+        run: |
+          cd tests
+          npm ci
+          npx cypress install
+      - name: Run Cypress tests
+        run: |
+          cd tests
+          npx cypress run --config baseUrl=https://test.pronom.nationalarchives.gov.uk
+  destroy-test:
+    needs: e2e-tests
+    if: always()
+    runs-on: ubuntu-latest
+    name: Destroy test environment
+    environment:
+      name: test
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4.0.0
+        with:
+          terraform_wrapper: false
+      - name: Configure AWS credentials for Lambda
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 #v6.1.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/TestPRONOMInfrastructureRole
+          aws-region: eu-west-2
+          role-session-name: DestroyPRONOMTest
+      - name: Destroy test Terraform infrastructure
+        #Have to create empty files to zip and upload to S3 as terraform destroy fails if the files are not present, also empty bucket.
+        run: |
+          cd terraform
+          touch results_tmp.txt
+          touch soap_tmp.txt
+          zip results.zip results_tmp.txt
+          zip soap.zip soap_tmp.txt
+          aws s3 rm s3://test-pronom-site-${{ secrets.ACCOUNT_ID }}-eu-west-2-an --recursive
+          terraform init
+          terraform workspace select test
+          TF_VAR_latest_signature_version=DROID_SignatureFile_$(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.name') terraform destroy --auto-approve
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TF_VAR_environment: test
+
+  release-prod:
+    needs:
+      - destroy-test
+      - e2e-tests
+    if: ${{ needs.e2e-tests.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    name: Release production
+    environment:
+      name: production
+      url: https://pronom.nationalarchives.gov.uk/
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          repository: nationalarchives/pronom-signatures
+          path: "signature-files"
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4.0.0
+        with:
+          terraform_wrapper: false
+      - name: Configure AWS credentials for Lambda
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 #v6.1.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/ProdPRONOMInfrastructureRole
           aws-region: eu-west-2
           role-session-name: DeployPRONOM
       - run: .github/scripts/release.sh prod
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
           REGION: eu-west-2
-          GITHUB_TOKEN: ${{ github.token }}
