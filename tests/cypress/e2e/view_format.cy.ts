@@ -19,9 +19,9 @@ describe("PRONOM View Format Spec", () => {
         expect(summaryFields["Name"]).to.equal("Microsoft Visio Drawing");
         expect(summaryFields["Version"]).to.equal("3");
         expect(summaryFields["Identifiers"]).to.equal(
-          "MIME: application/vnd.visio, PUID: fmt/1509",
+          "MIME: application/vnd.visio\n                        PUID: fmt/1509",
         );
-        expect(summaryFields["Format Type"]).to.equal("Image (Vector)");
+        expect(summaryFields["Format type"]).to.equal("Image (Vector)");
         expect(summaryFields["Description"]).to.equal(
           "Microsoft Visio is a diagramming and vector graphics application and is part of the Microsoft Office family.",
         );

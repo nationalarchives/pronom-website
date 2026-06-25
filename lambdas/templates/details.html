@@ -95,21 +95,50 @@
       <dl class="tna-dl tna-dl--lined">
         {%- for result in summary.results %}
           {%- for key, value in result.items() %}
-            {%- if value is defined and value is not none %}
+            {%- if value %}
               <dt>
-                <span class="tna-dl__sticky-title">{{ key }}</span>
+                <span class="tna-dl__sticky-title">{{ key|capitalize }}</span>
               </dt>
-              <dd>{{ value|urlize(nofollow=True) }}</dd>
+              <dd>
+                {%- if value is iterable and not value is string %}
+                  {%- if (value|length > 1) %}
+                    <ul class="tna-ul">
+                    {%- if value is mapping %}
+                      {%- for key, item in value.items() %}
+                        <li><strong>{{ key }}</strong>: {{ item|urlize(nofollow=True) }}</li>
+                      {%- endfor %}
+                    {%- else %}
+                      {%- for item in value %}
+                        <li>{{ item|urlize(nofollow=True) }}</li>
+                      {%- endfor %}
+                    {%- endif %}
+                    </ul>
+                  {%- elif value is mapping %}
+                    {%- for key, item in value.items() %}
+                      <strong>{{ key }}</strong>: {{ item|urlize(nofollow=True) }}
+                    {%- endfor %}
+                  {%- else %}
+                    {%- for item in value %}
+                      {{ item|urlize(nofollow=True) }}
+                    {%- endfor %}
+                  {%- endif %}
+                {%- else %}
+                  {{ value|urlize(nofollow=True) }}
+                {%- endif %}
+              </dd>
             {%- endif %}
           {%- endfor %}
         {%- endfor %}
 
-        {%- if summary.extensions is defined and summary.extensions is not none %}
+        {%- if summary.extensions %}
           <dt>
             <span class="tna-dl__sticky-title">File extensions</span>
           </dt>
           <dd>
-            <code>{{ summary.extensions }}</code>
+            {%- for extension in summary.extensions %}
+              <code>{{ extension }}</code>
+              {%- if not loop.last %}, {% endif %}
+            {%- endfor %}
           </dd>
         {%- endif %}
 
