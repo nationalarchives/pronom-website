@@ -24,6 +24,8 @@ jobs:
           npx cypress run
           cd ..
           docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
   check-formatting:
     runs-on: ubuntu-latest
