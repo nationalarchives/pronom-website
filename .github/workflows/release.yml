@@ -112,6 +112,9 @@ jobs:
       - e2e-tests
     if: ${{ needs.e2e-tests.result == 'success' }}
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     name: Release production
     environment:
       name: production
