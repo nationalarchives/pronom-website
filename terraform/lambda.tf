@@ -35,12 +35,12 @@ resource "aws_iam_role_policy_attachment" "lambda_soap" {
 }
 
 resource "aws_lambda_function" "search" {
-  function_name = "${var.environment}-pronom-search"
-  role          = aws_iam_role.lambda_search_execution.arn
-  runtime       = local.python_runtime
-  handler       = "results.lambda_handler"
-  filename      = "${path.module}/results.zip"
-  timeout       = 60
+  function_name                  = "${var.environment}-pronom-search"
+  role                           = aws_iam_role.lambda_search_execution.arn
+  runtime                        = local.python_runtime
+  handler                        = "results.lambda_handler"
+  filename                       = "${path.module}/results.zip"
+  timeout                        = 60
   publish                        = true
   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
   source_code_hash               = filebase64sha256("${path.module}/results.zip")
