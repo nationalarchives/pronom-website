@@ -200,23 +200,17 @@ def format_date(date_str: str) -> str:
     dt = datetime.strptime(date_str, "%Y-%m-%d")
     return f"{ordinal(dt.day)} {dt.strftime('%B %Y')}"
 
-
-def create_release_pages():
+def create_release_page():
     base_path = Path(path) / Path("changelogs")
+    releases = {}
     items = []
     latest_release = get_latest_release()
     for file in os.listdir(Path(path) / Path("changelogs")):
-        version = re.search(r"(v\d{2,4})", file).group()
-        date = re.search(r"\d{4}-\d{2}-\d{2}", file).group()
-        if int(version.lstrip("v")) <= int(latest_release.lstrip("V")):
-            items.append(
-                {
-                    "text": version,
-                    "date": format_date(date),
-                    "href": f"release/{version}",
-                }
-            )
-            release_item = {
+        version = re.search(r"(v\d{2,4})", file).group().upper()
+        date = format_date(re.search(r"(\d{4}-\d{2}-\d{2})", file).group())
+        if int(version.lstrip("V")) <= int(latest_release.lstrip("V")):
+            items.append({"text": version, "href": f"#{version}"})
+            releases[(version, date,)] = {
                 "New Records": [],
                 "New Signatures": [],
                 "Updated Records": [],
@@ -225,22 +219,16 @@ def create_release_pages():
                 reader = csv.reader(change_file)
                 for row in reader:
                     type_key = "New Signatures" if row[0] == "Signatures" else row[0]
-                    release_item[type_key].append(
-                        {"puid": row[1], "description": row[2]}
-                    )
-            with open(f"site/release/{version.lower()}", "w") as version_file:
-                version_file.write(
-                    env.get_template("release_notes.html").render(
-                        release_item=release_item, version=version
-                    )
-                )
-    return sorted(items, key=lambda item: int(item["text"].lstrip("v")), reverse=True)
+                    releases[(version, date,)][type_key].append({"puid": row[1], "description": row[2]})
+
+    sorted_releases = dict(sorted(releases.items(), key=lambda item: int(item[0][0].lstrip("Vs")), reverse=True))
+    sorted_items = sorted(items, key=lambda item: int(item["text"].lstrip("V")), reverse=True)
+    return env.get_template("release_notes.html").render(releases=sorted_releases, items=sorted_items)
 
 
 def run():
     with open("site/releases", "w") as release_notes:
-        releases = create_release_pages()
-        release_notes.write(env.get_template("releases.html").render(releases=releases))
+        release_notes.write(create_release_page())
     # with open("site/error", "w") as error_page:
     #     error_page.write(env.get_template("error.html").render())
     # with open("site/signature-list", "w") as signature_list:
