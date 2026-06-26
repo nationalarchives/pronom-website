@@ -170,6 +170,8 @@ def create_file_list():
 
 
 def run():
+    with open("site/help", "w") as help_page:
+        help_page.write(env.get_template("help.html").render())
     with open("site/error", "w") as error_page:
         error_page.write(env.get_template("error.html").render())
     with open("site/signature-list", "w") as signature_list:
