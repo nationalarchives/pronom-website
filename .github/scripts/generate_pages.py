@@ -162,7 +162,9 @@ def create_file_list():
         all_signatures["signatures"],
         key=lambda k: int(re.search(r"(\d+)", k["location"]).group(1)),
     )
+    signatures.reverse()
     container_signatures = all_signatures["container_signatures"]
+    container_signatures.reverse()
 
     return env.get_template("signature_list.html").render(
         signature_data=signatures, container_signature_data=container_signatures

@@ -4,7 +4,7 @@
 {%- from "components/search-field/macro.html" import tnaSearchField -%}
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 
-{%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/' -%}
+{%- set old_url = 'https://www.nationalarchives.gov.uk/aboutapps/pronom/default.htm' -%}
 
 {% block beforeContent %}
     <div class="tna-!--padding-top-s">
@@ -26,7 +26,8 @@
 {% block content %}
     <div class="tna-container">
         <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
-            <h1 class="tna-heading-l">Welcome to PRONOM</h1>
+            <h1 class="tna-heading-l">About PRONOM</h1>
+            <h2 class="tna-heading-m">What is PRONOM?</h2>
             <p>PRONOM is an online database that provides clear, reliable information about digital file formats.</p>
             <p>
                 It holds the details of over two thousand individual file formats including how to identify them.
@@ -53,9 +54,9 @@
 
             <p>You can search PRONOM in a few ways, including:</p>
             <ul class="tna-ul">
-                <li>By file format name, for example <code>pdf</code></li>
-                <li>By PRONOM Unique Identifier (PUID) for example <code>fmt/1</code></li>
-                <li>By file extension, by preceding this with a dot, for example <code>.pdf</code></li>
+                <li>By file format name, for example <code>Microsoft Word</code></li>
+                <li>By PRONOM Unique Identifier (PUID) for example <code>fmt/2000</code></li>
+                <li>By file extension, by preceding this with a dot, for example <code>.doc</code></li>
             </ul>
 
             <h2 class="tna-heading-m">Accessing PRONOM Data</h2>
