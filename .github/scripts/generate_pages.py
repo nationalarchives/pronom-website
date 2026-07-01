@@ -1,8 +1,12 @@
+import csv
 import json
 import os
 import re
 import sys
+import urllib
 from datetime import datetime
+from pathlib import Path
+from urllib.request import Request
 
 from jinja2 import (
     ChoiceLoader,
@@ -162,14 +166,69 @@ def create_file_list():
         all_signatures["signatures"],
         key=lambda k: int(re.search(r"(\d+)", k["location"]).group(1)),
     )
+    signatures.reverse()
     container_signatures = all_signatures["container_signatures"]
+    container_signatures.reverse()
 
     return env.get_template("signature_list.html").render(
         signature_data=signatures, container_signature_data=container_signatures
     )
 
 
+def get_latest_release():
+    req = Request(
+        "https://api.github.com/repos/nationalarchives/pronom/releases/latest"
+    )
+    if "GITHUB_TOKEN" in os.environ:
+        req.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
+    req.add_header("Accept", "application/vnd.github+json")
+    with urllib.request.urlopen(req) as response:
+        return json.load(response)["name"]
+
+
+def ordinal(n: int) -> str:
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def format_date(date_str: str) -> str:
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    return f"{ordinal(dt.day)} {dt.strftime('%B %Y')}"
+
+def create_release_page():
+    base_path = Path(path) / Path("changelogs")
+    releases = {}
+    items = []
+    latest_release = get_latest_release()
+    for file in os.listdir(Path(path) / Path("changelogs")):
+        version = re.search(r"(v\d{2,4})", file).group().upper()
+        date = format_date(re.search(r"(\d{4}-\d{2}-\d{2})", file).group())
+        if int(version.lstrip("V")) <= int(latest_release.lstrip("V")):
+            items.append({"text": version, "href": f"#{version}"})
+            releases[(version, date,)] = {
+                "New Records": [],
+                "New Signatures": [],
+                "Updated Records": [],
+            }
+            with open(base_path / Path(file)) as change_file:
+                reader = csv.reader(change_file)
+                for row in reader:
+                    type_key = "New Signatures" if row[0] == "Signatures" else row[0]
+                    releases[(version, date,)][type_key].append({"puid": row[1], "description": row[2]})
+
+    sorted_releases = dict(sorted(releases.items(), key=lambda item: int(item[0][0].lstrip("Vs")), reverse=True))
+    sorted_items = sorted(items, key=lambda item: int(item["text"].lstrip("V")), reverse=True)
+    return env.get_template("release_notes.html").render(releases=sorted_releases, items=sorted_items)
+
+
 def run():
+    with open("site/releases", "w") as release_notes:
+        release_notes.write(create_release_page())
+    with open("site/help", "w") as help_page:
+        help_page.write(env.get_template("help.html").render())
     with open("site/error", "w") as error_page:
         error_page.write(env.get_template("error.html").render())
     with open("site/signature-list", "w") as signature_list:
@@ -216,6 +275,7 @@ def run():
                 results=actor, name=name, actorId=actor_id
             )
             actor_page.write(actor_details)
+
 
 
 run()

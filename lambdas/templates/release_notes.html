@@ -1,0 +1,71 @@
+{%- extends 'index.html' -%}
+
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+{%- from "components/sidebar/macro.html" import tnaSidebar -%}
+
+{%- set old_url = 'https://www.nationalarchives.gov.uk/aboutapps/pronom/release-notes.xml' -%}
+
+{% block beforeContent %}
+<div class="tna-!--padding-top-s">
+    <div class="tna-container">
+        <div class="tna-column tna-column--full">
+            {{ tnaBreadcrumbs({
+            'items': [
+            {
+            'text': 'Home',
+            'href': '/'
+            }
+            ]
+            }) | indent(6) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="tna-container tna-!--margin-bottom-l">
+    <div class="tna-column tna-column--width-1-6 tna-column--full-small tna-column--full-tiny tna-!--margin-top-m">
+        {{ tnaSidebar({
+        "headingLevel": 2,
+        "items": items,
+        "type": "contents",
+        "sticky": True
+        }) }}
+    </div>
+    <div class="tna-column tna-column--width-5-6 tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
+        <hgroup class="tna-hgroup-xl">
+            <h1 class="tna-hgroup__title">Release notes</h1>
+        </hgroup>
+        {%- for version_date, release in releases.items() %}
+            <h2 class="tna-heading-l" id="{{ version_date[0] }}">{{ version_date[0] }}</h2>
+            <h2 class="tna-heading-m" id="{{ version_date[1] }}">{{ version_date[1] }}</h2>
+            {% for table in ["New Records", "New Signatures", "Updated Records"] %}
+                {% if release[table] | length > 0 %}
+                    <h3 class="tna-heading-s">{{ table }}</h3>
+                    <table class="tna-table">
+                        <thead class="tna-table__head">
+                        <tr class="tna-table__row">
+                            <th class="tna-table__header">PUID</th>
+                            <th class="tna-table__header">Description</th>
+                        </tr>
+                        </thead>
+                        <tbody class="tna-table__body">
+                        {%- for new_record in release[table] %}
+                            <tr class="tna-table__row">
+                                <td class="tna-table__cell">{{ new_record.puid }}</td>
+                                <td class="tna-table__cell">{{ new_record.description }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% endfor %}
+
+
+
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}
