@@ -13,7 +13,7 @@ describe("PRONOM Signature List Spec", () => {
   });
   it("renders the signature files page", () => {
     cy.request<AllSignatures>(
-      "https://pronom.nationalarchives.gov.uk/signatures.json",
+      "/signatures.json",
     ).then((res: Cypress.Response<AllSignatures>) => {
       const checkSignatures: (signatures: Array<Signature>) => void = (
         signatures,
