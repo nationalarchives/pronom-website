@@ -12,19 +12,19 @@ describe("PRONOM Signature List Spec", () => {
     cy.get("a[href='/signature-list']").first().click();
   });
   it("renders the signature files page", () => {
-    cy.request<AllSignatures>(
-      "https://pronom.nationalarchives.gov.uk/signatures.json",
-    ).then((res: Cypress.Response<AllSignatures>) => {
-      const checkSignatures: (signatures: Array<Signature>) => void = (
-        signatures,
-      ) => {
-        for (const { location, name } of signatures) {
-          cy.get(`a[href='${location}`).should("have.html", name);
-        }
-      };
+    cy.request<AllSignatures>("/signatures.json").then(
+      (res: Cypress.Response<AllSignatures>) => {
+        const checkSignatures: (signatures: Array<Signature>) => void = (
+          signatures,
+        ) => {
+          for (const { location, name } of signatures) {
+            cy.get(`a[href='${location}`).should("have.html", name);
+          }
+        };
 
-      checkSignatures(res.body.signatures);
-      checkSignatures(res.body.container_signatures);
-    });
+        checkSignatures(res.body.signatures);
+        checkSignatures(res.body.container_signatures);
+      },
+    );
   });
 });
