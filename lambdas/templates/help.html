@@ -1,0 +1,131 @@
+{%- extends 'index.html' -%}
+
+{%- from "components/button/macro.html" import tnaButton -%}
+{%- from "components/search-field/macro.html" import tnaSearchField -%}
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+
+{%- set old_url = 'https://www.nationalarchives.gov.uk/aboutapps/pronom/default.htm' -%}
+
+{% block beforeContent %}
+    <div class="tna-!--padding-top-s">
+        <div class="tna-container">
+            <div class="tna-column tna-column--full">
+                {{ tnaBreadcrumbs({
+          'items': [
+            {
+              'text': 'Home',
+              'href': '/'
+            }
+          ]
+        }) | indent(6) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="tna-container">
+        <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
+            <h1 class="tna-heading-l">About PRONOM</h1>
+            <h2 class="tna-heading-m">What is PRONOM?</h2>
+            <p>PRONOM is an online database that provides clear, reliable information about digital file formats.</p>
+            <p>
+                It holds the details of over two thousand individual file formats including how to identify them.
+                This information has been created through research by The National Archives (UK) and contributions by many archives and related organisations across the world
+            </p>
+            <p>PRONOM is widely used as part of digital preservation activities to help organisations understand the files they hold so that they can manage their readability over time.</p>
+
+            <p>
+                PRONOM data can be used in other tools, such as <a href="https://nationalarchives.gov.uk/droid">DROID</a>, which is a software application developed by The National Archives (UK).
+                DROID scans files and uses PRONOM data to identify them, helping users identify, manage, understand and preserve their digital content.
+            </p>
+
+            <p>PRONOM is freely available for anyone who needs reliable information about file formats.</p>
+
+            <h2 class="tna-heading-m">Using PRONOM</h2>
+
+            <p>PRONOM contains detailed information about file formats including:</p>
+
+            <ul class="tna-ul">
+                <li>File format names and versions</li>
+                <li>File format details, background information and links to further resources</li>
+                <li>Technical details used for file format identification</li>
+            </ul>
+
+            <p>You can search PRONOM in a few ways, including:</p>
+            <ul class="tna-ul">
+                <li>By file format name, for example <code>Microsoft Word</code></li>
+                <li>By PRONOM Unique Identifier (PUID) for example <code>fmt/2000</code></li>
+                <li>By file extension, by preceding this with a dot, for example <code>.doc</code></li>
+            </ul>
+
+            <h2 class="tna-heading-m">Accessing PRONOM Data</h2>
+
+            <p>PRONOM data is openly available and can be accessed in different ways.</p>
+
+            <ul class="tna-ul">
+                <li>Searching the website</li>
+                <li>Accessing the <a href="https://github.com/nationalarchives/pronom/tree/develop/signatures">full dataset on GitHub</a> as JSON files</li>
+                <li>Downloading XML files containing identification information, by appending .xml to a format page address, e.g. <a href="https://pronom.nationalarchives.gov.uk/fmt/1.xml">https://pronom.nationalarchives.gov.uk/fmt/1.xml</a></li>
+            </ul>
+
+            <p>For more technical details, including documentation and source code, please visit the <a href="https://github.com/nationalarchives/pronom">PRONOM GitHub repository</a></p>
+
+            <h2 class="tna-heading-m">Contributing to PRONOM</h2>
+
+            <p>
+                We actively encourage the submission of new information to improve PRONOM.
+                If you have information on a file format that is not currently in the database;  believe you could improve an entry; or have feedback, then please do get in touch.
+            </p>
+            <p>
+                Currently, to contribute to PRONOM, the easiest way is to submit an issue via our <a href="https://github.com/digital-preservation/PRONOM_Research/tree/main">PRONOM Research GitHub repository</a>,
+                where a member of the team can pick it up easily. We can also be contacted via email at <a href="mailto:pronom@nationalarchives.gov.uk">pronom@nationalarchives.gov.uk</a>
+            </p>
+            <p>We are currently working on improving our contribution process, and this guidance will be updated as new options become available.</p>
+
+            <h2 class="tna-heading-m">Status of this website</h2>
+
+            <p>This is a new (beta) version of the PRONOM website, to replace the <a href="https://nationalarchives.gov.uk/PRONOM">current system</a>, which has been in use for over 20 years.</p>
+
+            <p>The new PRONOM is designed to:</p>
+            <ul class="tna-ul">
+                <li>Improve accessibility, usability and sustainability</li>
+                <li>Support open and community-driven development</li>
+                <li>Make it easier to access and reuse data</li>
+                <li>Increase transparency by using open-source tools</li>
+            </ul>
+
+
+            <p>While the core PRONOM data remains consistent between the two systems, the new PRONOM changes how the system is delivered by:</p>
+            <ul class="tna-ul">
+                <li>Using modern, cloud-based technology</li>
+                <li>Making data openly available via GitHub</li>
+                <li>Supporting easier integration with external tools</li>
+            </ul>
+
+            <h2 class="tna-heading-m">During the Transition</h2>
+            <ul class="tna-ul">
+                <li>The <a href="https://www.nationalarchives.gov.uk/pronom/">current PRONOM service</a> will remain available (the website address will not change)</li>
+                <li>Data will continue to be released in both systems</li>
+                <li>The data output of both systems will continue to work on tools such as DROID</li>
+            </ul>
+
+            <p>
+                We expect to replace the current website with this new one in the near future, but it will remain available in the meantime.
+                As soon as we have a timeline for this work we will be making announcements to the community and updating our web pages.
+            </p>
+
+            <h2 class="tna-heading-m">Feedback</h2>
+            <p>
+                The new PRONOM website is still in an early beta version, and we want to make sure to get as much feedback as possible before taking it live and using it as our main website.
+                If you have any suggestions for improvements, please fill out our <a href="https://www.smartsurvey.co.uk/s/pronom/">feedback form.</a>
+            </p>
+
+            <p>
+                We will be actively contacting developers and service providers that use PRONOM data within their tools to support a smooth transition.
+                Please get in touch if you think you might be impacted by these changes.
+            </p>
+        </div>
+    </div>
+
+{% endblock %}
