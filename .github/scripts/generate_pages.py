@@ -206,8 +206,9 @@ def create_release_page():
     latest_release = get_latest_release()
     for file in os.listdir(Path(path) / Path("changelogs")):
         version = re.search(r"(v\d{2,4})", file).group().upper()
-        date = format_date(re.search(r"(\d{4}-\d{2}-\d{2})", file).group())
-        if int(version.lstrip("V")) <= int(latest_release.lstrip("V")):
+        date_match = re.search(r"(\d{4}-\d{2}-\d{2})", file)
+        if int(version.lstrip("V")) <= int(latest_release.lstrip("V")) and date_match:
+            date = format_date(date_match.group())
             items.append({"text": version, "href": f"#{version}"})
             releases[
                 (
