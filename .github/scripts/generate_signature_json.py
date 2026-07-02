@@ -45,7 +45,9 @@ def get_all_release_names(names=None, page=1):
 
 
 def get_binary_version(key):
-    return key.split("_")[2].split(".")[0]
+    regex = r"DROID_SignatureFile_(V\d.*)\.xml"
+    version = re.search(regex, key).group(1)
+    return version.replace("_", " ").replace("droid", "DROID")
 
 
 def get_container_version(key):
