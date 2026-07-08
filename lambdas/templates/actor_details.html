@@ -1,9 +1,9 @@
-{%- extends 'index.html' -%}
+{%- extends '_base.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 
 {%- set pageTitle = name -%}
-{%- set old_url = 'https://www.nationalarchives.gov.uk/PRONOM/Vendor/proVendorSearch.aspx?status=detailReport&id=' ~ actorId -%}
+{%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/Vendor/proVendorSearch.aspx?status=detailReport&id=' ~ actorId -%}
 
 {% block beforeContent %}
   <div class="tna-!--padding-top-s">

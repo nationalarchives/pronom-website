@@ -1,9 +1,10 @@
-{%- extends 'index.html' -%}
+{%- extends '_base.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 {%- from "components/search-field/macro.html" import tnaSearchField -%}
 
 {%- set pageTitle = 'Search results' -%}
+{%- set highlight_header_item = 'search' -%}
 
 {% block skipLink %}
   {% if data|length > 0 %}

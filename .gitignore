@@ -17,3 +17,4 @@ version
 *.zip
 .terraform
 /styles
+.env

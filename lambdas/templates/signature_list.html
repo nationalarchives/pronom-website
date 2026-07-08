@@ -1,12 +1,13 @@
-{%- extends 'index.html' -%}
+{%- extends '_base.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 
 {%- set pageTitle = 'DROID Signature Files' -%}
 {%- set old_url = 'https://www.nationalarchives.gov.uk/aboutapps/pronom/droid-signature-files.htm' -%}
+{%- set highlight_header_item = 'signatures' -%}
 
 {% block beforeContent %}
-  <div class="tna-!--padding-top-s">
+  <div class="tna-!--padding-top-s tna-background-accent-light">
     <div class="tna-container">
       <div class="tna-column tna-column--full">
         {{ tnaBreadcrumbs({
@@ -23,9 +24,16 @@
 {% endblock %}
 
 {% block content %}
+  <div class="tna-section tna-background-accent-light">
+    <div class="tna-container">
+      <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+        <h1 class="tna-heading-xl">{{ pageTitle }}</h1>
+        <p class="tna-scene-setter">Information about the PRONOM database and this site.</p>
+      </div>
+    </div>
+  </div>
   <div class="tna-container tna-section">
     <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
-      <h1 class="tna-heading-xl">{{ pageTitle }}</h1>
       <p>
         This page provides an archive of all previously released DROID signature files.
         These signature files are created by PRONOM and used by the DROID software tool to identify the exact format of a digital file.</p>

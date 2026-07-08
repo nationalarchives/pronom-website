@@ -13,11 +13,14 @@
 
 // Form components
 @use "@nationalarchives/frontend/nationalarchives/components/search-field";
+@use "@nationalarchives/frontend/nationalarchives/components/text-input";
 
 // Tools
 @use "@nationalarchives/frontend/nationalarchives/tools/a11y";
+@use "@nationalarchives/frontend/nationalarchives/tools/borders";
 @use "@nationalarchives/frontend/nationalarchives/tools/colour";
 @use "@nationalarchives/frontend/nationalarchives/tools/media";
+@use "@nationalarchives/frontend/nationalarchives/tools/shadows";
 @use "@nationalarchives/frontend/nationalarchives/tools/spacing";
 
 .tna-dl {
@@ -53,7 +56,7 @@
     grid-template-columns: subgrid;
 
     &:hover {
-      @include colour.colour-background("background-tint");
+      @include colour.tint;
     }
 
     @include a11y.faux-full-outline("a");
@@ -98,5 +101,130 @@
     &__item-details {
       display: block;
     }
+  }
+}
+
+.tna-table {
+  &:last-child {
+    margin-bottom: 0 !important;
+  }
+}
+
+.pronom-release {
+  @include spacing.space-above;
+  padding: spacing.space(1.5);
+
+  @include colour.tint;
+
+  @include borders.rounded-border;
+
+  &__heading {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: start;
+    justify-content: space-between;
+    gap: spacing.space(2);
+  }
+}
+
+.pronom-hero {
+  padding-top: spacing.space(8);
+  padding-bottom: spacing.space(12);
+
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
+  overflow: hidden;
+
+  position: relative;
+
+  background: linear-gradient(-45deg, #86bc25, #00b0ff);
+  background-size: 125% 125%;
+
+  &::before {
+    content: "0101001101001011010011010010101001010101010101010100101010100110010100101001010010100101001001010010100101001101010011010100110100101101001101001010100101010101010101010010101010011001010010100101001010010100100101001010010100110101001101010011010010110100110100101010010101010101010101001010101001100101001010010100101001010010010100101001010011010100110101001101001011010011010010101001010101010101010100101010100110010100101001010010100101001001010010100101001101010011010100110100101101001101001010100101010101010101010010101010011001010010100101001010010100100101001010010100110101001101010011010010110100110100101010010101010101010101001010101001100101001010010100101001010010010100101001010011010100110101001101001011010011010010101001010101010101010100101010100110010100101001010010100101001001010010100101001101010011010100110100101101001101001010100101010101010101010010101010011001010010100101001010010100100101001010010100110101001101010011010010110100110100101010010101010101010101001010101001100101001010010100101001010010010100101001010011010100110101001101001011010011010010101001010101010101010100101010100110010100101001010010100101001001010010100101001101010011010100110100101101001101001010100101010101010101010010101010011001010010100101001010010100100101001010010100110101001101010011010010110100110100101010010101010101010101001010101001100101001010010100101001010010010100101001010011010100110101001101001011010011010010101001010101010101010100101010100110010100101001010010100101001001010010100101001101010011010100110100101101001101001010100101010101010101010010101010011001010010100101001010010100100101001010010100110101001101010011010010110100110100101010010101010101010101001010101001100101001010010100101001010010010100101001010011010100110101001101001011010011010010101001010101010101010100101010100110010100101001010010100101001001010010100101001101010011" /
+      "";
+
+    max-width: 50vw;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    top: 50%;
+    right: 0;
+    z-index: 1;
+
+    font-size: clamp(1rem, 2.5vw, 3rem);
+    font-weight: 700;
+    line-height: 1;
+    text-align: right;
+    word-break: break-all;
+
+    opacity: 0.05;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black var(--fade-size, 5rem)
+    );
+
+    transform: translateY(-60%) translateX(2rem) rotate(-10deg);
+    transform-origin: 100% 0;
+
+    pointer-events: none;
+  }
+
+  &__content {
+    padding: spacing.space(2);
+
+    position: relative;
+    z-index: 2;
+
+    background-color: rgb(244 244 244 / 50%);
+    @include borders.rounded-border;
+
+    @include shadows.drop-shadow;
+
+    @media (prefers-reduced-transparency: reduce) {
+      @include colour.colour-background("base-background", true);
+    }
+  }
+
+  .tna-template--dark-theme & {
+    background: linear-gradient(-45deg, #00623b, #004c7e);
+
+    &__content {
+      background-color: rgb(0 0 0 / 45%);
+    }
+  }
+
+  .tna-template--system-theme & {
+    @media (prefers-color-scheme: dark) {
+      background: linear-gradient(-45deg, #00623b, #004c7e);
+
+      &__content {
+        background-color: rgb(0 0 0 / 45%);
+      }
+    }
+  }
+}
+
+.pronom-box {
+  @include spacing.space-above;
+  padding: spacing.space(1);
+
+  @include colour.colour-border("keyline", 1px, solid);
+  @include borders.rounded-border;
+
+  @include a11y.faux-full-outline("a");
+
+  &.tna-background-accent {
+    border-width: 0;
+  }
+
+  &:hover {
+    outline: 2px colour.colour-var("base-keyline") solid;
+    outline-offset: 2px;
   }
 }

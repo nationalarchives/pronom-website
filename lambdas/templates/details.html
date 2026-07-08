@@ -1,13 +1,14 @@
-{%- extends 'index.html' -%}
+{%- extends '_base.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+{%- from "components/button/macro.html" import tnaButton -%}
 {%- from "components/sidebar/macro.html" import tnaSidebar -%}
 
 {%- set pageTitle = name -%}
 {%- if id %}
-  {%- set old_url = 'https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=' ~ id -%}
+  {%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/Format/proFormatSearch.aspx?status=detailReport&id=' ~ id -%}
 {%- elif puid %}
-  {%- set old_url = 'https://www.nationalarchives.gov.uk/PRONOM/' ~ puid -%}
+  {%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/' ~ puid -%}
 {%- endif %}
 
 {% block beforeContent %}
@@ -36,45 +37,46 @@
         }], sidebar_container_signatures=[], sidebar_containers=[], sidebar_relationships=[]) %}
 
       {%- if summary.relationships %}
-        {% set ns.sidebar_items = ns.sidebar_items + [
-          {
-            'text': 'Relationships',
-            'href': '#relationships',
-            'children': []
-          }
-        ] %}
+        {% do ns.sidebar_items.append({
+          'text': 'Relationships',
+          'href': '#relationships',
+          'children': []
+        }) %}
       {%- endif %}
 
       {%- if signatures %}
         {%- for signature in signatures %}
-          {%- set ns.sidebar_container_signatures = ns.sidebar_container_signatures + [{
+          {%- do ns.sidebar_container_signatures.append({
             'text': signature.name,
             'href': '#internal-signatures-' ~ signature.signatureID
-          }] %}
+          }) %}
         {%- endfor %}
-        {% set ns.sidebar_items = ns.sidebar_items + [
-          {
-            'text': 'Internal signatures',
-            'href': '#internal-signatures',
-            'children': ns.sidebar_container_signatures
-          }
-        ] %}
+        {% do ns.sidebar_items.append({
+          'text': 'Internal signatures',
+          'href': '#internal-signatures',
+          'children': ns.sidebar_container_signatures
+        }) %}
       {%- endif %}
 
       {%- if containers %}
         {%- for container in containers %}
-          {%- set ns.sidebar_containers = ns.sidebar_containers + [{
+          {%- do ns.sidebar_containers.append({
             'text': container.description,
             'href': '#container-signatures-' ~ container.id
-          }] %}
+          }) %}
         {%- endfor %}
-        {% set ns.sidebar_items = ns.sidebar_items + [
-          {
-            'text': 'Container signatures',
-            'href': '#container-signatures',
-            'children': ns.sidebar_containers
-          }
-        ] %}
+        {% do ns.sidebar_items.append({
+          'text': 'Container signatures',
+          'href': '#container-signatures',
+          'children': ns.sidebar_containers
+        }) %}
+      {%- endif %}
+
+      {%- if changed_in_releases %}
+        {% do ns.sidebar_items.append({
+          'text': 'Releases',
+          'href': '#releases'
+        }) %}
       {%- endif %}
 
       {{ tnaSidebar({
@@ -91,6 +93,16 @@
         <p class="tna-hgroup__supertitle">Format</p>
         <h1 class="tna-hgroup__title">{{ pageTitle }}</h1>
       </hgroup>
+      <div class="tna-button-group tna-button-group--small">
+        {{ tnaButton({
+          'text': 'Download XML',
+          'href': '/' ~ puid ~ '.xml',
+          'icon': 'file-code',
+          'attributes': {
+            'download': 'pronom-' ~ (puid|lower|replace('/', '-')|slugify) ~ '.xml'
+          }
+        }) | indent(8) }}
+      </div>
       <h2 class="tna-heading-l" id="summary">Summary</h2>
       <dl class="tna-dl tna-dl--lined">
         {%- for result in summary.results %}
@@ -278,6 +290,17 @@
             {%- endfor %}
           </div>
         {%- endfor %}
+      {%- endif %}
+      
+      {%- if changed_in_releases %}
+      <h2 class="tna-heading-l" id="releases">Releases</h2>
+      <ul class="tna-ul">
+        {%- for release in changed_in_releases %}
+          <li>
+            {{ release[2]|capitalize }} in <a href="/releases/{{ release[0]|lower }}">{{ release[0] }}</a> ({{ release[1] }})
+          </li>
+        {%- endfor %}
+      </ul>
       {%- endif %}
     </div>
   </div>
