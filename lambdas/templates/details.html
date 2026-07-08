@@ -97,10 +97,7 @@
         {{ tnaButton({
           'text': 'Download XML',
           'href': '/' ~ puid ~ '.xml',
-          'icon': 'file-code',
-          'attributes': {
-            'download': 'pronom-' ~ (puid|lower|replace('/', '-')|slugify) ~ '.xml'
-          }
+          'icon': 'file-code'
         }) | indent(8) }}
       </div>
       <h2 class="tna-heading-l" id="summary">Summary</h2>
