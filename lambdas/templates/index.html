@@ -16,19 +16,30 @@
   <div class="tna-container">
     <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
       <div class="pronom-hero__content">
-        <h1 class="tna-heading-xl">PRONOM</h1>
-        <p class="tna-scene-setter">PRONOM is an online database that provides clear, reliable information about digital file formats.</p>
-        <hr class="tna-!--margin-top-m">
-        <form class="tna-!--margin-top-s" action="/results" method="get" novalidate>
-          {{ tnaSearchField({
-            'label': 'Search',
-            'headingLevel': 2,
-            'headingSize': 'l',
-            'id': 'search',
-            'name': 'q',
-            'hint': 'Enter a file format name or file extension'
-          }) }}
-        </form>
+        <div class="pronom-hero__content-inner tna-!--padding-vertical-m">
+          <h1 class="tna-heading-xl">PRONOM</h1>
+          <p class="tna-scene-setter">PRONOM is an online database that provides clear, reliable information about digital file formats.</p>
+          <div class="tna-button-group">
+            {{ tnaButton({
+              'text': 'Learn more',
+              'href': '/about',
+              'icon': 'arrow-right',
+              'rightAlignIcon': True
+            }) | indent(10) }}
+          </div>
+        </div>
+        <div class="pronom-hero__content-inner tna-!--padding-top-s tna-!--padding-bottom-m tna-background-accent-light">
+          <form class="tna-!--margin-top-xs" action="/results" method="get" novalidate>
+            {{ tnaSearchField({
+              'label': 'Search',
+              'headingLevel': 2,
+              'headingSize': 'l',
+              'id': 'search',
+              'name': 'q',
+              'hint': 'Enter a file format name or file extension'
+            }) }}
+          </form>
+        </div>
       </div>
     </div>
   </div>
