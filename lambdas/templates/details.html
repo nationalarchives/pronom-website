@@ -295,9 +295,12 @@
         {%- for release in changelog %}
           <li class="pronom-format-changelog__item">
             <h3 class="tna-heading-s">{{ release.status|capitalize }} in <a href="/releases/{{ release.version|lower }}">{{ release.version }}</a></h3>
-            <p class="tna-!--no-margin-top">
-              <em>{{ release.date }}</em>
-            </p>
+            <dl class="tna-dl-chips tna-dl-chips--plain tna-!--margin-top-xs tna-!--margin-bottom-s">
+              <dt>Release date</dt>
+              <dd>
+                <span class="tna-dl-chips__item">{{ release.date }}</span>
+              </dd>
+            </dl>
             {%- for change in release.details %}
             <p>{{ change }}</p>
             {%- endfor %}
