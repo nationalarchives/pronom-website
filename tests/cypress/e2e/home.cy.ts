@@ -4,14 +4,20 @@ describe("PRONOM Home Spec", () => {
   });
 
   it("displays the expected links", () => {
+    cy.get("a[href='/about']").first().should("contain.text", "About");
+    cy.get("a[href='/results?q=']").first().should("contain.text", "Search");
+    cy.get("a[href='/releases']").first().should("contain.text", "Releases");
     cy.get("a[href='/signature-list']")
       .first()
-      .should("contain.text", "View DROID signature files");
+      .should("contain.text", "DROID signature files");
   });
 
   it("renders the search box", () => {
     cy.get("#search").should("exist");
-    cy.contains("Search PRONOM").should("exist");
+    cy.get("#search").should(
+      "contain.text",
+      "Enter a file format name or file extension",
+    );
   });
 
   it("submits a search if the search is not a puid", () => {
