@@ -5,7 +5,7 @@ describe("PRONOM Home Spec", () => {
 
   it("displays the expected links", () => {
     cy.get("a[href='/about']").first().should("contain.text", "About");
-    cy.get("a[href='/results?q=']").first().should("contain.text", "Search");
+    cy.get("a[href='/search']").first().should("contain.text", "Search");
     cy.get("a[href='/releases']").first().should("contain.text", "Releases");
     cy.get("a[href='/signature-list']")
       .first()
@@ -24,9 +24,9 @@ describe("PRONOM Home Spec", () => {
       fmt.should("have.text", name);
     };
     cy.get("#search").type("docx");
-    cy.intercept("GET", "/results?q=*").as("results");
-    cy.get("form[action='/results']").submit();
-    cy.wait("@results").should(({ request, response }) => {
+    cy.intercept("GET", "/search?q=*").as("search");
+    cy.get("form[action='/search']").submit();
+    cy.wait("@search").should(({ request, response }) => {
       expect(request.query["q"]).to.equal("docx");
       if (response) {
         expect(response.statusCode).to.equal(200);
@@ -45,16 +45,16 @@ describe("PRONOM Home Spec", () => {
       fmt.should("have.text", name);
     };
     cy.get("#search").type(".js");
-    cy.get("form[action='/results']").submit();
+    cy.get("form[action='/search']").submit();
     cy.get(".pronom-results__item").should("have.length", 1);
     cy.get("a[href='x-fmt/423']").should("have.text", "JavaScript file");
   });
 
   it("redirects if the search is a valid puid", () => {
     cy.get("#search").type("fmt/1");
-    cy.intercept("GET", "/results?q=*").as("results");
-    cy.get("form[action='/results']").submit();
-    cy.wait("@results").should(({ _, response }) => {
+    cy.intercept("GET", "/search?q=*").as("search");
+    cy.get("form[action='/search']").submit();
+    cy.wait("@search").should(({ _, response }) => {
       if (response) {
         expect(response.statusCode).to.equal(302);
         expect(response.headers["location"]).to.equal("fmt/1");
@@ -64,9 +64,9 @@ describe("PRONOM Home Spec", () => {
 
   it("returns no results if no results are found", () => {
     cy.get("#search").type("thisstringdoesnotexist");
-    cy.intercept("GET", "/results?q=*").as("results");
-    cy.get("form[action='/results']").submit();
-    cy.wait("@results").its("response.statusCode").should("eq", 200);
+    cy.intercept("GET", "/search?q=*").as("search");
+    cy.get("form[action='/search']").submit();
+    cy.wait("@search").its("response.statusCode").should("eq", 200);
     cy.get(".tna-aside > h2.tna-heading-m").should(
       "have.text",
       "No results found",
@@ -75,9 +75,9 @@ describe("PRONOM Home Spec", () => {
 
   it("returns no results if the search is a non-existent puid", () => {
     cy.get("#search").type("fmt/12345678");
-    cy.intercept("GET", "/results?q=*").as("results");
-    cy.get("form[action='/results']").submit();
-    cy.wait("@results").its("response.statusCode").should("eq", 200);
+    cy.intercept("GET", "/search?q=*").as("search");
+    cy.get("form[action='/search']").submit();
+    cy.wait("@search").its("response.statusCode").should("eq", 200);
     cy.get(".tna-aside > h2.tna-heading-m").should(
       "have.text",
       "No results found",

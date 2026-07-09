@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda_search_execution" {
-  name = "${var.environment}-pronom-lambda-results-execution"
+  name = "${var.environment}-pronom-lambda-search-execution"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -24,7 +24,7 @@ resource "aws_iam_role" "lambda_soap_execution" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_results" {
+resource "aws_iam_role_policy_attachment" "lambda_search" {
   role       = aws_iam_role.lambda_search_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
@@ -38,12 +38,12 @@ resource "aws_lambda_function" "search" {
   function_name                  = "${var.environment}-pronom-search"
   role                           = aws_iam_role.lambda_search_execution.arn
   runtime                        = local.python_runtime
-  handler                        = "results.lambda_handler"
-  filename                       = "${path.module}/results.zip"
+  handler                        = "search.lambda_handler"
+  filename                       = "${path.module}/search.zip"
   timeout                        = 60
   publish                        = true
   reserved_concurrent_executions = local.lambda_reserved_concurrent_executions
-  source_code_hash               = filebase64sha256("${path.module}/results.zip")
+  source_code_hash               = filebase64sha256("${path.module}/search.zip")
   environment {
     variables = {
       DB_NAME = "indexes"
@@ -78,7 +78,7 @@ resource "aws_lambda_permission" "soap_api_gateway" {
 }
 
 
-resource "aws_lambda_function_url" "results" {
+resource "aws_lambda_function_url" "search" {
   function_name      = aws_lambda_alias.search_alias.function_name
   qualifier          = aws_lambda_alias.search_alias.name
   authorization_type = "AWS_IAM"

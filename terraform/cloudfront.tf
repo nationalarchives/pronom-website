@@ -1,5 +1,5 @@
 locals {
-  results_origin_name = "results-url-origin"
+  search_origin_name = "search-url-origin"
   soap_origin_name    = "soap-url-origin"
   s3_origin_name      = "s3-origin"
 }
@@ -53,14 +53,14 @@ resource "aws_cloudfront_origin_access_control" "s3" {
 }
 
 resource "aws_cloudfront_origin_access_control" "lambda_url" {
-  name                              = "${var.environment}-pronom-results-url-oac"
+  name                              = "${var.environment}-pronom-search-url-oac"
   description                       = "OAC for Lambda Function URL origin"
   origin_access_control_origin_type = "lambda"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
 }
 
-resource "aws_lambda_permission" "cloudfront_invoke_results" {
+resource "aws_lambda_permission" "cloudfront_invoke_search" {
   for_each      = toset(["InvokeFunction", "InvokeFunctionUrl"])
   statement_id  = "AllowCloudFront${each.value}"
   action        = "lambda:${each.value}"
@@ -127,8 +127,8 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   origin {
-    domain_name              = replace(replace(aws_lambda_function_url.results.function_url, "https://", ""), "/", "")
-    origin_id                = local.results_origin_name
+    domain_name              = replace(replace(aws_lambda_function_url.search.function_url, "https://", ""), "/", "")
+    origin_id                = local.search_origin_name
     origin_access_control_id = aws_cloudfront_origin_access_control.lambda_url.id
 
     custom_origin_config {
@@ -165,8 +165,8 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   ordered_cache_behavior {
-    path_pattern           = "/results"
-    target_origin_id       = local.results_origin_name
+    path_pattern           = "/search"
+    target_origin_id       = local.search_origin_name
     viewer_protocol_policy = "redirect-to-https"
 
     allowed_methods = ["GET", "HEAD", "OPTIONS"]

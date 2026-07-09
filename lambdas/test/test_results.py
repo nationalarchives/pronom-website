@@ -3,7 +3,7 @@ import sqlite3
 import unittest
 from unittest import mock
 
-from lambdas.results import results
+from lambdas.search import search
 
 db_name = "test_indexes"
 

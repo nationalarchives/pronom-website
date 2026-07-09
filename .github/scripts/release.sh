@@ -17,13 +17,13 @@ LATEST_SIGNATURE_FILE=DROID_SignatureFile_$(gh api repos/nationalarchives/pronom
 docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 docker compose cp app:/app/version .
 
-cd lambdas/results
+cd lambdas/search
 mkdir -p package
 pip install --target=package .
 cd package || exit
-zip -q -r ../../../results.zip .
+zip -q -r ../../../search.zip .
 cd ../../../ || exit
-zip -q ./results.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html indexes
+zip -q ./search.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html ./lambdas/templates/_base.html indexes
 
 python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 cd lambdas || exit
@@ -48,7 +48,8 @@ aws s3 sync --content-type text/css  --exclude "*" --include "*.css" . $S3_URL
 aws s3 sync --content-type text/javascript  --exclude "*" --include "*.js" . $S3_URL
 aws s3 sync --content-type application/xml  --exclude "*" --include "*.xml" . $S3_URL
 aws s3 sync --content-type text/html  --exclude "*.css" --exclude "*.xml" --exclude "*.js" --exclude "fa-solid-900.woff2" . $S3_URL
-aws s3 cp fa-solid-900.woff2 $S3_URL
+aws s3 cp fa-solid-900.woff2 $S3_URL//fa-solid-900.woff2
 aws s3 cp signatures.json $S3_URL
+aws s3 mv s3://test-pronom-site-490872067939-eu-west-2-an/releases.html s3://test-pronom-site-490872067939-eu-west-2-an/releases
 
 aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"

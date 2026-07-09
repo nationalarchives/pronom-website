@@ -61,6 +61,7 @@ def search(search_string):
 
 def lambda_handler(event, _):
     query_params = event.get("queryStringParameters", {})
+    search_results = env.get_template("search_results.html")
     if query_params:
         search_term = query_params.get("q") if query_params else None
         if re.search(
@@ -69,12 +70,17 @@ def lambda_handler(event, _):
             return {"statusCode": 302, "headers": {"Location": search_term.lower()}}
         rows = search(search_term)
         data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]
-        search_results = env.get_template("search_results.html")
-        body = search_results.render(data=data, search_term=search_term)
+        body = search_results.render(data=data, search_term=search_term, search_home=False)
 
         return {
             "statusCode": 200,
             "body": body,
             "headers": {"Content-Type": "text/html"},
         }
-    return {"statusCode": 200}
+    else:
+        body = search_results.render(search_home=True)
+    return {
+        "statusCode": 200,
+        "body": body,
+        "headers": {"Content-Type": "text/html"},
+    }
