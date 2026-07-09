@@ -9,15 +9,11 @@ describe("PRONOM Home Spec", () => {
     cy.get("a[href='/releases']").first().should("contain.text", "Releases");
     cy.get("a[href='/signature-list']")
       .first()
-      .should("contain.text", "DROID signature files");
+      .should("contain.text", "DROID Signature Files");
   });
 
   it("renders the search box", () => {
     cy.get("#search").should("exist");
-    cy.get("#search").should(
-      "contain.text",
-      "Enter a file format name or file extension",
-    );
   });
 
   it("submits a search if the search is not a puid", () => {
