@@ -70,7 +70,9 @@ def lambda_handler(event, _):
             return {"statusCode": 302, "headers": {"Location": search_term.lower()}}
         rows = search(search_term)
         data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]
-        body = search_results.render(data=data, search_term=search_term, search_home=False)
+        body = search_results.render(
+            data=data, search_term=search_term, search_home=False
+        )
 
         return {
             "statusCode": 200,

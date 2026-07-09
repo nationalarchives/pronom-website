@@ -33,7 +33,7 @@ class ResultsTest(unittest.TestCase):
         os.remove(db_name)
 
     def test_search_found(self):
-        response = results.lambda_handler(
+        response = search.lambda_handler(
             {"queryStringParameters": {"q": "search"}}, None
         )
         for i in range(1, 1001):
@@ -44,7 +44,7 @@ class ResultsTest(unittest.TestCase):
             self.assertIn(f"<code>ext{i}</code>", response["body"])
 
     def test_search_not_found(self):
-        response = results.lambda_handler(
+        response = search.lambda_handler(
             {"queryStringParameters": {"q": "invalid"}}, None
         )
         self.assertIn(
@@ -52,33 +52,33 @@ class ResultsTest(unittest.TestCase):
         )
 
     def test_search_file_extension(self):
-        response = results.lambda_handler(
+        response = search.lambda_handler(
             {"queryStringParameters": {"q": ".ext1"}}, None
         )
         self.assertEqual(response["statusCode"], 200)
         self.assertIn("<code>ext1</code>", response["body"])
 
     def test_search_single_dot(self):
-        response = results.lambda_handler({"queryStringParameters": {"q": "."}}, None)
+        response = search.lambda_handler({"queryStringParameters": {"q": "."}}, None)
         self.assertEqual(response["statusCode"], 200)
         self.assertIn("No results found", response["body"])
 
     def test_search_existing_fmt(self):
-        response = results.lambda_handler(
+        response = search.lambda_handler(
             {"queryStringParameters": {"q": "fmt/123"}}, None
         )
         self.assertEqual(response["statusCode"], 302)
         self.assertEqual(response["headers"]["Location"], "fmt/123")
 
     def test_search_existing_fmt_upper_case(self):
-        response = results.lambda_handler(
+        response = search.lambda_handler(
             {"queryStringParameters": {"q": "FMT/123"}}, None
         )
         self.assertEqual(response["statusCode"], 302)
         self.assertEqual(response["headers"]["Location"], "fmt/123")
 
     def test_search_not_existing_fmt(self):
-        response = results.lambda_handler(
+        response = search.lambda_handler(
             {"queryStringParameters": {"q": "fmt/3210"}}, None
         )
         self.assertIn(

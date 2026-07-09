@@ -1,7 +1,7 @@
 locals {
   search_origin_name = "search-url-origin"
-  soap_origin_name    = "soap-url-origin"
-  s3_origin_name      = "s3-origin"
+  soap_origin_name   = "soap-url-origin"
+  s3_origin_name     = "s3-origin"
 }
 resource "aws_cloudfront_response_headers_policy" "security" {
   name    = "${title(var.environment)}-ResponseHeadersPolicy"

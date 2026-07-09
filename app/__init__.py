@@ -15,7 +15,7 @@ def pronom_search():
     query_string = request.args.get("q")
     if query_string is not None:
         response = search.lambda_handler(
-            {"queryStringParameters": {"q": query_string }}, None
+            {"queryStringParameters": {"q": query_string}}, None
         )
     else:
         response = search.lambda_handler({"queryStringParameters": {}}, None)
@@ -23,7 +23,6 @@ def pronom_search():
         return response["body"]
     else:
         return redirect(response["headers"]["Location"], code=response["statusCode"])
-
 
 
 if __name__ == "__main__":
