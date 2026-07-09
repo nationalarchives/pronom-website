@@ -195,6 +195,18 @@
       }
     }
   }
+
+  @include media.on-mobile {
+    padding-top: spacing.space(3);
+    padding-bottom: spacing.space(5);
+
+    &__content {
+      &-inner {
+        padding-right: spacing.space(1.5);
+        padding-left: spacing.space(1.5);
+      }
+    }
+  }
 }
 
 .pronom-release {
