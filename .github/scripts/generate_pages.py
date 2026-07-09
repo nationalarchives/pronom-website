@@ -28,6 +28,9 @@ env = Environment(
 )
 env.add_extension("jinja2.ext.do")
 env.filters["slugify"] = slugify
+env.filters["sortpuids"] = lambda puids: sorted(
+    puids, key=lambda puid: int(re.sub(r"^(((x\-)?fmt)|sfw)\/", "", puid))
+)
 
 bucket_name = "tna-pronom-signatures-spike"
 
@@ -107,14 +110,24 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         "source": all_actors[json_data["source"]] if "source" in json_data else None,
     }
     signatures = json_data["internalSignatures"]
-    changed_in_releases = [
-        release
-        + (
-            "Added"
+    changelog = [
+        {
+            "version": release[0],
+            "date": release[1],
+            "status": "Added"
             if puid in [sig["puid"] for sig in details["New Records"]]
             or puid in [sig["puid"] for sig in details["New Signatures"]]
             else "Updated",
-        )
+            "details": [
+                sig["description"]
+                for sig in (
+                    details["Updated Records"]
+                    + details["New Signatures"]
+                    + details["New Records"]
+                )
+                if sig["puid"] == puid
+            ],
+        }
         for release, details in releases.items()
         if any(
             sig["puid"] == puid
@@ -133,7 +146,7 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         signatures=signatures,
         containers=json_data.get("containerSignatures", []),
         releases=releases,
-        changed_in_releases=changed_in_releases,
+        changelog=changelog,
     )
 
 

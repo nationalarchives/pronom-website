@@ -110,30 +110,10 @@
   }
 }
 
-.pronom-release {
-  @include spacing.space-above;
-  padding: spacing.space(1.5);
-
-  @include colour.tint;
-
-  @include borders.rounded-border;
-
-  &__heading {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: start;
-    justify-content: space-between;
-    gap: spacing.space(2);
-  }
-}
-
 .pronom-hero {
   padding-top: spacing.space(8);
   padding-bottom: spacing.space(12);
 
-  // display: flex;
-  // align-items: center;
-  // justify-content: center;
   overflow: hidden;
 
   position: relative;
@@ -210,7 +190,7 @@
   }
 }
 
-.pronom-box {
+.pronom-release {
   @include spacing.space-above;
   padding: spacing.space(1);
 
@@ -226,5 +206,20 @@
   &:hover {
     outline: 2px colour.colour-var("base-keyline") solid;
     outline-offset: 2px;
+  }
+}
+
+.pronom-format-changelog {
+  &__item {
+    padding: spacing.space(1);
+    @include colour.colour-border("keyline", 1px, solid);
+    @include borders.rounded-border;
+
+    @include a11y.faux-full-outline("a");
+
+    &:hover {
+      outline: 2px colour.colour-var("base-keyline") solid;
+      outline-offset: 2px;
+    }
   }
 }

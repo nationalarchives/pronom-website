@@ -35,7 +35,7 @@
   </div>
 <div class="tna-container tna-section">
   <div class="tna-column tna-column--width-5-6 tna-column--full-medium tna-column--full-small tna-column--full-tiny">
-    <div data-module="filter-container" data-filter-target="releases" data-filter-attribute="data-affected-records" class="tna-!--margin-bottom-l" hidden>
+    <!-- <div data-module="filter-container" data-filter-target="releases" data-filter-attribute="data-affected-records" class="tna-!--margin-bottom-l" hidden>
       {{ tnaTextInput({
         'label': 'Filter by PUID',
         'headingSize': 'm',
@@ -45,13 +45,13 @@
         'classes': 'filter-input'
       }) }}
       <p class="filtered-count tna-!--margin-top-xs" aria-live="polite"></p>
-    </div>
+    </div> -->
     <ul class="tna-ul tna-ul--plain" id="releases">
     {%- for version_date, release in releases.items() %}
       {%- set is_latest = version_date[0] == latest_release %}
-      {%- set affected_records = (release["New Records"]|map(attribute='puid')|list + release["Updated Records"]|map(attribute='puid')|list + release["New Signatures"]|map(attribute='puid')|list)|unique %}
+      {%- set affected_records = (release["New Records"]|map(attribute='puid')|list + release["Updated Records"]|map(attribute='puid')|list + release["New Signatures"]|map(attribute='puid')|list)|unique|list %}
       <li class="tna-!--margin-bottom-s" data-affected-records="{{ affected_records|join(',') }}">
-        <div class="pronom-box{{ ' tna-background-accent-light' if is_latest else '' }}">
+        <div class="pronom-release{{ ' tna-background-accent-light' if is_latest else '' }}">
           {% if is_latest %}
           <hgroup class="tna-hgroup-l">
             <p class="tna-hgroup__supertitle">Latest</p>
@@ -67,18 +67,18 @@
           <dl class="tna-dl tna-dl--right-weighted tna-!--margin-top-xs">
             <dt>Release date</dt>
             <dd>{{ version_date[1] }}</dd>
+            <dt>Changes</dt>
             {%- if release["New Records"]|length %}
-            <dt>{{ release["New Records"]|length }} record{{ 's' if release["New Records"]|length > 1 else '' }} added</dt>
-            <dd>{% for item in release["New Records"]|map(attribute='puid') %}<code>{{ item }}</code>{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+            <dd>{{ release["New Records"]|length }} record{{ 's' if release["New Records"]|length > 1 else '' }} added</dd>
             {%- endif %}
             {%- if release["New Signatures"]|length %}
-            <dt>{{ release["New Signatures"]|length }} signature{{ 's' if release["New Signatures"]|length > 1 else '' }} added</dt>
-            <dd>{% for item in release["New Signatures"]|map(attribute='puid') %}<code>{{ item }}</code>{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+            <dd>{{ release["New Signatures"]|length }} signature{{ 's' if release["New Signatures"]|length > 1 else '' }} added</dd>
             {%- endif %}
             {%- if release["Updated Records"]|length %}
-            <dt>{{ release["Updated Records"]|length }} record{{ 's' if release["Updated Records"]|length > 1 else '' }} updated</dt>
-            <dd>{% for item in release["Updated Records"]|map(attribute='puid') %}<code>{{ item }}</code>{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+            <dd>{{ release["Updated Records"]|length }} record{{ 's' if release["Updated Records"]|length > 1 else '' }} updated</dd>
             {%- endif %}
+            <dt>Records added or changed</dt>
+            <dd>{% for item in affected_records|sortpuids %}<code>{{ item }}</code>{% if not loop.last %}, {% endif %}{% endfor %}</dd>
           </dl>
         </div>
       </li>

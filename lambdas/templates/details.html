@@ -72,10 +72,10 @@
         }) %}
       {%- endif %}
 
-      {%- if changed_in_releases %}
+      {%- if changelog %}
         {% do ns.sidebar_items.append({
-          'text': 'Releases',
-          'href': '#releases'
+          'text': 'Changelog',
+          'href': '#changelog'
         }) %}
       {%- endif %}
 
@@ -289,12 +289,18 @@
         {%- endfor %}
       {%- endif %}
       
-      {%- if changed_in_releases %}
-      <h2 class="tna-heading-l" id="releases">Releases</h2>
-      <ul class="tna-ul">
-        {%- for release in changed_in_releases %}
-          <li>
-            {{ release[2]|capitalize }} in <a href="/releases/{{ release[0]|lower }}">{{ release[0] }}</a> ({{ release[1] }})
+      {%- if changelog %}
+      <h2 class="tna-heading-l" id="changelog">Changelog</h2>
+      <ul class="tna-ul tna-ul--plain tna-ul--spaced pronom-format-changelog">
+        {%- for release in changelog %}
+          <li class="pronom-format-changelog__item">
+            <h3 class="tna-heading-s">{{ release.status|capitalize }} in <a href="/releases/{{ release.version|lower }}">{{ release.version }}</a></h3>
+            <p class="tna-!--no-margin-top">
+              <em>{{ release.date }}</em>
+            </p>
+            {%- for change in release.details %}
+            <p>{{ change }}</p>
+            {%- endfor %}
           </li>
         {%- endfor %}
       </ul>

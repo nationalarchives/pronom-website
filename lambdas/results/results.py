@@ -20,8 +20,7 @@ env = Environment(
     ),
     autoescape=select_autoescape(),
 )
-
-env.filters["commafy"] = lambda x: f"{x:,d}"
+env.filters["commafy"] = lambda number: f"{number:,d}"
 
 
 def puid_exists(puid):
