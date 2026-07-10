@@ -1,4 +1,4 @@
-{%- extends 'index.html' -%}
+{%- extends '_base.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 {%- from "components/card/macro.html" import tnaCard -%}
@@ -16,7 +16,7 @@
       {{ tnaCard({
         'title': 'Add a new signature',
         'headingLevel': 2,
-        'href': '/add',
+        'href': '/add/',
         'body': 'Help us keep PRONOM up to date by contributing new technical information about file formats, software products or other technical components.',
         'fullAreaClick': True
       }) }}
@@ -25,7 +25,7 @@
       {{ tnaCard({
         'title': 'Add a new organisation',
         'headingLevel': 2,
-        'href': '/actor/add',
+        'href': '/actor/add/',
         'body': 'Contribute information about an organisation that creates or maintains file formats or software products.',
         'fullAreaClick': True
       }) }}

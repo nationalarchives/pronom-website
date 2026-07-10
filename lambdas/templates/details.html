@@ -1,13 +1,14 @@
-{%- extends 'index.html' -%}
+{%- extends '_base.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+{%- from "components/button/macro.html" import tnaButton -%}
 {%- from "components/sidebar/macro.html" import tnaSidebar -%}
 
 {%- set pageTitle = name -%}
 {%- if id %}
-  {%- set old_url = 'https://www.nationalarchives.gov.uk/PRONOM/Format/proFormatSearch.aspx?status=detailReport&id=' ~ id -%}
+  {%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/Format/proFormatSearch.aspx?status=detailReport&id=' ~ id -%}
 {%- elif puid %}
-  {%- set old_url = 'https://www.nationalarchives.gov.uk/PRONOM/' ~ puid -%}
+  {%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/' ~ puid -%}
 {%- endif %}
 
 {% block beforeContent %}
@@ -36,45 +37,46 @@
         }], sidebar_container_signatures=[], sidebar_containers=[], sidebar_relationships=[]) %}
 
       {%- if summary.relationships %}
-        {% set ns.sidebar_items = ns.sidebar_items + [
-          {
-            'text': 'Relationships',
-            'href': '#relationships',
-            'children': []
-          }
-        ] %}
+        {% do ns.sidebar_items.append({
+          'text': 'Relationships',
+          'href': '#relationships',
+          'children': []
+        }) %}
       {%- endif %}
 
       {%- if signatures %}
         {%- for signature in signatures %}
-          {%- set ns.sidebar_container_signatures = ns.sidebar_container_signatures + [{
+          {%- do ns.sidebar_container_signatures.append({
             'text': signature.name,
             'href': '#internal-signatures-' ~ signature.signatureID
-          }] %}
+          }) %}
         {%- endfor %}
-        {% set ns.sidebar_items = ns.sidebar_items + [
-          {
-            'text': 'Internal signatures',
-            'href': '#internal-signatures',
-            'children': ns.sidebar_container_signatures
-          }
-        ] %}
+        {% do ns.sidebar_items.append({
+          'text': 'Internal signatures',
+          'href': '#internal-signatures',
+          'children': ns.sidebar_container_signatures
+        }) %}
       {%- endif %}
 
       {%- if containers %}
         {%- for container in containers %}
-          {%- set ns.sidebar_containers = ns.sidebar_containers + [{
+          {%- do ns.sidebar_containers.append({
             'text': container.description,
             'href': '#container-signatures-' ~ container.id
-          }] %}
+          }) %}
         {%- endfor %}
-        {% set ns.sidebar_items = ns.sidebar_items + [
-          {
-            'text': 'Container signatures',
-            'href': '#container-signatures',
-            'children': ns.sidebar_containers
-          }
-        ] %}
+        {% do ns.sidebar_items.append({
+          'text': 'Container signatures',
+          'href': '#container-signatures',
+          'children': ns.sidebar_containers
+        }) %}
+      {%- endif %}
+
+      {%- if changelog %}
+        {% do ns.sidebar_items.append({
+          'text': 'Changelog',
+          'href': '#changelog'
+        }) %}
       {%- endif %}
 
       {{ tnaSidebar({
@@ -91,6 +93,13 @@
         <p class="tna-hgroup__supertitle">Format</p>
         <h1 class="tna-hgroup__title">{{ pageTitle }}</h1>
       </hgroup>
+      <div class="tna-button-group tna-button-group--small">
+        {{ tnaButton({
+          'text': 'Download XML',
+          'href': '/' ~ puid ~ '.xml',
+          'icon': 'file-code'
+        }) | indent(8) }}
+      </div>
       <h2 class="tna-heading-l" id="summary">Summary</h2>
       <dl class="tna-dl tna-dl--lined">
         {%- for result in summary.results %}
@@ -278,6 +287,26 @@
             {%- endfor %}
           </div>
         {%- endfor %}
+      {%- endif %}
+      
+      {%- if changelog %}
+      <h2 class="tna-heading-l" id="changelog">Changelog</h2>
+      <ul class="tna-ul tna-ul--plain tna-ul--spaced pronom-format-changelog">
+        {%- for release in changelog %}
+          <li class="pronom-format-changelog__item">
+            <h3 class="tna-heading-s">{{ release.status|capitalize }} in <a href="/releases/{{ release.version|lower }}">{{ release.version }}</a></h3>
+            <dl class="tna-dl-chips tna-dl-chips--plain tna-!--margin-top-xs tna-!--margin-bottom-s">
+              <dt>Release date</dt>
+              <dd>
+                <span class="tna-dl-chips__item">{{ release.date }}</span>
+              </dd>
+            </dl>
+            {%- for change in release.details %}
+            <p>{{ change }}</p>
+            {%- endfor %}
+          </li>
+        {%- endfor %}
+      </ul>
       {%- endif %}
     </div>
   </div>

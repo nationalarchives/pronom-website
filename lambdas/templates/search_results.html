@@ -1,9 +1,10 @@
-{%- extends 'index.html' -%}
+{%- extends '_base.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
 {%- from "components/search-field/macro.html" import tnaSearchField -%}
 
 {%- set pageTitle = 'Search results' -%}
+{%- set highlight_header_item = 'search' -%}
 
 {% block skipLink %}
   {% if data|length > 0 %}
@@ -36,7 +37,7 @@
   <div class="tna-!--padding-top-xs tna-!--padding-bottom-m tna-background-accent-light">
     <div class="tna-container">
       <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
-        <form action="/results" method="get" novalidate>
+        <form action="/search" method="get" novalidate>
           {{ tnaSearchField({
             'label': 'Search PRONOM',
             'headingLevel': 1,
@@ -50,7 +51,8 @@
       </div>
     </div>
   </div>
-  <div class="tna-container tna-section tna-!--padding-top-m">
+  {% if not search_home %}
+    <div class="tna-container tna-section tna-!--padding-top-m">
     <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny tna-!--padding-top-s" id="search-results">
       {% if data|length == 0 %}
         <div class="tna-aside tna-aside--tight tna-background-accent">
@@ -87,4 +89,5 @@
       {% endif %}
     </div>
   </div>
+  {% endif %}
 {% endblock %}

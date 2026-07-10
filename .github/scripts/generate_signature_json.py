@@ -22,8 +22,8 @@ def filter_container_files(names: list[str]):
 
 def create_request(url):
     req = Request(url)
-    if "GITHUB_TOKEN" in os.environ and os.environ["GITHUB_TOKEN"]:
-        req.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
+    if github_token := os.environ.get("GITHUB_TOKEN", None):
+        req.add_header("Authorization", f"Bearer {github_token}")
     req.add_header("Accept", "application/vnd.github+json")
     return req
 
@@ -33,6 +33,9 @@ def get_all_release_names(names=None, page=1):
         names = []
     url = f"{RELEASES_API_ENDPOINT}?page={page}&per_page=100"
     req = create_request(url)
+    if github_token := os.environ.get("GITHUB_TOKEN", None):
+        req.add_header("Authorization", f"Bearer {github_token}")
+    req.add_header("Accept", "application/vnd.github+json")
     with urllib.request.urlopen(req) as response:
         releases = json.load(response)
         if len(releases) != 0:

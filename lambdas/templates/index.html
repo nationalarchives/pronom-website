@@ -1,92 +1,80 @@
-{%- extends 'layouts/base.html' -%}
+{%- extends '_base.html' -%}
 
-{%- from "components/cookie-banner/macro.html" import tnaCookieBanner -%}
-{%- from "components/footer/macro.html" import tnaFooter -%}
-{%- from "components/header/macro.html" import tnaHeader -%}
+{%- from "components/button/macro.html" import tnaButton -%}
+{%- from "components/search-field/macro.html" import tnaSearchField -%}
 
-{%- set siteTitle = 'PRONOM - The National Archives' -%}
-{%- set theme = 'system' -%}
-{%- set themeAccent = 'blue' -%}
-{%- set htmlAttributes = {
-  'data-tna-cookies-domain': '.nationalarchives.gov.uk'
-} -%}
-
-{% block headIcons %}
-  <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/favicon.ico" type="image/x-icon">
-{% endblock %}
+{%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/' -%}
+{%- set no_footer_margin = True -%}
+{%- set mainClasses = 'pronom-hero' -%}
 
 {% block head %}
-<meta name="description" content="An online database of digital file formats">
-<meta name="robots" content="none">
-{% endblock %}
-
-{% block stylesheets %}
-  <link rel="stylesheet" href="/main.css" media="screen,print">
-  <link rel="stylesheet" href="/font-awesome.css">
-  <link rel="preconnect" href="https://use.typekit.net">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://use.typekit.net/kaq6qqh.css" media="screen,print">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400..700&family=Roboto+Mono:wght@400..500&display=swap" media="screen,print">
-  <link rel="stylesheet" href="https://www.nationalarchives.gov.uk/enrichment/css/logo-adornments.css" media="screen">
-  <link rel="stylesheet" href="/print.css" media="print">
-  <link rel="stylesheet" href="/ie.css" media="all and (-ms-high-contrast: none), (-ms-high-contrast: active)">
-{% endblock %}
-
-{% block cookies %}
-  {{ tnaCookieBanner({
-    'cookiesUrl': 'https://www.nationalarchives.gov.uk/cookies/'
-  }) | indent(6) }}
-{% endblock %}
-
-{% block header %}
-  {%- set phase_banner_message -%}
-    This service is still in development. <a href="https://www.smartsurvey.co.uk/s/pronom/">Give us your feedback</a>{%- if old_url %} or <a href="{{ old_url }}">view this page on the current PRONOM service</a>{%- endif -%}.
-  {%- endset -%}
-  {{ tnaHeader({
-    'logo': {
-      'strapline': 'PRONOM',
-      'href': '/'
-    },
-    'phaseBanner': {
-      'phase': 'Beta',
-      'message': phase_banner_message
-    }
-  }) | indent(4) }}
+{{ super() }}
+<meta name="description" content="An online database that provides clear, reliable information about digital file formats">
 {% endblock %}
 
 {% block content %}
-  {{ content | safe }}
-{% endblock %}
+  <div class="tna-container">
+    <div class="tna-column tna-column--full tna-column--width-5-6-medium">
+      <div class="pronom-hero__content">
+        <div class="pronom-hero__content-inner tna-!--padding-vertical-m">
+          <h1 class="tna-heading-xl">PRONOM</h1>
+          <p class="tna-scene-setter">PRONOM is an online database that provides clear, reliable information about digital file formats.</p>
+          <div class="tna-button-group">
+            {{ tnaButton({
+              'text': 'Learn more',
+              'href': '/about',
+              'icon': 'arrow-right',
+              'rightAlignIcon': True
+            }) | indent(10) }}
+          </div>
+        </div>
+        <div class="pronom-hero__content-inner tna-!--padding-top-s tna-!--padding-bottom-m tna-background-accent-light">
+          <form class="tna-!--margin-top-xs" action="/search" method="get" novalidate>
+            {{ tnaSearchField({
+              'label': 'Search',
+              'headingLevel': 2,
+              'headingSize': 'l',
+              'id': 'search',
+              'name': 'q',
+              'hint': 'Enter a file format name or file extension'
+            }) }}
+          </form>
+          <p class="tna-!--margin-top-xs">
+            <small>Browse <a href="/releases">PRONOM releases</a></small>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
 
-{% block footer %}
-  {{ tnaFooter({
-    'themeSelector': True,
-    'currentTheme': theme,
-    'defaultContent': True,
-    'defaultContentBaseUrl': 'https://www.nationalarchives.gov.uk',
-    'navigation': [],
-    'showNewsletter': False,
-    'legal': [
-      {
-        'text': 'Accessibility',
-        'href': '/accessibility'
-      },
-      {
-        'text': 'Terms and conditions',
-        'href': 'https://www.nationalarchives.gov.uk/legal/'
-      },
-      {
-        'text': 'Cookies',
-        'href': 'https://www.nationalarchives.gov.uk/cookies/'
-      }
-    ],
-    'classes': 'tna-!--margin-top-xl'
-  }) | indent(4) }}
-{% endblock %}
-
-{% block bodyEnd %}
-  <script src="/all.js"></script>
-  <script src="/site.js"></script>
-  <script type="module" src="https://www.nationalarchives.gov.uk/enrichment/js/logo-adornments.js" defer></script>
-{% endblock %}
+{% block content_old %}
+<div class="tna-section tna-background-accent-light">
+  <div class="tna-container">
+    <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+      <form action="/search" method="get" novalidate>
+        {{ tnaSearchField({
+          'label': 'Search PRONOM',
+          'headingLevel': 1,
+          'headingSize': 'xl',
+          'id': 'search',
+          'name': 'q',
+          'hint': 'Enter a file format name or file extension'
+        }) }}
+      </form>
+    </div>
+  </div>
+</div>
+<div class="tna-container">
+  <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
+    <p class="tna-large-paragraph">PRONOM is an online database that provides clear, reliable information about digital
+      file formats.</p>
+    <h2 class="tna-heading-m">About this service</h2>
+    <p>Archivists and others use it to understand the technical details behind files so they can keep
+      important digital records accessible over time. A key part of PRONOM is its database of file‑format signatures -
+      small patterns inside a file that help tools like DROID identify exactly what format it is. Knowing the precise
+      format helps you plan how to maintain access and readability, especially as older formats become harder to
+      open.</p>
+  </div>
+</div>
+{% endblock content_old %}

@@ -17,21 +17,21 @@ LATEST_SIGNATURE_FILE=DROID_SignatureFile_$(gh api repos/nationalarchives/pronom
 docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 docker compose cp app:/app/version .
 
-cd lambdas/results
+cd lambdas/search
 mkdir -p package
 pip install --target=package .
 cd package || exit
-zip -q -r ../../../results.zip .
+zip -q -r ../../../search.zip .
 cd ../../../ || exit
-zip -q ./results.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html indexes
+zip -q ./search.zip ./lambdas/templates/index.html ./lambdas/templates/search_results.html ./lambdas/templates/_base.html indexes
 
 python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
 cd lambdas || exit
 cd soap
 zip -rq ../../soap.zip .
 cd ../../
-wget $(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.assets[] | select(.name | startswith("DROID")) | .browser_download_url')
-mv $LATEST_SIGNATURE_FILE signature-file.xml
+wget $(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.assets[] | select(.name | startswith("DROID")) | .browser_download_url') -O signature-file.xml
+wget $(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.assets[] | select(.name | startswith("container")) | .browser_download_url') -O container-signatures.xml
 zip -q soap.zip version signature-file.xml
 
 cp ./*.zip terraform
@@ -47,8 +47,12 @@ cd html
 aws s3 sync --content-type text/css  --exclude "*" --include "*.css" . $S3_URL
 aws s3 sync --content-type text/javascript  --exclude "*" --include "*.js" . $S3_URL
 aws s3 sync --content-type application/xml  --exclude "*" --include "*.xml" . $S3_URL
-aws s3 sync --content-type text/html  --exclude "*.css" --exclude "*.xml" --exclude "*.js" --exclude "fa-solid-900.woff2" . $S3_URL
-aws s3 cp fa-solid-900.woff2 $S3_URL
+aws s3 sync --content-type text/html  --exclude "*.css" --exclude "*.xml" --exclude "*.js" --exclude "fa-solid-900.woff2" --exclude "fa-brands-400.woff2" . $S3_URL
+aws s3 cp fa-solid-900.woff2 $S3_URL//fa-solid-900.woff2
+aws s3 cp fa-brands-400.woff2 $S3_URL//fa-brands-400.woff2
 aws s3 cp signatures.json $S3_URL
+aws s3 mv $S3_URL/releases.html $S3_URL/releases
+aws s3 cp ../signature-file.xml $S3_URL/binary-signatures.xml
+aws s3 cp ../container-signatures.xml $S3_URL/container-signatures.xml
 
 aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"

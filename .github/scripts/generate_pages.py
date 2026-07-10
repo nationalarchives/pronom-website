@@ -15,6 +15,7 @@ from jinja2 import (
     PackageLoader,
     select_autoescape,
 )
+from tna_utilities.string import slugify
 
 env = Environment(
     loader=ChoiceLoader(
@@ -24,6 +25,11 @@ env = Environment(
         ]
     ),
     autoescape=select_autoescape(),
+)
+env.add_extension("jinja2.ext.do")
+env.filters["slugify"] = slugify
+env.filters["sortpuids"] = lambda puids: sorted(
+    puids, key=lambda puid: int(re.sub(r"^(((x\-)?fmt)|sfw)\/", "", puid))
 )
 
 bucket_name = "tna-pronom-signatures-spike"
@@ -88,7 +94,7 @@ def get_file_extensions(json_data):
     return [extension for extension in extension_names if extension]
 
 
-def create_detail(json_data, all_actors, json_by_id):
+def create_detail(puid, json_data, all_actors, json_by_id, releases):
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
     summary_args = {
@@ -104,13 +110,43 @@ def create_detail(json_data, all_actors, json_by_id):
         "source": all_actors[json_data["source"]] if "source" in json_data else None,
     }
     signatures = json_data["internalSignatures"]
+    changelog = [
+        {
+            "version": release[0],
+            "date": release[1],
+            "status": "Added"
+            if puid in [sig["puid"] for sig in details["New Records"]]
+            or puid in [sig["puid"] for sig in details["New Signatures"]]
+            else "Updated",
+            "details": [
+                sig["description"]
+                for sig in (
+                    details["Updated Records"]
+                    + details["New Signatures"]
+                    + details["New Records"]
+                )
+                if sig["puid"] == puid
+            ],
+        }
+        for release, details in releases.items()
+        if any(
+            sig["puid"] == puid
+            for sig in (
+                details["Updated Records"]
+                + details["New Signatures"]
+                + details["New Records"]
+            )
+        )
+    ]
     return details_template.render(
         id=json_data.get("fileFormatID"),
-        puid=summary.get("PUID"),
+        puid=puid,
         name=summary["Name"],
         summary=summary_args,
         signatures=signatures,
         containers=json_data.get("containerSignatures", []),
+        releases=releases,
+        changelog=changelog,
     )
 
 
@@ -144,7 +180,7 @@ def create_signature_section():
 
 
 def create_home():
-    return env.get_template("home.html").render()
+    return env.get_template("index.html").render()
 
 
 def create_search():
@@ -152,7 +188,7 @@ def create_search():
 
 
 def create_accessibility():
-    return env.get_template("accessibility.html").render()
+    return env.get_template("accessibility-statement.html").render()
 
 
 path = sys.argv[1]
@@ -179,8 +215,8 @@ def get_latest_release():
     req = Request(
         "https://api.github.com/repos/nationalarchives/pronom/releases/latest"
     )
-    if "GITHUB_TOKEN" in os.environ:
-        req.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
+    if github_token := os.environ.get("GITHUB_TOKEN", None):
+        req.add_header("Authorization", f"Bearer {github_token}")
     req.add_header("Accept", "application/vnd.github+json")
     with urllib.request.urlopen(req) as response:
         return json.load(response)["name"]
@@ -199,17 +235,15 @@ def format_date(date_str: str) -> str:
     return f"{ordinal(dt.day)} {dt.strftime('%B %Y')}"
 
 
-def create_release_page():
+def get_releases():
     base_path = Path(path) / Path("changelogs")
     releases = {}
-    items = []
-    latest_release = get_latest_release()
+    latest_release = get_latest_release().upper()
     for file in os.listdir(Path(path) / Path("changelogs")):
         version = re.search(r"(v\d{2,4})", file).group().upper()
         date_match = re.search(r"(\d{4}-\d{2}-\d{2})", file)
         if int(version.lstrip("V")) <= int(latest_release.lstrip("V")) and date_match:
             date = format_date(date_match.group())
-            items.append({"text": version, "href": f"#{version}"})
             releases[
                 (
                     version,
@@ -234,31 +268,50 @@ def create_release_page():
     sorted_releases = dict(
         sorted(
             releases.items(),
-            key=lambda item: int(item[0][0].lstrip("Vs")),
+            key=lambda item: int(item[0][0].lstrip("V")),
             reverse=True,
         )
     )
-    sorted_items = sorted(
-        items, key=lambda item: int(item["text"].lstrip("V")), reverse=True
+    return sorted_releases, latest_release
+
+
+def create_releases_page(releases, latest_release):
+    items = [
+        {"text": release[0], "href": f"#{release[0]}"} for release in releases.keys()
+    ]
+    return env.get_template("releases.html").render(
+        releases=releases, items=items, latest_release=latest_release
     )
-    return env.get_template("release_notes.html").render(
-        releases=sorted_releases, items=sorted_items
-    )
+
+
+def create_release_page(release, details):
+    return env.get_template("release.html").render(release=release, details=details)
 
 
 def run():
-    with open("site/help", "w") as help_page:
-        help_page.write(env.get_template("help.html").render())
-    with open("site/releases", "w") as release_notes:
-        release_notes.write(create_release_page())
+    releases, latest_release = get_releases()
+
+    with open("site/about", "w") as about_page:
+        about_page.write(env.get_template("about.html").render())
+
+    os.makedirs("site/releases", exist_ok=True)
+    with open("site/releases.html", "w") as release_notes:
+        release_notes.write(create_releases_page(releases, latest_release))
+    for release, details in releases.items():
+        release_version = release[0].lower()
+        with open(f"site/releases/{release_version}", "w") as release_page:
+            release_page.write(create_release_page(release, details))
+
     with open("site/error", "w") as error_page:
         error_page.write(env.get_template("error.html").render())
+
     with open("site/signature-list", "w") as signature_list:
         signature_list.write(create_file_list())
+
     with open("site/home", "w") as home:
         home.write(create_home())
 
-    with open("site/accessibility", "w") as accessibility:
+    with open("site/accessibility-statement", "w") as accessibility:
         accessibility.write(create_accessibility())
 
     all_json_files = {}
@@ -283,7 +336,9 @@ def run():
 
     for puid, json_data in all_json_files.items():
         with open(f"site/{puid}", "w") as output:
-            output.write(create_detail(json_data, all_actors, json_by_id))
+            output.write(
+                create_detail(puid, json_data, all_actors, json_by_id, releases)
+            )
 
     for actor_json in all_actors.values():
         actor_id = actor_json["actorId"]

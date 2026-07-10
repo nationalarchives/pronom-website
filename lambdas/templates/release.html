@@ -1,0 +1,85 @@
+{%- extends '_base.html' -%}
+
+{%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+{%- from "components/sidebar/macro.html" import tnaSidebar -%}
+
+{%- set pageTitle = 'Release ' ~ release[0] -%}
+{%- set highlight_header_item = 'releases' -%}
+
+{% block beforeContent %}
+<div class="tna-!--padding-top-s">
+  <div class="tna-container">
+    <div class="tna-column tna-column--full">
+      {{ tnaBreadcrumbs({
+        'items': [
+          {
+            'text': 'Home',
+            'href': '/'
+          },
+          {
+            'text': 'Releases',
+            'href': '/releases'
+          }
+        ]
+      }) | indent(6) }}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="tna-container">
+  <div class="tna-column tna-column--width-1-4 tna-column--margin-right-1-12 tna-column--width-1-3-medium tna-column--no-margin-right-medium tna-column--full-small tna-column--no-margin-right-small tna-column--full-tiny tna-column--no-margin-right-tiny tna-!--margin-top-m">
+    {% set sidebar_items = [] %}
+    {% for table in details %}
+      {% if details[table] %}
+        {% do sidebar_items.append({
+          'text': table|capitalize,
+          'href': '#' ~ table|slugify
+        }) %}
+      {% endif %}
+    {% endfor %}
+
+    {{ tnaSidebar({
+      'title': 'On this page',
+      'headingLevel': 2,
+      'items': sidebar_items,
+      'type': 'sections',
+      'sticky': True,
+      'classes': 'tna-!--padding-top-s'
+    }) | indent(6) }}
+  </div>
+  <div class="tna-column tna-column--width-2-3 tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
+    <hgroup class="tna-hgroup-xl">
+      <p class="tna-hgroup__supertitle">Release</p>
+      <h2 class="tna-hgroup__title">{{ release[0] }}</h2>
+    </hgroup>
+    <p>Release date: {{ release[1] }}</p>
+    {% for table in details %}
+      {% if details[table] %}
+        <h3 class="tna-heading-l" id="{{ table|slugify }}">{{ table|capitalize }}</h3>
+        <table class="tna-table">
+          <thead class="tna-table__head">
+            <tr class="tna-table__row">
+              <th class="tna-table__header">PUID</th>
+              <th class="tna-table__header">Description</th>
+            </tr>
+          </thead>
+          <tbody class="tna-table__body">
+          {%- for item in details[table] %}
+            <tr class="tna-table__row">
+              <th class="tna-table__header">
+                <code>
+                  <a href="/{{ item.puid }}">{{ item.puid }}</a>
+                </code>
+              </th>
+              <td class="tna-table__cell">{{ item.description }}</td>
+            </tr>
+          {%- endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
