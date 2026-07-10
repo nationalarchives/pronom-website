@@ -69,7 +69,6 @@ jobs:
           npx cypress run --config baseUrl=https://test.pronom.nationalarchives.gov.uk
 #  destroy-test:
 #    needs: e2e-tests
-#    if: always()
 #    runs-on: ubuntu-latest
 #    name: Destroy test environment
 #    environment:
