@@ -28,35 +28,38 @@
     <div class="tna-container">
       <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
         <h1 class="tna-heading-xl">{{ pageTitle }}</h1>
-        <p class="tna-scene-setter">Information about the PRONOM database and this site.</p>
+        <p class="tna-scene-setter">An archive of all previously released DROID signature files.</p>
       </div>
     </div>
   </div>
   <div class="tna-container tna-section">
     <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
       <p>
-        This page provides an archive of all previously released DROID signature files.
         These signature files are created by PRONOM and used by the DROID software tool to identify the exact format of a digital file.</p>
       <p>
         Each download is an XML file containing a set of signatures that were released together.
         If you are researching digital file formats, or you are interested in how file format identification works, these files may be helpful.
       </p>
+    </div>
+    <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
       <h2 class="tna-heading-l">Binary signature files</h2>
-      <ol class="tna-ol tna-ol--plain">
+      <ul class="tna-ul tna-ul--plain">
         {%- for data in signature_data %}
-          <li>
-            <a href="{{ data['location'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a>
-          </li>
+        <li>
+          <a href="{{ data['location'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a>
+        </li>
         {%- endfor %}
-      </ol>
+      </ul>
+    </div>
+    <div class="tna-column tna-column--width-1-2 tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
       <h2 class="tna-heading-l">Container signature files</h2>
-      <ol class="tna-ol tna-ol--plain">
+      <ul class="tna-ul tna-ul--plain">
         {%- for data in container_signature_data %}
-          <li>
-            <a href="{{ data['location'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a>
-          </li>
+        <li>
+          <a href="{{ data['location'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a>
+        </li>
         {%- endfor %}
-      </ol>
+      </ul>
     </div>
   </div>
 {% endblock %}
