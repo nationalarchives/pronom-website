@@ -44,13 +44,14 @@ cd ..
 python .github/scripts/upload_signature_files.py $S3_BUCKET
 
 cd html
-aws s3 sync --content-type text/css  --exclude "*" --include "*.css" . $S3_URL
-aws s3 sync --content-type text/javascript  --exclude "*" --include "*.js" . $S3_URL
-aws s3 sync --content-type application/xml  --exclude "*" --include "*.xml" . $S3_URL
-aws s3 sync --content-type font/woff2  --exclude "*" --include "*.woff2" . $S3_URL
-aws s3 sync --content-type image/x-icon  --exclude "*" --include "*.ico" . $S3_URL
-aws s3 sync --content-type image/png  --exclude "*" --include "*.png" . $S3_URL
-aws s3 sync --content-type text/html  --exclude "*.css" --exclude "*.js" --exclude "*.xml" --exclude "*.woff2" --exclude "*.ico" --exclude "*.png" . $S3_URL
+aws s3 sync --content-type text/css --exclude "*" --include "*.css" . $S3_URL
+aws s3 sync --content-type text/javascript --exclude "*" --include "*.js" . $S3_URL
+aws s3 sync --content-type application/xml --exclude "*" --include "*.xml" . $S3_URL
+aws s3 sync --content-type font/woff2 --exclude "*" --include "*.woff2" . $S3_URL
+aws s3 sync --content-type image/x-icon --exclude "*" --include "*.ico" . $S3_URL
+aws s3 sync --content-type image/png --exclude "*" --include "*.png" . $S3_URL
+aws s3 sync --content-type application/json --exclude "*" --include "*.json" . $S3_URL
+aws s3 sync --content-type text/html --exclude "*.css" --exclude "*.js" --exclude "*.xml" --exclude "*.woff2" --exclude "*.ico" --exclude "*.png" --exclude "*.json" . $S3_URL
 aws s3 cp fa-solid-900.woff2 $S3_URL//fa-solid-900.woff2
 aws s3 cp fa-brands-400.woff2 $S3_URL//fa-brands-400.woff2
 aws s3 cp signatures.json $S3_URL
