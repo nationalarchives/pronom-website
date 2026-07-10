@@ -18,3 +18,4 @@ version
 .terraform
 /styles
 .env
+.DS_Store
