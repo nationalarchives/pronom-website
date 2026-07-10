@@ -30,8 +30,8 @@ cd lambdas || exit
 cd soap
 zip -rq ../../soap.zip .
 cd ../../
-wget $(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.assets[] | select(.name | startswith("DROID")) | .browser_download_url')
-mv $LATEST_SIGNATURE_FILE signature-file.xml
+wget $(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.assets[] | select(.name | startswith("DROID")) | .browser_download_url') -O signature-file.xml
+wget $(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.assets[] | select(.name | startswith("container")) | .browser_download_url') -O container-signatures.xml
 zip -q soap.zip version signature-file.xml
 
 cp ./*.zip terraform
@@ -51,6 +51,8 @@ aws s3 sync --content-type text/html  --exclude "*.css" --exclude "*.xml" --excl
 aws s3 cp fa-solid-900.woff2 $S3_URL/fa-solid-900.woff2
 aws s3 cp fa-brands-400.woff2 $S3_URL/fa-brands-400.woff2
 aws s3 cp signatures.json $S3_URL
-aws s3 mv s3://test-pronom-site-490872067939-eu-west-2-an/releases.html s3://test-pronom-site-490872067939-eu-west-2-an/releases
+aws s3 mv $S3_URL/releases.html $S3_URL/releases
+aws s3 cp signature-file.xml $S3_URL/binary-signatures.xml
+aws s3 cp container-signatures.xml $S3_URL/container-signatures.xml
 
 aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"
