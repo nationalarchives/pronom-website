@@ -48,8 +48,8 @@ aws s3 sync --content-type text/css  --exclude "*" --include "*.css" . $S3_URL
 aws s3 sync --content-type text/javascript  --exclude "*" --include "*.js" . $S3_URL
 aws s3 sync --content-type application/xml  --exclude "*" --include "*.xml" . $S3_URL
 aws s3 sync --content-type text/html  --exclude "*.css" --exclude "*.xml" --exclude "*.js" --exclude "fa-solid-900.woff2" --exclude "fa-brands-400.woff2" . $S3_URL
-aws s3 cp fa-solid-900.woff2 $S3_URL/fa-solid-900.woff2
-aws s3 cp fa-brands-400.woff2 $S3_URL/fa-brands-400.woff2
+aws s3 cp fa-solid-900.woff2 $S3_URL//fa-solid-900.woff2
+aws s3 cp fa-brands-400.woff2 $S3_URL//fa-brands-400.woff2
 aws s3 cp signatures.json $S3_URL
 aws s3 mv $S3_URL/releases.html $S3_URL/releases
 aws s3 cp ../lambdas/signature-file.xml $S3_URL/binary-signatures.xml
