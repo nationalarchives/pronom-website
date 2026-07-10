@@ -67,6 +67,7 @@ jobs:
         run: |
           cd tests
           npx cypress run --config baseUrl=https://test.pronom.nationalarchives.gov.uk
+
 #  destroy-test:
 #    needs: e2e-tests
 #    runs-on: ubuntu-latest
