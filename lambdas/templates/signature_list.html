@@ -46,7 +46,7 @@
       <ul class="tna-ul tna-ul--plain">
         {%- for data in signature_data %}
         <li>
-          <a href="{{ data['location'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a>
+          <a href="{{ data['location'] }}">{{ data['name'] }}</a>
         </li>
         {%- endfor %}
       </ul>
@@ -56,7 +56,7 @@
       <ul class="tna-ul tna-ul--plain">
         {%- for data in container_signature_data %}
         <li>
-          <a href="{{ data['location'] }}" rel="noreferrer noopener" target="_blank">{{ data['name'] }}</a>
+          <a href="{{ data['location'] }}">{{ data['name'] }}</a>
         </li>
         {%- endfor %}
       </ul>
