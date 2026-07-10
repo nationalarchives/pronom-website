@@ -5,7 +5,7 @@
 
 {%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/' -%}
 {%- set no_footer_margin = True -%}
-{%- set mainClasses = 'pronom-hero tna-background-accent-light' -%}
+{%- set mainClasses = 'pronom-hero' -%}
 
 {% block head %}
 {{ super() }}
@@ -14,7 +14,7 @@
 
 {% block content %}
   <div class="tna-container">
-    <div class="tna-column tna-column--width-2-3 tna-column--width-5-6-medium tna-column--full-small tna-column--full-tiny">
+    <div class="tna-column tna-column--full tna-column--width-5-6-medium">
       <div class="pronom-hero__content">
         <div class="pronom-hero__content-inner tna-!--padding-vertical-m">
           <h1 class="tna-heading-xl">PRONOM</h1>
@@ -39,6 +39,9 @@
               'hint': 'Enter a file format name or file extension'
             }) }}
           </form>
+          <p class="tna-!--margin-top-xs">
+            <small>Browse <a href="/releases">PRONOM releases</a></small>
+          </p>
         </div>
       </div>
     </div>

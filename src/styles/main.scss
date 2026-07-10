@@ -111,8 +111,8 @@
 }
 
 .pronom-hero {
-  padding-top: spacing.space(8);
-  padding-bottom: spacing.space(12);
+  padding-top: clamp(spacing.space(3), 6vh, spacing.space(8));
+  padding-bottom: clamp(spacing.space(5), 15vh, spacing.space(12));
 
   overflow: hidden;
 
@@ -156,21 +156,25 @@
   }
 
   &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    overflow: hidden;
+
     position: relative;
     z-index: 2;
 
-    background-color: rgb(244 244 244 / 50%);
+    @include colour.colour-background("background");
+
     @include borders.rounded-border;
 
     @include shadows.drop-shadow;
 
-    @media (prefers-reduced-transparency: reduce) {
-      @include colour.colour-background("base-background", true);
-    }
-
     &-inner {
       padding-right: spacing.space(2);
       padding-left: spacing.space(2);
+
+      flex: 1;
 
       &.tna-background-accent-light {
         @include colour.colour-border("keyline", 1px, solid, top);
@@ -180,26 +184,28 @@
 
   .tna-template--dark-theme & {
     background: linear-gradient(-45deg, #00623b, #004c7e);
-
-    &__content {
-      background-color: rgb(0 0 0 / 45%);
-    }
   }
 
   .tna-template--system-theme & {
     @media (prefers-color-scheme: dark) {
       background: linear-gradient(-45deg, #00623b, #004c7e);
+    }
+  }
 
-      &__content {
-        background-color: rgb(0 0 0 / 45%);
+  @include media.on-large {
+    &__content {
+      flex-direction: row;
+
+      &-inner {
+        &.tna-background-accent-light {
+          border-top: none;
+          @include colour.colour-border("keyline", 1px, solid, left);
+        }
       }
     }
   }
 
   @include media.on-mobile {
-    padding-top: spacing.space(3);
-    padding-bottom: spacing.space(5);
-
     &__content {
       &-inner {
         padding-right: spacing.space(1.5);
