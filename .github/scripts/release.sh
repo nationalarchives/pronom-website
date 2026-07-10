@@ -52,7 +52,7 @@ aws s3 cp fa-solid-900.woff2 $S3_URL//fa-solid-900.woff2
 aws s3 cp fa-brands-400.woff2 $S3_URL//fa-brands-400.woff2
 aws s3 cp signatures.json $S3_URL
 aws s3 mv $S3_URL/releases.html $S3_URL/releases
-aws s3 cp ../lambdas/signature-file.xml $S3_URL/binary-signatures.xml
-aws s3 cp ../lambdas/container-signatures.xml $S3_URL/container-signatures.xml
+aws s3 cp signature-file.xml $S3_URL/binary-signatures.xml
+aws s3 cp container-signatures.xml $S3_URL/container-signatures.xml
 
 aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"
