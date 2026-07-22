@@ -21,6 +21,10 @@ jobs:
       contents: read
 
     steps:
+      - name: Provision runner
+        uses: nationalarchives/org-actions/actions/provision-runner@adcee5564f6efe21c00cdcb994cf819b77fc5be9 # v1.0.5
+        with:
+          wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
         with:
           persist-credentials: false
