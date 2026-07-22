@@ -4,7 +4,6 @@ import os
 import re
 import sys
 import urllib
-from datetime import datetime
 from pathlib import Path
 from urllib.request import Request
 
@@ -15,6 +14,7 @@ from jinja2 import (
     PackageLoader,
     select_autoescape,
 )
+from tna_utilities.datetime import pretty_date
 from tna_utilities.string import slugify
 
 env = Environment(
@@ -151,17 +151,16 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
 
 
 def create_actor(data):
-    def format_date():
-        return datetime.strptime(data["sourceDate"], "%Y-%m-%d").strftime("%d %b %Y")
+    source_date = data.get("sourceDate")
 
     return {
         "Address": data.get("address"),
         "Country": data.get("addressCountry"),
-        "Support Website": data.get("supportWebsite"),
-        "Company Website": data.get("companyWebsite"),
+        "Support website": data.get("supportWebsite"),
+        "Company website": data.get("companyWebsite"),
         "Contact": data.get("contact"),
         "Source": data.get("source"),
-        "Source Date": format_date() if "sourceDate" in data else None,
+        "Source date": pretty_date(source_date) if source_date else None,
     }
 
 
@@ -230,11 +229,6 @@ def ordinal(n: int) -> str:
     return f"{n}{suffix}"
 
 
-def format_date(date_str: str) -> str:
-    dt = datetime.strptime(date_str, "%Y-%m-%d")
-    return f"{ordinal(dt.day)} {dt.strftime('%B %Y')}"
-
-
 def get_releases():
     base_path = Path(path) / Path("changelogs")
     releases = {}
@@ -243,7 +237,7 @@ def get_releases():
         version = re.search(r"(v\d{2,4})", file).group().upper()
         date_match = re.search(r"(\d{4}-\d{2}-\d{2})", file)
         if int(version.lstrip("V")) <= int(latest_release.lstrip("V")) and date_match:
-            date = format_date(date_match.group())
+            date = pretty_date(date_match.group())
             releases[
                 (
                     version,
