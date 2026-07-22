@@ -4,7 +4,7 @@
     "css": "sass --style=compressed --load-path=node_modules --embed-sources src/styles:styles"
   },
   "dependencies": {
-    "@nationalarchives/frontend": "1.0.0"
+    "@nationalarchives/frontend": "1.1.0"
   },
   "devDependencies": {
     "sass": "^1.99.0"
