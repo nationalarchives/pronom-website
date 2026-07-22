@@ -1,5 +1,4 @@
 FROM ghcr.io/nationalarchives/tna-python-dev:latest AS build
-ENV COOLDOWN_PERIOD=0
 ENV NPM_BUILD_COMMAND=css
 COPY pyproject.toml poetry.lock package.json package-lock.json ./
 COPY src src
