@@ -85,11 +85,32 @@
   "lang": "en",
   "screenshots": [
     {
-      "src": "/assets/screenshot-1.png",
-      "sizes": "640x320",
-      "type": "image/png",
+      "src": "/assets/screenshot-home.webp",
+      "sizes": "1280x720",
+      "type": "image/webp",
       "form_factor": "wide",
       "label": "Landing page"
+    },
+    {
+      "src": "/assets/screenshot-search.webp",
+      "sizes": "1280x720",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Search results page"
+    },
+    {
+      "src": "/assets/screenshot-details-page.webp",
+      "sizes": "1280x720",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "File format details page"
+    },
+    {
+      "src": "/assets/screenshot-actor.webp",
+      "sizes": "1280x720",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Actor details page"
     }
   ]
 }

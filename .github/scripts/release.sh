@@ -49,10 +49,11 @@ aws s3 sync --content-type text/javascript --exclude "*" --include "*.js" . $S3_
 aws s3 sync --content-type application/xml --exclude "*" --include "*.xml" . $S3_URL
 aws s3 sync --content-type image/x-icon --exclude "*" --include "*.ico" . $S3_URL
 aws s3 sync --content-type image/png --exclude "*" --include "*.png" . $S3_URL
+aws s3 sync --content-type image/webp --exclude "*" --include "*.webp" . $S3_URL
 aws s3 sync --content-type application/json --exclude "*" --include "*.json" . $S3_URL
 aws s3 cp --content-type font/woff2 assets/fa-solid-900.woff2 $S3_URL/assets//fa-solid-900.woff2
 aws s3 cp --content-type font/woff2 assets/fa-brands-400.woff2 $S3_URL/assets//fa-brands-400.woff2
-aws s3 sync --content-type text/html --exclude "*.css" --exclude "*.js" --exclude "*.xml" --exclude "*.woff2" --exclude "*.ico" --exclude "*.png" --exclude "*.json" . $S3_URL
+aws s3 sync --content-type text/html --exclude "*.css" --exclude "*.js" --exclude "*.xml" --exclude "*.woff2" --exclude "*.ico" --exclude "*.png" --exclude "*.webp" --exclude "*.json" . $S3_URL
 aws s3 cp signatures.json $S3_URL
 aws s3 mv $S3_URL/releases.html $S3_URL/releases
 aws s3 cp ../signature-file.xml $S3_URL/binary-signatures.xml
