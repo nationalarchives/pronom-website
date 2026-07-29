@@ -21,10 +21,13 @@
           <p class="tna-scene-setter">PRONOM is an online database that provides clear, reliable information about digital file formats.</p>
           <div class="tna-button-group">
             {{ tnaButton({
-              'html': 'Learn more<span class="tna-visually-hidden"> about PRONOM</span>',
+              'html': 'Learn more',
               'href': '/about',
               'icon': 'arrow-right',
-              'rightAlignIcon': True
+              'rightAlignIcon': True,
+              'attributes': {
+                'aria-label': 'Learn more about PRONOM'
+              }
             }) | indent(10) }}
           </div>
         </div>
