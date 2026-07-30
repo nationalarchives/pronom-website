@@ -5,6 +5,7 @@
 {%- from "components/sidebar/macro.html" import tnaSidebar -%}
 
 {%- set pageTitle = name -%}
+{%- set description = 'File format information for ' ~ name -%}
 {%- if id %}
   {%- set old_url = 'https://www.nationalarchives.gov.uk/pronom/Format/proFormatSearch.aspx?status=detailReport&id=' ~ id -%}
 {%- elif puid %}
