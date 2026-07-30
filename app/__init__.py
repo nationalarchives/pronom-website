@@ -13,12 +13,23 @@ def healthcheck():
 @app.route("/search")
 def pronom_search():
     query_string = request.args.get("q")
+    cookies = request.cookies
     if query_string is not None:
         response = search.lambda_handler(
-            {"queryStringParameters": {"q": query_string}}, None
+            {
+                "queryStringParameters": {"q": query_string},
+                "cookies": [f"{k}={v}" for k, v in cookies.items()],
+            },
+            None,
         )
     else:
-        response = search.lambda_handler({"queryStringParameters": {}}, None)
+        response = search.lambda_handler(
+            {
+                "queryStringParameters": {},
+                "cookies": [f"{k}={v}" for k, v in cookies.items()],
+            },
+            None,
+        )
     if "body" in response:
         return response["body"]
     else:

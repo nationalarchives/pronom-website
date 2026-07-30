@@ -61,6 +61,10 @@ def search(search_string):
 
 def lambda_handler(event, _):
     query_params = event.get("queryStringParameters", {})
+    cookies = {}
+    for c in event.get("cookies", []):
+        (k, v) = c.split("=", 1)
+        cookies[k] = v
     search_results = env.get_template("search_results.html")
     if query_params:
         search_term = query_params.get("q") if query_params else None
@@ -71,7 +75,10 @@ def lambda_handler(event, _):
         rows = search(search_term)
         data = [{"puid": row[0], "name": row[1], "extensions": row[2]} for row in rows]
         body = search_results.render(
-            data=data, search_term=search_term, search_home=False
+            data=data,
+            search_term=search_term,
+            search_home=False,
+            theme=cookies.get("theme", "system"),
         )
 
         return {
@@ -80,7 +87,9 @@ def lambda_handler(event, _):
             "headers": {"Content-Type": "text/html"},
         }
     else:
-        body = search_results.render(search_home=True)
+        body = search_results.render(
+            search_home=True, theme=cookies.get("theme", "system")
+        )
     return {
         "statusCode": 200,
         "body": body,
