@@ -4,6 +4,7 @@
 {%- from "components/search-field/macro.html" import tnaSearchField -%}
 
 {%- set pageTitle = 'Search results' -%}
+{%- set description = ('Search results for ' ~ search_term) if search_term else 'Search results' -%}
 {%- set highlight_header_item = 'search' -%}
 
 {% block skipLink %}
