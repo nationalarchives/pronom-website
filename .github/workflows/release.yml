@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
         with:
           persist-credentials: false
-      - uses: actions/setup-node@6a61c0375d66246de94630495909f12cf8dac84d
+      - uses: actions/setup-node@e51e5fe84fc33b4c73ebe40526b2694712b5b858
         with:
           node-version: 20
       - name: Wait for domain to be available
