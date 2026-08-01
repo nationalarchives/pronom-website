@@ -33,7 +33,7 @@ jobs:
         with:
           terraform_wrapper: false
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b #v6.2.0
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c #v6.2.3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/TestPRONOMInfrastructureRole
           aws-region: eu-west-2
@@ -85,7 +85,7 @@ jobs:
         with:
           terraform_wrapper: false
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b #v6.2.0
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c #v6.2.3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/TestPRONOMInfrastructureRole
           aws-region: eu-west-2
@@ -132,7 +132,7 @@ jobs:
         with:
           terraform_wrapper: false
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b #v6.2.0
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c #v6.2.3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/ProdPRONOMInfrastructureRole
           aws-region: eu-west-2
