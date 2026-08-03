@@ -7,18 +7,33 @@ module.exports = defineConfig({
     supportFile: false,
     baseUrl: "http://localhost:8081",
     setupNodeEvents(on) {
-      on("file:preprocessor", webpackPreprocessor({
-        webpackOptions: {
-          resolve: { extensions: [".ts", ".js"] },
-          module: {
-            rules: [{
-              test: /\.tsx?$/,
-              use: [{ loader: "babel-loader", options: { presets: ["@babel/preset-env", "@babel/preset-typescript"] } }],
-              exclude: /node_modules/,
-            }],
+      on(
+        "file:preprocessor",
+        webpackPreprocessor({
+          webpackOptions: {
+            resolve: { extensions: [".ts", ".js"] },
+            module: {
+              rules: [
+                {
+                  test: /\.tsx?$/,
+                  use: [
+                    {
+                      loader: "babel-loader",
+                      options: {
+                        presets: [
+                          "@babel/preset-env",
+                          "@babel/preset-typescript",
+                        ],
+                      },
+                    },
+                  ],
+                  exclude: /node_modules/,
+                },
+              ],
+            },
           },
-        },
-      }));
+        }),
+      );
     },
   },
   allowCypressEnv: false,
