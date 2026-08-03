@@ -21,10 +21,10 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           repository: nationalarchives/pronom-signatures
           path: "signature-files"
@@ -33,7 +33,7 @@ jobs:
         with:
           terraform_wrapper: false
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b #v6.2.0
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c #v6.2.3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/TestPRONOMInfrastructureRole
           aws-region: eu-west-2
@@ -50,10 +50,10 @@ jobs:
     environment:
       name: test
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@6a61c0375d66246de94630495909f12cf8dac84d
+      - uses: actions/setup-node@e51e5fe84fc33b4c73ebe40526b2694712b5b858
         with:
           node-version: 20
       - name: Wait for domain to be available
@@ -78,14 +78,14 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           persist-credentials: false
       - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
         with:
           terraform_wrapper: false
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b #v6.2.0
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c #v6.2.3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/TestPRONOMInfrastructureRole
           aws-region: eu-west-2
@@ -120,10 +120,10 @@ jobs:
       name: production
       url: https://pronom.nationalarchives.gov.uk/
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           repository: nationalarchives/pronom-signatures
           path: "signature-files"
@@ -132,7 +132,7 @@ jobs:
         with:
           terraform_wrapper: false
       - name: Configure AWS credentials for Lambda
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b #v6.2.0
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c #v6.2.3
         with:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/ProdPRONOMInfrastructureRole
           aws-region: eu-west-2
