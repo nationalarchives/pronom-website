@@ -75,15 +75,64 @@
       "type": "image/png",
       "sizes": "1024x1024",
       "purpose": "any"
+    },
+    {
+      "src": "/assets/maskable_icon_x48.png",
+      "type": "image/png",
+      "sizes": "48x48",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/maskable_icon_x72.png",
+      "type": "image/png",
+      "sizes": "72x72",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/maskable_icon_x96.png",
+      "type": "image/png",
+      "sizes": "96x96",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/maskable_icon_x128.png",
+      "type": "image/png",
+      "sizes": "128x128",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/maskable_icon_x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/maskable_icon_x384.png",
+      "type": "image/png",
+      "sizes": "384x384",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/maskable_icon_x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/?utm_source=pwa",
   "scope": "/",
   "display": "minimal-ui",
-  "background_color": "#010101",
+  "background_color": "#004c7e",
   "dir": "ltr",
   "lang": "en",
   "screenshots": [
+    {
+      "src": "/assets/screenshot-home-mobile.webp",
+      "sizes": "540x960",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Landing page"
+    },
     {
       "src": "/assets/screenshot-home.webp",
       "sizes": "1280x720",
