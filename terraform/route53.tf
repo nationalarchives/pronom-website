@@ -23,6 +23,7 @@ resource "aws_route53_record" "aaaa" {
 }
 
 resource "aws_route53_record" "google_verification" {
+  count = var.environment == "prod" ? 1 : 0
   name    = "google-site-verification"
   records = ["vq3nRRGt1EWmwSZP9zx6ncR-dI5UO2mR-IZarh3ARxQ"]
   type    = "TXT"
