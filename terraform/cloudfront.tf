@@ -162,6 +162,11 @@ resource "aws_cloudfront_distribution" "site" {
     cache_policy_id = data.aws_cloudfront_cache_policy.caching_optimised.id
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
+
+    forwarded_values {
+      query_string = true
+      query_string_cache_keys = ["v"]
+    }
   }
 
   ordered_cache_behavior {
@@ -176,6 +181,16 @@ resource "aws_cloudfront_distribution" "site" {
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
+
+    forwarded_values {
+      query_string = true
+      query_string_cache_keys = ["q"]
+
+      cookies {
+        forward = "whitelist"
+        whitelisted_names = ["cookies_policy", "cookie_preferences", "cookie_preferences_set", "theme"]
+      }
+    }
   }
 
   ordered_cache_behavior {
