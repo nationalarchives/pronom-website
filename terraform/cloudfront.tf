@@ -164,7 +164,7 @@ resource "aws_cloudfront_distribution" "site" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
     forwarded_values {
-      query_string = true
+      query_string            = true
       query_string_cache_keys = ["v"]
     }
   }
@@ -183,11 +183,11 @@ resource "aws_cloudfront_distribution" "site" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
     forwarded_values {
-      query_string = true
+      query_string            = true
       query_string_cache_keys = ["q"]
 
       cookies {
-        forward = "whitelist"
+        forward           = "whitelist"
         whitelisted_names = ["cookies_policy", "cookie_preferences", "cookie_preferences_set", "theme"]
       }
     }
