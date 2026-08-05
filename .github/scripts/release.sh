@@ -44,16 +44,16 @@ cd ..
 python .github/scripts/upload_signature_files.py $S3_BUCKET
 
 cd html
-aws s3 sync --content-type text/css --exclude "*" --include "*.css" . $S3_URL
-aws s3 sync --content-type text/javascript --exclude "*" --include "*.js" . $S3_URL
-aws s3 sync --content-type application/xml --exclude "*" --include "*.xml" . $S3_URL
-aws s3 sync --content-type image/x-icon --exclude "*" --include "*.ico" . $S3_URL
-aws s3 sync --content-type image/png --exclude "*" --include "*.png" . $S3_URL
-aws s3 sync --content-type image/webp --exclude "*" --include "*.webp" . $S3_URL
-aws s3 sync --content-type application/json --exclude "*" --include "*.json" . $S3_URL
-aws s3 cp --content-type font/woff2 assets/fa-solid-900.woff2 $S3_URL/assets//fa-solid-900.woff2
-aws s3 cp --content-type font/woff2 assets/fa-brands-400.woff2 $S3_URL/assets//fa-brands-400.woff2
-aws s3 sync --content-type text/html --exclude "*.css" --exclude "*.js" --exclude "*.xml" --exclude "*.woff2" --exclude "*.ico" --exclude "*.png" --exclude "*.webp" --exclude "*.json" . $S3_URL
+aws s3 sync --content-type text/css --cache-control max-age=2592000 --exclude "*" --include "*.css" . $S3_URL
+aws s3 sync --content-type text/javascript --cache-control max-age=2592000 --exclude "*" --include "*.js" . $S3_URL
+aws s3 sync --content-type application/xml --cache-control max-age=2592000 --exclude "*" --include "*.xml" . $S3_URL
+aws s3 sync --content-type image/x-icon --cache-control max-age=31536000 --exclude "*" --include "*.ico" . $S3_URL
+aws s3 sync --content-type image/png --cache-control max-age=31536000 --exclude "*" --include "*.png" . $S3_URL
+aws s3 sync --content-type image/webp --cache-control max-age=31536000 --exclude "*" --include "*.webp" . $S3_URL
+aws s3 sync --content-type application/json --cache-control max-age=2592000 --exclude "*" --include "*.json" . $S3_URL
+aws s3 cp --content-type font/woff2 --cache-control max-age=31536000 assets/fa-solid-900.woff2 $S3_URL/assets//fa-solid-900.woff2
+aws s3 cp --content-type font/woff2 --cache-control max-age=31536000 assets/fa-brands-400.woff2 $S3_URL/assets//fa-brands-400.woff2
+aws s3 sync --content-type text/html --cache-control max-age=2592000 --exclude "*.css" --exclude "*.js" --exclude "*.xml" --exclude "*.woff2" --exclude "*.ico" --exclude "*.png" --exclude "*.webp" --exclude "*.json" . $S3_URL
 aws s3 cp signatures.json $S3_URL
 aws s3 mv $S3_URL/releases.html $S3_URL/releases
 aws s3 cp ../signature-file.xml $S3_URL/binary-signatures.xml
