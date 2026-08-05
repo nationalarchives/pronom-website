@@ -203,6 +203,12 @@
                       "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/test-*"
                     },
                     {
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/dr2-*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:policy/dr2-*"
+                    },
+                    {
                       "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
                     }
                   ]

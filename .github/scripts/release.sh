@@ -2,7 +2,7 @@
 
 set -e
 
-ENVIRONMENT=$1
+ENVIRONMENT=$(echo $1 | tr '[:upper:]' '[:lower:]')
 
 
 S3_BUCKET="$ENVIRONMENT-pronom-site-$ACCOUNT_NUMBER-$REGION-an"

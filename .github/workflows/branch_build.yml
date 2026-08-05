@@ -1,0 +1,49 @@
+name: Branch build
+
+concurrency:
+  group: ${{ inputs.branch-name }}
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch-name:
+        description: The name of the branch to deploy
+      domain-prefix:
+        description: This prefix will be prepended to the domain. Do no use spaces.
+permissions: {}
+jobs:
+  release-test:
+    runs-on: ubuntu-latest
+    name: Release test
+    environment:
+      name: test
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+        with:
+          ref: ${{ inputs.branch-name }}
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+        with:
+          repository: nationalarchives/pronom-signatures
+          path: "signature-files"
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_wrapper: false
+      - name: Configure AWS credentials for Lambda
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c #v6.2.3
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/TestPRONOMInfrastructureRole
+          aws-region: eu-west-2
+          role-session-name: DeployPRONOMTest
+      - run: .github/scripts/release.sh $ENVIRONMENT
+        env:
+          ENVIRONMENT: ${{ inputs.domain-prefix }}
+          GITHUB_TOKEN: ${{ github.token }}
+          ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
+          REGION: eu-west-2
