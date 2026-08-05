@@ -7,7 +7,7 @@ locals {
 
   error_response_codes = [403, 404, 500, 502, 503, 504]
 
-  domain_prefix = var.environment == "prod" ? "" : "test."
+  domain_prefix = var.environment == "prod" ? "" : "${var.environment}."
   domain_name   = "${local.domain_prefix}pronom.nationalarchives.gov.uk"
 
   allowed_style_shas = [
