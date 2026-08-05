@@ -21,3 +21,11 @@ resource "aws_route53_record" "aaaa" {
     evaluate_target_health = false
   }
 }
+
+resource "aws_route53_record" "google_verification" {
+  name    = "google-site-verification"
+  records = ["vq3nRRGt1EWmwSZP9zx6ncR-dI5UO2mR-IZarh3ARxQ"]
+  type    = "TXT"
+  ttl     = 300
+  zone_id = data.aws_route53_zone.zone.zone_id
+}
