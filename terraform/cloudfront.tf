@@ -163,6 +163,8 @@ resource "aws_cloudfront_distribution" "site" {
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
+    compress = true
+
     forwarded_values {
       query_string            = true
       query_string_cache_keys = ["v"]
@@ -181,6 +183,8 @@ resource "aws_cloudfront_distribution" "site" {
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
+
+    compress = true
 
     forwarded_values {
       query_string            = true
