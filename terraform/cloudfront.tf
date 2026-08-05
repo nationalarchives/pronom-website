@@ -70,10 +70,6 @@ resource "aws_lambda_permission" "cloudfront_invoke_search" {
   source_arn    = aws_cloudfront_distribution.site.arn
 }
 
-data "aws_cloudfront_cache_policy" "caching_optimised" {
-  name = "Managed-CachingOptimized"
-}
-
 data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
   name = "Managed-AllViewerExceptHostHeader"
 }
@@ -88,7 +84,10 @@ resource "aws_cloudfront_cache_policy" "cache_query_strings" {
       query_string_behavior = "all"
     }
     cookies_config {
-      cookie_behavior = "none"
+      cookie_behavior = "whitelist"
+      cookies {
+        items = ["cookies_policy", "cookie_preferences", "cookie_preferences_set", "theme"]
+      }
     }
     headers_config {
       header_behavior = "none"
@@ -159,16 +158,11 @@ resource "aws_cloudfront_distribution" "site" {
     allowed_methods = ["GET", "HEAD", "OPTIONS"]
     cached_methods  = ["GET", "HEAD", "OPTIONS"]
 
-    cache_policy_id = data.aws_cloudfront_cache_policy.caching_optimised.id
+    cache_policy_id = aws_cloudfront_cache_policy.cache_query_strings.id
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
     compress = true
-
-    forwarded_values {
-      query_string            = true
-      query_string_cache_keys = ["v"]
-    }
   }
 
   ordered_cache_behavior {
@@ -185,16 +179,6 @@ resource "aws_cloudfront_distribution" "site" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
     compress = true
-
-    forwarded_values {
-      query_string            = true
-      query_string_cache_keys = ["q"]
-
-      cookies {
-        forward           = "whitelist"
-        whitelisted_names = ["cookies_policy", "cookie_preferences", "cookie_preferences_set", "theme"]
-      }
-    }
   }
 
   ordered_cache_behavior {
