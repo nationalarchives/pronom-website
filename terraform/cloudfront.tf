@@ -81,7 +81,11 @@ resource "aws_cloudfront_cache_policy" "cache_query_strings" {
   default_ttl = 86400
   parameters_in_cache_key_and_forwarded_to_origin {
     query_strings_config {
-      query_string_behavior = "all"
+      query_string_behavior = "whitelist"
+
+      query_strings {
+        items = ["q", "v"]
+      }
     }
     cookies_config {
       cookie_behavior = "whitelist"
