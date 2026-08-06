@@ -5,6 +5,8 @@ services:
       secrets:
         - github_token
       dockerfile: Dockerfile.nginx
+      args:
+        COOKIES_DOMAIN: localhost
     ports:
       - 8081:80
     volumes:
@@ -18,6 +20,7 @@ services:
       dockerfile: Dockerfile.flask
     environment:
       - DB_NAME=/home/app/indexes
+      - COOKIES_DOMAIN=localhost
     volumes:
       - ./:/app
     restart: unless-stopped

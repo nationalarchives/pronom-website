@@ -1,4 +1,6 @@
 import csv
+import datetime
+import hashlib
 import json
 import os
 import re
@@ -31,6 +33,16 @@ env.filters["slugify"] = slugify
 env.filters["sortpuids"] = lambda puids: sorted(
     puids, key=lambda puid: int(re.sub(r"^(((x\-)?fmt)|sfw)\/", "", puid))
 )
+cache_buster = hashlib.md5(
+    datetime.datetime.now().isoformat().encode(), usedforsecurity=False
+).hexdigest()[:8]
+env.globals.update(
+    {
+        "cache_buster": cache_buster,
+        "cookies_domain": os.environ.get("COOKIES_DOMAIN", ".nationalarchives.gov.uk"),
+    }
+)
+
 
 bucket_name = "tna-pronom-signatures-spike"
 
@@ -206,7 +218,8 @@ def create_file_list():
     container_signatures.reverse()
 
     return env.get_template("signature_list.html").render(
-        signature_data=signatures, container_signature_data=container_signatures
+        signature_data=signatures,
+        container_signature_data=container_signatures,
     )
 
 
@@ -274,7 +287,9 @@ def create_releases_page(releases, latest_release):
         {"text": release[0], "href": f"#{release[0]}"} for release in releases.keys()
     ]
     return env.get_template("releases.html").render(
-        releases=releases, items=items, latest_release=latest_release
+        releases=releases,
+        items=items,
+        latest_release=latest_release,
     )
 
 
