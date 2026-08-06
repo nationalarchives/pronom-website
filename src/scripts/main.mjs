@@ -13,7 +13,7 @@ const setTheme = (theme) => {
 
 const appendDateToLogoAdornments = () => {
   const now = new Date();
-  /* eslint-disable no-magic-numbers */
+  /* eslint-disable-next-line no-magic-numbers */
   const iso8601DateString = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
   const logoAdornmentsCss = document.getElementById("logo-adornments-css");
   if (logoAdornmentsCss) {
