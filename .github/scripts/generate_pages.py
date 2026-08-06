@@ -33,10 +33,16 @@ env.filters["slugify"] = slugify
 env.filters["sortpuids"] = lambda puids: sorted(
     puids, key=lambda puid: int(re.sub(r"^(((x\-)?fmt)|sfw)\/", "", puid))
 )
-
 cache_buster = hashlib.md5(
     datetime.datetime.now().isoformat().encode(), usedforsecurity=False
 ).hexdigest()[:8]
+env.globals.update(
+    {
+        "cache_buster": cache_buster,
+        "cookies_domain": os.environ.get("COOKIES_DOMAIN", ".nationalarchives.gov.uk"),
+    }
+)
+
 
 bucket_name = "tna-pronom-signatures-spike"
 
@@ -153,7 +159,6 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         containers=json_data.get("containerSignatures", []),
         releases=releases,
         changelog=changelog,
-        cache_buster=cache_buster,
     )
 
 
@@ -182,23 +187,19 @@ def create_signature_section():
     position_type_select = [{"value": x, "text": x} for x in position_type_names]
     position_type_select.insert(0, {"value": "", "text": ""})
     signature_template = env.get_template("signature.html")
-    return signature_template.render(
-        position_types=position_type_select, cache_buster=cache_buster
-    )
+    return signature_template.render(position_types=position_type_select)
 
 
 def create_home():
-    return env.get_template("index.html").render(cache_buster=cache_buster)
+    return env.get_template("index.html").render()
 
 
 def create_search():
-    return env.get_template("search.html").render(cache_buster=cache_buster)
+    return env.get_template("search.html").render()
 
 
 def create_accessibility():
-    return env.get_template("accessibility-statement.html").render(
-        cache_buster=cache_buster
-    )
+    return env.get_template("accessibility-statement.html").render()
 
 
 path = sys.argv[1]
@@ -219,7 +220,6 @@ def create_file_list():
     return env.get_template("signature_list.html").render(
         signature_data=signatures,
         container_signature_data=container_signatures,
-        cache_buster=cache_buster,
     )
 
 
@@ -290,23 +290,18 @@ def create_releases_page(releases, latest_release):
         releases=releases,
         items=items,
         latest_release=latest_release,
-        cache_buster=cache_buster,
     )
 
 
 def create_release_page(release, details):
-    return env.get_template("release.html").render(
-        release=release, details=details, cache_buster=cache_buster
-    )
+    return env.get_template("release.html").render(release=release, details=details)
 
 
 def run():
     releases, latest_release = get_releases()
 
     with open("site/about", "w") as about_page:
-        about_page.write(
-            env.get_template("about.html").render(cache_buster=cache_buster)
-        )
+        about_page.write(env.get_template("about.html").render())
 
     os.makedirs("site/releases", exist_ok=True)
     with open("site/releases.html", "w") as release_notes:
@@ -317,9 +312,7 @@ def run():
             release_page.write(create_release_page(release, details))
 
     with open("site/error", "w") as error_page:
-        error_page.write(
-            env.get_template("error.html").render(cache_buster=cache_buster)
-        )
+        error_page.write(env.get_template("error.html").render())
 
     with open("site/signature-list", "w") as signature_list:
         signature_list.write(create_file_list())
@@ -364,7 +357,7 @@ def run():
             actor = create_actor(actor_json)
             name = actor_json["name"]
             actor_details = actor_details_template.render(
-                results=actor, name=name, actorId=actor_id, cache_buster=cache_buster
+                results=actor, name=name, actorId=actor_id
             )
             actor_page.write(actor_details)
 

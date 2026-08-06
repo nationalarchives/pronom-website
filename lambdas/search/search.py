@@ -23,10 +23,15 @@ env = Environment(
     autoescape=select_autoescape(),
 )
 env.filters["commafy"] = lambda number: f"{number:,d}"
-
 cache_buster = hashlib.md5(
     datetime.datetime.now().isoformat().encode(), usedforsecurity=False
 ).hexdigest()[:8]
+env.globals.update(
+    {
+        "cache_buster": cache_buster,
+        "cookies_domain": os.environ.get("COOKIES_DOMAIN", ".nationalarchives.gov.uk"),
+    }
+)
 
 
 def puid_exists(puid):
@@ -85,7 +90,6 @@ def lambda_handler(event, _):
             search_term=search_term,
             search_home=False,
             theme=cookies.get("theme", "system"),
-            cache_buster=cache_buster,
         )
 
         return {
@@ -97,7 +101,6 @@ def lambda_handler(event, _):
         body = search_results.render(
             search_home=True,
             theme=cookies.get("theme", "system"),
-            cache_buster=cache_buster,
         )
     return {
         "statusCode": 200,

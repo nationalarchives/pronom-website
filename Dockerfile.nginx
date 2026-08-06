@@ -1,12 +1,13 @@
 FROM ghcr.io/nationalarchives/tna-python-dev:latest AS build
-ENV NPM_BUILD_COMMAND=css
-COPY pyproject.toml poetry.lock package.json package-lock.json ./
+ENV NPM_BUILD_COMMAND=build
+ARG COOKIES_DOMAIN=.nationalarchives.gov.uk
+COPY pyproject.toml poetry.lock package.json package-lock.json vite.config.js ./
 COPY src src
 RUN git clone https://github.com/nationalarchives/pronom-signatures/ /home/app/pronom-signatures
 RUN tna-build
 COPY . .
 RUN mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit site/assets
-RUN cp styles/* assets/* node_modules/@nationalarchives/frontend/nationalarchives/all.js node_modules/@nationalarchives/frontend/nationalarchives/all.js.map node_modules/@nationalarchives/frontend/nationalarchives/assets/fonts/* node_modules/@nationalarchives/frontend/nationalarchives/assets/images/* site/assets
+RUN cp styles/* assets/* node_modules/@nationalarchives/frontend/nationalarchives/assets/fonts/* node_modules/@nationalarchives/frontend/nationalarchives/assets/images/* site/assets
 RUN --mount=type=secret,id=github_token GITHUB_TOKEN="$(cat /run/secrets/github_token)" poetry run python .github/scripts/generate_signature_json.py && \
     poetry run python .github/scripts/generate_pages.py /home/app/pronom-signatures && \
     poetry run python .github/scripts/generate_pronom_xml.py /home/app/pronom-signatures

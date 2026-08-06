@@ -9,7 +9,7 @@
 {%- set theme = theme if theme in ['light', 'dark', 'system'] else 'system' -%}
 {%- set themeAccent = 'blue' -%}
 {%- set htmlAttributes = {
-  'data-tna-cookies-domain': '.nationalarchives.gov.uk'
+  'data-tna-cookies-domain': cookies_domain
 } -%}
 {%- set highlight_header_item = highlight_header_item or '' -%}
 
@@ -146,7 +146,6 @@
 {% endblock %}
 
 {% block bodyEnd %}
-  <script src="/assets/all.js?v={{ cache_buster }}" defer></script>
-  <script src="/assets/site.js?v={{ cache_buster }}" defer></script>
+  <script src="/assets/main.js?v={{ cache_buster }}" defer></script>
   <script type="module" src="https://www.nationalarchives.gov.uk/enrichment/js/logo-adornments.js" id="logo-adornments-js" async></script>
 {% endblock %}
