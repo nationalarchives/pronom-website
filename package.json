@@ -1,12 +1,15 @@
 {
   "name": "pronom-website",
   "scripts": {
-    "css": "sass --style=compressed --load-path=node_modules --embed-sources src/styles:styles"
+    "build": "npm run css && npm run js",
+    "css": "sass --style=compressed --load-path=node_modules --embed-sources src/styles:styles",
+    "js": "vite build"
   },
   "dependencies": {
-    "@nationalarchives/frontend": "1.1.0"
+    "@nationalarchives/frontend": "1.2.0"
   },
   "devDependencies": {
-    "sass": "^1.99.0"
+    "sass": "^1.99.0",
+    "vite": "^8.2.0"
   }
 }
