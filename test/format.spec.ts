@@ -40,7 +40,9 @@ test("page has an XML download button", async ({ page }) => {
     '<PRONOM-Report xmlns="http://pronom.nationalarchives.gov.uk">',
   );
   await expect(xmlContent).toContain("<FormatID>924</FormatID>");
-  await expect(xmlContent).toContain("<FormatName>MPEG-4 Media File</FormatName>");
+  await expect(xmlContent).toContain(
+    "<FormatName>MPEG-4 Media File</FormatName>",
+  );
 });
 
 describe("page shows the correct details", () => {
@@ -98,14 +100,20 @@ describe("page shows the correct details", () => {
     );
     await expect(await developedBy.textContent()).not.toBeNull();
     await expect(developedBy.locator("a")).toHaveCount(1);
-    await expect(developedBy.locator("a")).toHaveAttribute("href", /actor\/(\d+)/);
+    await expect(developedBy.locator("a")).toHaveAttribute(
+      "href",
+      /actor\/(\d+)/,
+    );
 
     const supportedBy = await summary.locator(
       "dt:has-text('Supported by') + dd",
     );
     await expect(await supportedBy.textContent()).not.toBeNull();
     await expect(supportedBy.locator("a")).toHaveCount(1);
-    await expect(supportedBy.locator("a")).toHaveAttribute("href", /actor\/(\d+)/);
+    await expect(supportedBy.locator("a")).toHaveAttribute(
+      "href",
+      /actor\/(\d+)/,
+    );
 
     await goToFormatPage(page, 61);
 
@@ -146,9 +154,8 @@ describe("page shows the correct details", () => {
 
   test("internal signatures", async ({ page }) => {
     await goToFormatPage(page, 199);
-    await expect(page.locator(
-      ".tna-aside:near(:text('Internal signatures'))",
-    )).toMatchAriaSnapshot(`- heading "MP4 Media File" [level=3]
+    await expect(page.locator(".tna-aside:near(:text('Internal signatures'))"))
+      .toMatchAriaSnapshot(`- heading "MP4 Media File" [level=3]
 - term: Note
 - definition: "Represents the following character sequence: \{4\}ftyp\{0-64\}\(mp42\|mp41\|isom\|iso2\)\*moov"
 - heading "Byte sequences" [level=4]
@@ -167,9 +174,8 @@ describe("page shows the correct details", () => {
 
   test("container signatures", async ({ page }) => {
     await goToFormatPage(page, 1509);
-    await expect(page.locator(
-      ".tna-aside:near(:text('Container signatures'))",
-    )).toMatchAriaSnapshot(`- paragraph: "Type: OLE2"
+    await expect(page.locator(".tna-aside:near(:text('Container signatures'))"))
+      .toMatchAriaSnapshot(`- paragraph: "Type: OLE2"
 - heading "13090 - Microsoft Visio Document 3" [level=3]
 - term: File path
 - definition: VisioDocument

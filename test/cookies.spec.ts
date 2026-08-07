@@ -26,7 +26,9 @@ test("cookie banner can be dismissed", async ({ page }) => {
 
   await page.goto("/");
   await expect(await page.locator(".tna-cookie-banner")).not.toBeVisible();
-  await expect(await page.locator(".tna-footer__theme-selector-notice")).toBeHidden();
+  await expect(
+    await page.locator(".tna-footer__theme-selector-notice"),
+  ).toBeHidden();
 
   await page.goto("/about");
   await expect(await page.locator(".tna-cookie-banner")).not.toBeVisible();
