@@ -13,9 +13,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           persist-credentials: false
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk-bridge2.0-0 libdrm2 libxcomposite1 libxdamage1 libxrandr2 libgbm1
+      - uses: actions/setup-node@e51e5fe84fc33b4c73ebe40526b2694712b5b858
       - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
-      - run: |
-          (cd terraform && terraform fmt -check --recursive)
+      - run: cd terraform && terraform fmt -check --recursive
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Run tests
+        run: |
           cp .env.example .env
           docker compose up --detach --wait --wait-timeout 120
           docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
@@ -23,8 +31,6 @@ jobs:
           npx playwright install
           CI=true TEST_DOMAIN=https://test.pronom.nationalarchives.gov.uk playwright test --grep-invert @wip
           docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
   check-formatting:
     runs-on: ubuntu-latest
