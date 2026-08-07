@@ -18,7 +18,6 @@ jobs:
       - run: cd terraform && terraform fmt -check --recursive
       - name: Run tests
         run: |
-          cp .env.example .env
           docker compose up --detach --wait --wait-timeout 120
           docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
           npm ci
@@ -27,6 +26,7 @@ jobs:
           docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          COOKIES_DOMAIN: localhost
 
   check-formatting:
     runs-on: ubuntu-latest
