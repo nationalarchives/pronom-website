@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile.nginx
       args:
         COOKIES_DOMAIN: ${COOKIES_DOMAIN}
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
     ports:
       - 8081:80
     volumes:
