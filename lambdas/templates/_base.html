@@ -9,7 +9,7 @@
 {%- set theme = theme if theme in ['light', 'dark', 'system'] else 'system' -%}
 {%- set themeAccent = 'blue' -%}
 {%- set htmlAttributes = {
-  'data-tna-cookies-domain': cookies_domain
+  'data-tna-cookies-domain': cookies_domain or '.nationalarchives.gov.uk'
 } -%}
 {%- set highlight_header_item = highlight_header_item or '' -%}
 
