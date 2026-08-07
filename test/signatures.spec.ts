@@ -24,7 +24,7 @@ test("page has valid HTML", async ({ page }) => {
 
 //   const response = await page.goto(href);
 //   const xmlContent = await response?.text();
-//   expect(xmlContent).toContain(
+//   await expect(xmlContent).toContain(
 //     '<FFSignatureFile xmlns="http://www.nationalarchives.gov.uk/pronom/SignatureFile"',
 //   );
 // });
@@ -44,7 +44,7 @@ test("page has valid HTML", async ({ page }) => {
 
 //   const response = await page.goto(href);
 //   const xmlContent = await response?.text();
-//   expect(xmlContent).toContain(
+//   await expect(xmlContent).toContain(
 //     '<FFSignatureFile xmlns="http://www.nationalarchives.gov.uk/pronom/SignatureFile"',
 //   );
 // });

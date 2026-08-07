@@ -13,7 +13,7 @@ export const checkAccessibility: (
       .disableRules(disableRules)
       .analyze();
     const accessibilityScanViolations = accessibilityScanResults.violations;
-    expect(accessibilityScanViolations).toEqual([]);
+    await expect(accessibilityScanViolations).toEqual([]);
   });
 };
 
