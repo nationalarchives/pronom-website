@@ -25,7 +25,7 @@ jobs:
           docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
           npm ci
           npx playwright install --with-deps chromium
-          CI=true TEST_DOMAIN=https://test.pronom.nationalarchives.gov.uk playwright test --grep-invert @wip
+          CI=true TEST_DOMAIN=https://test.pronom.nationalarchives.gov.uk npx playwright test --grep-invert @wip
           docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
 
   check-formatting:
