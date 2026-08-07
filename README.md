@@ -104,10 +104,11 @@ python -m unittest discover -s lambdas/test
 
 #### End-to-end tests
 
-These are [Cypress](https://www.cypress.io/) tests which test the behaviour of a local copy of the site. The site must be running locally before these are run.
+These are [Playwright](https://playwright.dev/) tests which test the behaviour of a local copy of the site. The site must be running locally before these are run.
 
 ```bash
-npm --prefix tests t
+npm install
+npm run test
 ```
 
 ### Infrastructure
