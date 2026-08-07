@@ -19,11 +19,9 @@ jobs:
           cp .env.example .env
           docker compose up --detach --wait --wait-timeout 120
           docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
-          cd tests
-          npm --ignore-scripts ci
-          npx cypress install
-          npx cypress run
-          cd ..
+          npm ci
+          npx playwright install
+          CI=true TEST_DOMAIN=https://test.pronom.nationalarchives.gov.uk playwright test --grep-invert @wip
           docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
         env:
           GITHUB_TOKEN: ${{ github.token }}

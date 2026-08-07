@@ -58,15 +58,12 @@ jobs:
           node-version: 20
       - name: Wait for domain to be available
         run: while ! curl -s -o /dev/null -w "%{http_code}" https://test.pronom.nationalarchives.gov.uk | grep -q "^200$"; do sleep 60; done
-      - name: Install Cypress dependencies
+      - name: Install dependencies
         run: |
-          cd tests
           npm ci
-          npx cypress install
-      - name: Run Cypress tests
-        run: |
-          cd tests
-          npx cypress run --config baseUrl=https://test.pronom.nationalarchives.gov.uk
+          npx playwright install
+      - name: Run tests
+        run: CI=true TEST_DOMAIN=https://test.pronom.nationalarchives.gov.uk playwright test --grep-invert @wip
 
   destroy-test:
     needs: e2e-tests
