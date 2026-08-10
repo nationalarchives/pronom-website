@@ -20,6 +20,9 @@ jobs:
         run: |
           docker compose up --detach --wait --wait-timeout 120
           docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          COOKIES_DOMAIN: localhost
       - name: Install dependencies
         run: |
           npm ci
@@ -28,9 +31,6 @@ jobs:
         run: CI=true npx playwright test --grep-invert @wip
       - name: Run unit tests
         run: docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          COOKIES_DOMAIN: localhost
 
   check-formatting:
     runs-on: ubuntu-latest
