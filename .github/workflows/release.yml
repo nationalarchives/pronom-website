@@ -61,7 +61,7 @@ jobs:
         run: |
           npm ci
           npx playwright install --with-deps chromium
-      - name: Run tests
+      - name: Run Playwright tests
         run: CI=true TEST_DOMAIN=https://test.pronom.nationalarchives.gov.uk npx playwright test --grep-invert @wip
 
   destroy-test:
