@@ -73,3 +73,13 @@ export const validateHtml: (
     await expect(report.valid).toBeTruthy();
   });
 };
+
+export const domainFromUrl = (url: string): string => {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.hostname;
+  } catch (error) {
+    console.error("Invalid URL:", url);
+    throw error;
+  }
+};

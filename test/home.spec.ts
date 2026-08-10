@@ -64,7 +64,8 @@ test("main has the correct accessibility tree", async ({ page }) => {
       - /url: /releases`);
 });
 
-test("footer has the correct accessibility tree", async ({ page }) => {
+test("footer has the correct accessibility tree", async ({ page, context }) => {
+  await context.clearCookies();
   await page.goto("/");
   await expect(page.locator(".tna-footer")).toMatchAriaSnapshot(`- contentinfo:
   - heading "Change the site theme" [level=2]
