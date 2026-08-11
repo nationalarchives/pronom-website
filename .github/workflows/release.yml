@@ -47,6 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
           REGION: eu-west-2
+
   e2e-tests:
     needs: release-test
     runs-on: ubuntu-latest
@@ -62,19 +63,14 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions/setup-node@e51e5fe84fc33b4c73ebe40526b2694712b5b858
-        with:
-          node-version: 20
       - name: Wait for domain to be available
         run: while ! curl -s -o /dev/null -w "%{http_code}" https://test.pronom.nationalarchives.gov.uk | grep -q "^200$"; do sleep 60; done
-      - name: Install Cypress dependencies
+      - name: Install dependencies
         run: |
-          cd tests
           npm ci
-          npx cypress install
-      - name: Run Cypress tests
-        run: |
-          cd tests
-          npx cypress run --config baseUrl=https://test.pronom.nationalarchives.gov.uk
+          npx playwright install --with-deps chromium
+      - name: Run Playwright tests
+        run: CI=true TEST_DOMAIN=https://test.pronom.nationalarchives.gov.uk npx playwright test --grep-invert @wip
 
   destroy-test:
     needs: e2e-tests

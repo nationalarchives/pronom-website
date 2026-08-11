@@ -12,6 +12,19 @@ The website uses aggressive caching to reduce cost and request latency. All stat
 
 ![AWS architecture diagram of infrastructure hosting the PRONOM website.](diagram.png)
 
+## Quickstart
+
+```sh
+# Copy the example .env file
+cp .env.example .env
+
+# Start the Docker containers
+docker compose up -d
+
+# Open the site
+open http://localhost:8081
+```
+
 ## Build scripts
 
 The static content and search index are generated at build time using the data authored in [nationalarchives/pronom]. The transformations for this are completed as part of the GitHub Actions pipeline using the Python scripts in [`.github/scripts/`](/.github/scripts/).
@@ -91,10 +104,11 @@ python -m unittest discover -s lambdas/test
 
 #### End-to-end tests
 
-These are [Cypress](https://www.cypress.io/) tests which test the behaviour of a local copy of the site. The site must be running locally before these are run.
+These are [Playwright](https://playwright.dev/) tests which test the behaviour of a local copy of the site. The site must be running locally before these are run.
 
 ```bash
-npm --prefix tests t
+npm install
+npm run test
 ```
 
 ### Infrastructure

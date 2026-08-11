@@ -1,3 +1,5 @@
+import datetime
+import hashlib
 import os
 import re
 import sqlite3
@@ -21,6 +23,15 @@ env = Environment(
     autoescape=select_autoescape(),
 )
 env.filters["commafy"] = lambda number: f"{number:,d}"
+cache_buster = hashlib.md5(
+    datetime.datetime.now().isoformat().encode(), usedforsecurity=False
+).hexdigest()[:8]
+env.globals.update(
+    {
+        "cache_buster": cache_buster,
+        "cookies_domain": os.environ.get("COOKIES_DOMAIN", ".nationalarchives.gov.uk"),
+    }
+)
 
 
 def puid_exists(puid):
@@ -88,7 +99,8 @@ def lambda_handler(event, _):
         }
     else:
         body = search_results.render(
-            search_home=True, theme=cookies.get("theme", "system")
+            search_home=True,
+            theme=cookies.get("theme", "system"),
         )
     return {
         "statusCode": 200,
