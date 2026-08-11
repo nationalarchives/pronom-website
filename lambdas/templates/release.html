@@ -1,6 +1,7 @@
 {%- extends '_base.html' -%}
 
 {%- from "components/breadcrumbs/macro.html" import tnaBreadcrumbs -%}
+{%- from "components/pagination/macro.html" import tnaPagination -%}
 {%- from "components/sidebar/macro.html" import tnaSidebar -%}
 
 {%- set pageTitle = 'Release ' ~ release[0] -%}
@@ -53,23 +54,23 @@
   <div class="tna-column tna-column--width-2-3 tna-column--full-small tna-column--full-tiny tna-!--margin-top-l">
     <hgroup class="tna-hgroup-xl">
       <p class="tna-hgroup__supertitle">Release</p>
-      <h2 class="tna-hgroup__title">{{ release[0] }}</h2>
+      <h1 class="tna-hgroup__title">{{ release[0] }}</h1>
     </hgroup>
     <p>Release date: {{ release[1] }}</p>
     {% for table in details %}
       {% if details[table] %}
-        <h3 class="tna-heading-l" id="{{ table|slugify }}">{{ table|capitalize }}</h3>
+        <h2 class="tna-heading-l" id="{{ table|slugify }}">{{ table|capitalize }}</h2>
         <table class="tna-table">
           <thead class="tna-table__head">
             <tr class="tna-table__row">
-              <th class="tna-table__header">PUID</th>
-              <th class="tna-table__header">Description</th>
+              <th class="tna-table__header" scope="col">PUID</th>
+              <th class="tna-table__header" scope="col">Description</th>
             </tr>
           </thead>
           <tbody class="tna-table__body">
           {%- for item in details[table] %}
             <tr class="tna-table__row">
-              <th class="tna-table__header">
+              <th class="tna-table__header" scope="row">
                 <code>
                   <a href="/{{ item.puid }}">{{ item.puid }}</a>
                 </code>
@@ -81,6 +82,21 @@
         </table>
       {% endif %}
     {% endfor %}
+    {% if previous_release or next_release %}
+      {{ tnaPagination({
+        'previous': {
+          'href': '/releases/' ~ previous_release[0]|lower,
+          'text': 'Previous release: ' ~ previous_release[0],
+          'description': previous_release[1]
+        } if previous_release else None,
+        'next': {
+          'href': '/releases/' ~ next_release[0]|lower,
+          'text': 'Next release: ' ~ next_release[0],
+          'description': next_release[1]
+        } if next_release else None,
+        'classes': 'tna-!--margin-top-xl'
+      }) }}
+    {% endif %}
   </div>
 </div>
 {% endblock %}

@@ -293,8 +293,25 @@ def create_releases_page(releases, latest_release):
     )
 
 
-def create_release_page(release, details):
-    return env.get_template("release.html").render(release=release, details=details)
+def create_release_page(release, details, releases):
+    previous_release = None
+    next_release = None
+    release_keys = list(reversed(releases.keys()))
+    try:
+        release_index = release_keys.index(release[0])
+        if release_index > 0:
+            previous_release = release_keys[release_index - 1]
+        if release_index < len(release_keys) - 1:
+            next_release = release_keys[release_index + 1]
+    except ValueError:
+        # Release not found in the list, do nothing
+        pass
+    return env.get_template("release.html").render(
+        release=release,
+        details=details,
+        previous_release=previous_release,
+        next_release=next_release,
+    )
 
 
 def run():
@@ -309,7 +326,7 @@ def run():
     for release, details in releases.items():
         release_version = release[0].lower()
         with open(f"site/releases/{release_version}", "w") as release_page:
-            release_page.write(create_release_page(release, details))
+            release_page.write(create_release_page(release, details, releases))
 
     with open("site/error", "w") as error_page:
         error_page.write(env.get_template("error.html").render())

@@ -5,6 +5,19 @@
 {%- from "components/header/macro.html" import tnaHeader -%}
 
 {%- set siteTitle = 'PRONOM - The National Archives' -%}
+
+{% block pageTitle -%}
+  {%- set truncatedPageTitle = pageTitle -%}
+  {% if truncatedPageTitle %}
+    {%- set maxTitleLength = 70 -%}
+    {%- set titleCharsRemaining = maxTitleLength - ((siteTitle | length) + 3) -%}
+    {%- if (truncatedPageTitle | length) > titleCharsRemaining -%}
+      {%- set truncatedPageTitle = truncatedPageTitle | truncate(titleCharsRemaining, False, '...', 0) -%}
+    {%- endif -%}
+  {%- endif -%}
+  {%- if truncatedPageTitle %}{{ truncatedPageTitle }} - {% endif %}{{ siteTitle -}}
+{%- endblock pageTitle %}
+
 {%- set description = description or '' -%}
 {%- set theme = theme if theme in ['light', 'dark', 'system'] else 'system' -%}
 {%- set themeAccent = 'blue' -%}
@@ -67,6 +80,7 @@
 
 {% block cookies %}
   {{ tnaCookieBanner({
+    'serviceName': 'PRONOM',
     'cookiesUrl': 'https://www.nationalarchives.gov.uk/cookies/'
   }) | indent(6) }}
 {% endblock %}
@@ -122,6 +136,7 @@
 {% block footer %}
   {{ tnaFooter({
     'themeSelector': True,
+    'cookiesUrl': 'https://www.nationalarchives.gov.uk/cookies/',
     'currentTheme': theme,
     'defaultContent': True,
     'defaultContentBaseUrl': 'https://www.nationalarchives.gov.uk',

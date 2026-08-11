@@ -3,12 +3,17 @@
   "scripts": {
     "build": "npm run css && npm run js",
     "css": "sass --style=compressed --load-path=node_modules --embed-sources src/styles:styles",
-    "js": "vite build"
+    "js": "vite build",
+    "test": "npx playwright install --with-deps chromium && playwright test --ui"
   },
   "dependencies": {
     "@nationalarchives/frontend": "1.2.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@estruyf/github-actions-reporter": "^1.12.0",
+    "@playwright/test": "^1.62.1",
+    "html-validate": "^11.6.2",
     "sass": "^1.99.0",
     "vite": "^8.2.0"
   }

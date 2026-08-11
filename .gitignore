@@ -8,6 +8,8 @@ package-edit
 site/
 indexes
 test_indexes
+test-results
+test-results.json
 lambdas/__pycache__
 __pycache__
 nohup.out
