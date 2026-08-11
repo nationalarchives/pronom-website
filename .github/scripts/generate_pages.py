@@ -298,7 +298,7 @@ def create_release_page(release, details, releases):
     next_release = None
     release_keys = list(reversed(releases.keys()))
     try:
-        release_index = release_keys.index(release[0])
+        release_index = release_keys.index(release)
         if release_index > 0:
             previous_release = release_keys[release_index - 1]
         if release_index < len(release_keys) - 1:
