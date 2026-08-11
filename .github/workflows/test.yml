@@ -32,7 +32,7 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
       - name: Run Playwright tests
-        run: CI=true npx playwright test --grep-invert @wip
+        run: CI=true npx playwright test --grep-invert @wip|@aws
       - name: Run unit tests
         run: docker compose exec app poetry run python -m unittest discover -v -s lambdas/test
 

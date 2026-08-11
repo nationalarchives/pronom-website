@@ -66,7 +66,7 @@ describe("setting themes from cookies", () => {
       {
         name: "theme",
         value: "system",
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
@@ -92,7 +92,7 @@ describe("setting themes from cookies", () => {
       {
         name: "theme",
         value: "light",
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
@@ -118,7 +118,7 @@ describe("setting themes from cookies", () => {
       {
         name: "theme",
         value: "dark",
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
