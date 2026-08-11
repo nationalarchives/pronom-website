@@ -55,7 +55,7 @@ test("cookie banner hidden if already set", async ({
         marketing: true,
         essential: true,
       }),
-      domain: domainFromUrl(baseURL || ""),
+      domain: `.${domainFromUrl(baseURL || "")}`,
       path: "/",
     },
   ]);
@@ -63,7 +63,7 @@ test("cookie banner hidden if already set", async ({
     {
       name: "cookie_preferences_set",
       value: "true",
-      domain: domainFromUrl(baseURL || ""),
+      domain: `.${domainFromUrl(baseURL || "")}`,
       path: "/",
     },
   ]);
@@ -81,7 +81,7 @@ describe("cookie banner shown if necessary", () => {
       {
         name: "cookie_preferences",
         value: "foobar",
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
@@ -99,7 +99,7 @@ describe("cookie banner shown if necessary", () => {
       {
         name: "cookie_preferences",
         value: "foobar",
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
@@ -107,7 +107,7 @@ describe("cookie banner shown if necessary", () => {
       {
         name: "cookie_preferences_set",
         value: "true",
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
@@ -135,7 +135,7 @@ describe("cookie banner shown if necessary", () => {
         value: JSON.stringify({
           settings: true,
         }),
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
@@ -143,7 +143,7 @@ describe("cookie banner shown if necessary", () => {
       {
         name: "cookie_preferences_set",
         value: "true",
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
@@ -169,7 +169,7 @@ describe("cookie banner shown if necessary", () => {
       {
         name: "cookie_preferences_set",
         value: "true",
-        domain: domainFromUrl(baseURL || ""),
+        domain: `.${domainFromUrl(baseURL || "")}`,
         path: "/",
       },
     ]);
