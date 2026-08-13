@@ -40,6 +40,9 @@ env.globals.update(
     {
         "cache_buster": cache_buster,
         "cookies_domain": os.environ.get("COOKIES_DOMAIN", ".nationalarchives.gov.uk"),
+        "site_root": os.environ.get(
+            "SITE_ROOT", "https://pronom.nationalarchives.gov.uk"
+        ),
     }
 )
 
@@ -151,6 +154,7 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         )
     ]
     return details_template.render(
+        path=f"/{puid}",
         id=json_data.get("fileFormatID"),
         puid=puid,
         name=summary["Name"],
@@ -191,15 +195,17 @@ def create_signature_section():
 
 
 def create_home():
-    return env.get_template("index.html").render()
+    return env.get_template("index.html").render(path="/")
 
 
 def create_search():
-    return env.get_template("search.html").render()
+    return env.get_template("search.html").render(path="/search")
 
 
 def create_accessibility():
-    return env.get_template("accessibility-statement.html").render()
+    return env.get_template("accessibility-statement.html").render(
+        path="/accessibility-statement"
+    )
 
 
 path = sys.argv[1]
@@ -218,6 +224,7 @@ def create_file_list():
     container_signatures.reverse()
 
     return env.get_template("signature_list.html").render(
+        path="/signature-list",
         signature_data=signatures,
         container_signature_data=container_signatures,
     )
@@ -283,12 +290,9 @@ def get_releases():
 
 
 def create_releases_page(releases, latest_release):
-    items = [
-        {"text": release[0], "href": f"#{release[0]}"} for release in releases.keys()
-    ]
     return env.get_template("releases.html").render(
+        path="/releases",
         releases=releases,
-        items=items,
         latest_release=latest_release,
     )
 
@@ -307,6 +311,7 @@ def create_release_page(release, details, releases):
         # Release not found in the list, do nothing
         pass
     return env.get_template("release.html").render(
+        path=f"/releases/{release[0].lower()}",
         release=release,
         details=details,
         previous_release=previous_release,
@@ -314,11 +319,61 @@ def create_release_page(release, details, releases):
     )
 
 
+def release_date_to_iso(release_date):
+    try:
+        date = datetime.datetime.strptime(release_date, "%d %B %Y").date().isoformat()
+        return date
+    except ValueError:
+        try:
+            date = (
+                datetime.datetime.strptime(release_date, "%d %b %Y").date().isoformat()
+            )
+            return date
+        except ValueError:
+            return None
+
+
+def create_xml_sitemap(releases, actors, formats):
+    urls = [
+        {"loc": "/", "priority": 1.0},
+        {"loc": "/about", "priority": 0.8},
+        {"loc": "/search", "priority": 0.8},
+        {"loc": "/accessibility-statement", "priority": 0.3},
+        {"loc": "/signature-list", "priority": 0.3},
+    ]
+    urls.append(
+        {
+            "loc": "/releases",
+            "lastmod": release_date_to_iso(list(releases.keys())[0][1])
+            if len(releases)
+            else None,
+        }
+    )
+    for release, _ in releases.items():
+        release_version = release[0].lower()
+        release_date = release_date_to_iso(release[1])
+        urls.append(
+            {
+                "loc": f"/releases/{release_version}",
+                "lastmod": release_date,
+                "priority": 0.3,
+            }
+        )
+    for puid in formats.keys():
+        urls.append({"loc": f"/{puid}", "priority": 0.8})
+    for actor_id in actors.keys():
+        urls.append({"loc": f"/actor/{actor_id}", "priority": 0.3})
+    return env.get_template("sitemap.xml").render(
+        urls=urls,
+        generated_date=datetime.datetime.now().isoformat(),
+    )
+
+
 def run():
     releases, latest_release = get_releases()
 
     with open("site/about", "w") as about_page:
-        about_page.write(env.get_template("about.html").render())
+        about_page.write(env.get_template("about.html").render(path="/about"))
 
     os.makedirs("site/releases", exist_ok=True)
     with open("site/releases.html", "w") as release_notes:
@@ -374,9 +429,16 @@ def run():
             actor = create_actor(actor_json)
             name = actor_json["name"]
             actor_details = actor_details_template.render(
-                results=actor, name=name, actorId=actor_id
+                path=f"/actor/{actor_id}", results=actor, name=name, actorId=actor_id
             )
             actor_page.write(actor_details)
+
+    with open("site/sitemap.xml", "w") as sitemap:
+        sitemap.write(
+            create_xml_sitemap(
+                releases=releases, actors=all_actors, formats=all_json_files
+            )
+        )
 
 
 run()

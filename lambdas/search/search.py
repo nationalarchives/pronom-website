@@ -30,6 +30,9 @@ env.globals.update(
     {
         "cache_buster": cache_buster,
         "cookies_domain": os.environ.get("COOKIES_DOMAIN", ".nationalarchives.gov.uk"),
+        "site_root": os.environ.get(
+            "SITE_ROOT", "https://pronom.nationalarchives.gov.uk"
+        ),
     }
 )
 
@@ -77,7 +80,7 @@ def lambda_handler(event, _):
         (k, v) = c.split("=", 1)
         cookies[k] = v
     search_results = env.get_template("search_results.html")
-    if query_params:
+    if query_params and "q" in query_params:
         search_term = query_params.get("q") if query_params else None
         if re.search(
             r"^(x-)?fmt\/\d{1,5}$", search_term.lower()
@@ -90,6 +93,7 @@ def lambda_handler(event, _):
             search_term=search_term,
             search_home=False,
             theme=cookies.get("theme", "system"),
+            path=f"/search?q={search_term}",
         )
 
         return {
@@ -99,8 +103,7 @@ def lambda_handler(event, _):
         }
     else:
         body = search_results.render(
-            search_home=True,
-            theme=cookies.get("theme", "system"),
+            search_home=True, theme=cookies.get("theme", "system"), path="/search"
         )
     return {
         "statusCode": 200,

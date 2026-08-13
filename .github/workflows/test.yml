@@ -27,6 +27,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           COOKIES_DOMAIN: localhost
+          SITE_ROOT: http://localhost:8081
       - name: Install dependencies
         run: |
           npm ci
