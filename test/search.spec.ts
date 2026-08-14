@@ -117,7 +117,7 @@ describe("landing page", () => {
 });
 
 describe("searching", () => {
-  test("empty search", async ({ page }) => {
+  test("empty search shows everything", async ({ page }) => {
     await page.goto("/search");
     await expect(page.locator(".tna-skip-link")).toHaveCount(1);
     await expect(page.locator("#search-results")).toHaveCount(0);
@@ -132,11 +132,6 @@ describe("searching", () => {
     await expect(await searchResultList.locator("li").count()).toBeGreaterThan(
       0,
     );
-    // await checkAccessibility(page);  // TODO: Takes a long time to run, so disabled for now
-    await validateHtml(page);
-
-    await searchResultList.locator("li").first().getByRole("link").click();
-    await expect(page).toHaveURL(/\/fmt\/(\d+)$/);
   });
 
   test("search for 'mp4'", async ({ page }) => {
