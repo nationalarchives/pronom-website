@@ -47,6 +47,7 @@ jobs:
           ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
           REGION: eu-west-2
           COOKIES_DOMAIN: test.pronom.nationalarchives.gov.uk
+          SITE_ROOT: https://test.pronom.nationalarchives.gov.uk
 
   e2e-tests:
     needs: release-test

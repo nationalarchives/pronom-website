@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile.nginx
       args:
         COOKIES_DOMAIN: ${COOKIES_DOMAIN}
+        SITE_ROOT: ${SITE_ROOT}
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
     ports:
@@ -23,6 +24,7 @@ services:
     environment:
       - DB_NAME=/home/app/indexes
       - COOKIES_DOMAIN=${COOKIES_DOMAIN}
+      - SITE_ROOT=${SITE_ROOT}
     volumes:
       - ./:/app
     restart: unless-stopped

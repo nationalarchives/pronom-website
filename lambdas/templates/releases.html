@@ -36,17 +36,6 @@
   </div>
 <div class="tna-container tna-section">
   <div class="tna-column tna-column--width-5-6 tna-column--full-medium tna-column--full-small tna-column--full-tiny">
-    <!-- <div data-module="filter-container" data-filter-target="releases" data-filter-attribute="data-affected-records" class="tna-!--margin-bottom-l" hidden>
-      {{ tnaTextInput({
-        'label': 'Filter by PUID',
-        'headingSize': 'm',
-        'id': 'filter',
-        'name': 'filter',
-        'size': 'm',
-        'classes': 'filter-input'
-      }) }}
-      <p class="filtered-count tna-!--margin-top-xs" aria-live="polite"></p>
-    </div> -->
     <ul class="tna-ul tna-ul--plain" id="releases">
     {%- for version_date, release in releases.items() %}
       {%- set is_latest = version_date[0] == latest_release %}
