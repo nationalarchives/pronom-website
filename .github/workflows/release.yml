@@ -155,3 +155,5 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           ACCOUNT_NUMBER: ${{ secrets.ACCOUNT_ID }}
           REGION: eu-west-2
+          COOKIES_DOMAIN: .nationalarchives.gov.uk
+          SITE_ROOT: https://pronom.nationalarchives.gov.uk

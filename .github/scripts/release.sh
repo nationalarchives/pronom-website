@@ -4,7 +4,6 @@ set -e
 
 ENVIRONMENT=$1
 
-
 S3_BUCKET="$ENVIRONMENT-pronom-site-$ACCOUNT_NUMBER-$REGION-an"
 S3_URL="s3://$S3_BUCKET"
 
