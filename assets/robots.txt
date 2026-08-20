@@ -1,5 +1,5 @@
 User-agent: *
-Content-Signal: ai-train=no, search=yes, ai-input=yes
+Content-Signal: ai-train=no, search=yes, ai-input=no
 Allow: /
 
 Sitemap: https://pronom.nationalarchives.gov.uk/sitemap.xml
