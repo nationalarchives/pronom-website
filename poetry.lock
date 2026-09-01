@@ -216,18 +216,18 @@ files = [
 
 [[package]]
 name = "fastcore"
-version = "1.14.5"
+version = "2.2.15"
 description = "Python supercharged for fastai development"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "fastcore-1.14.5-py3-none-any.whl", hash = "sha256:4b870ee8dc7882b6c280e008ae4d0a355dc2ab4ae1c729a5301413c7f020cc11"},
-    {file = "fastcore-1.14.5.tar.gz", hash = "sha256:d6f1b4220913642964da6236047fe1e9474ecaeaf38737e144b296c31eb53a3a"},
+    {file = "fastcore-2.2.15-py3-none-any.whl", hash = "sha256:0d999b4ce213e8e493e7196c4471571a6e1e27d675eb767fd976211489df56a9"},
+    {file = "fastcore-2.2.15.tar.gz", hash = "sha256:d70feb76afa8f1e2722717126ea5813c60a7971d24cbbba5154f7b0ee59c1805"},
 ]
 
 [package.extras]
-dev = ["llms-txt", "matplotlib", "nbclassic", "nbdev (>=0.2.39)", "numpy", "pandas", "pillow", "plum-dispatch", "pysymbol_llm", "toolslm", "torch"]
+dev = ["llms-txt", "matplotlib", "nbclassic", "nbdev (>=3.3.2)", "numpy", "pandas", "pillow", "plum-dispatch", "pysym2md (>=0.0.6)", "remold", "torch"]
 
 [[package]]
 name = "fastspec"
@@ -673,4 +673,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "0186153b4547415b0433492b6a510f1acf7d3577db66e2dfa111a522953ef613"
+content-hash = "b346ad1241c28a5f5708785684992a29446611a1148e6d7af211c652fe2c5963"
