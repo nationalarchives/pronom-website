@@ -16,7 +16,7 @@ boto3 = "^1.43.56"
 ghapi = "^2.0.3"
 fastcore = "^1.13.6"
 pycountry = "^26.2.16"
-tna-utilities = "^1.6.0"
+tna-utilities = "^1.8.0"
 
 [tool.poetry.group.dev]
 optional = true
