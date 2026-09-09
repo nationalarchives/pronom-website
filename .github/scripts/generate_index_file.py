@@ -57,24 +57,20 @@ def run():
     for file_path in json_files:
         with open(f"{path}/signatures/{file_path}", "r") as file:
             data = json.load(file)
-            version = (
-                " " + data["version"] if "version" in data and data["version"] else ""
-            )
+            version = " " + data["version"] if data.get("version") else ""
             format_name = data["formatName"] + version
-            puid = [
+            puid = next(
                 idf["identifierText"]
                 for idf in data["identifiers"]
                 if idf["identifierType"] == "PUID"
-            ][0]
-            external_signatures = (
-                data["externalSignatures"] if "externalSignatures" in data else []
             )
+            external_signatures = data.get("externalSignatures", [])
             file_extension_list = [
                 x for x in external_signatures if x["signatureType"] == "File extension"
             ]
             extension_names = [fe["externalSignature"] for fe in file_extension_list]
             file_extension = "".join(extension_names)
-            field = "".join([format_name, file_extension])
+            field = f"{format_name}{file_extension}"
             insert_into_database(puid, format_name, extension_names, field)
 
 

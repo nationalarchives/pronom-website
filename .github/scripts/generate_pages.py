@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import urllib
+from datetime import timezone
 from pathlib import Path
 from urllib.request import Request
 
@@ -34,7 +35,7 @@ env.filters["sortpuids"] = lambda puids: sorted(
     puids, key=lambda puid: int(re.sub(r"^(((x\-)?fmt)|sfw)\/", "", puid))
 )
 cache_buster = hashlib.md5(
-    datetime.datetime.now().isoformat().encode(), usedforsecurity=False
+    datetime.datetime.now(timezone.utc).isoformat().encode(), usedforsecurity=False
 ).hexdigest()[:8]
 env.globals.update(
     {
@@ -79,11 +80,11 @@ def get_relationships(json_data, json_by_id):
     relationship_summary = []
     for relationship in relationships:
         relationship_json = json_by_id[relationship["relatedFormatID"]]
-        relationship_puid = [
+        relationship_puid = next(
             idf["identifierText"]
             for idf in relationship_json["identifiers"]
             if idf["identifierType"] == "PUID"
-        ][0]
+        )
         relationship_version = (
             f" {relationship_json['version']}"
             if relationship_json.get("version")
@@ -99,9 +100,7 @@ def get_relationships(json_data, json_by_id):
 
 
 def get_file_extensions(json_data):
-    external_signatures = (
-        json_data["externalSignatures"] if "externalSignatures" in json_data else []
-    )
+    external_signatures = json_data.get("externalSignatures", [])
     file_extension_list = [
         x for x in external_signatures if x["signatureType"] == "File extension"
     ]
@@ -321,12 +320,20 @@ def create_release_page(release, details, releases):
 
 def release_date_to_iso(release_date):
     try:
-        date = datetime.datetime.strptime(release_date, "%d %B %Y").date().isoformat()
+        date = (
+            datetime.datetime.strptime(release_date, "%d %B %Y")
+            .astimezone(timezone.utc)
+            .date()
+            .isoformat()
+        )
         return date
     except ValueError:
         try:
             date = (
-                datetime.datetime.strptime(release_date, "%d %b %Y").date().isoformat()
+                datetime.datetime.strptime(release_date, "%d %b %Y")
+                .astimezone(timezone.utc)
+                .date()
+                .isoformat()
             )
             return date
         except ValueError:
@@ -344,12 +351,12 @@ def create_xml_sitemap(releases, actors, formats):
     urls.append(
         {
             "loc": "/releases",
-            "lastmod": release_date_to_iso(list(releases.keys())[0][1])
+            "lastmod": release_date_to_iso(next(iter(releases.keys()))[1])
             if len(releases)
             else None,
         }
     )
-    for release, _ in releases.items():
+    for release in releases:
         release_version = release[0].lower()
         release_date = release_date_to_iso(release[1])
         urls.append(
@@ -359,13 +366,13 @@ def create_xml_sitemap(releases, actors, formats):
                 "priority": 0.3,
             }
         )
-    for puid in formats.keys():
+    for puid in formats:
         urls.append({"loc": f"/{puid}", "priority": 0.8})
-    for actor_id in actors.keys():
+    for actor_id in actors:
         urls.append({"loc": f"/actor/{actor_id}", "priority": 0.3})
     return env.get_template("sitemap.xml").render(
         urls=urls,
-        generated_date=datetime.datetime.now().isoformat(),
+        generated_date=datetime.datetime.now(timezone.utc).isoformat(),
     )
 
 

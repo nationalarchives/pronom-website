@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import json
 import sys
 import xml.etree.ElementTree as Et
@@ -102,7 +100,9 @@ def build_file_format_element(format_json: dict) -> Et.Element:
             byte_sequence_element = Et.SubElement(
                 internal_signature_element, q("ByteSequence")
             )
-            add_text_element(byte_sequence_element, "ByteSequenceID", 1)
+            add_text_element(
+                byte_sequence_element, "ByteSequenceID", byte_sequence["byteSequenceID"]
+            )
             add_text_element(
                 byte_sequence_element, "PositionType", byte_sequence.get("positionType")
             )

@@ -4,6 +4,7 @@ import os
 import re
 import sqlite3
 from contextlib import closing
+from datetime import timezone
 
 from jinja2 import (
     ChoiceLoader,
@@ -24,7 +25,7 @@ env = Environment(
 )
 env.filters["commafy"] = lambda number: f"{number:,d}"
 cache_buster = hashlib.md5(
-    datetime.datetime.now().isoformat().encode(), usedforsecurity=False
+    datetime.datetime.now(timezone.utc).isoformat().encode(), usedforsecurity=False
 ).hexdigest()[:8]
 env.globals.update(
     {
@@ -39,10 +40,9 @@ env.globals.update(
 
 def puid_exists(puid):
     db_name = os.getenv("DB_NAME", "indexes")
-    with closing(sqlite3.connect(db_name)) as conn:
-        with closing(conn.cursor()) as cur:
-            cur.execute("SELECT path from formats where path = ?", (puid,))
-            rows = cur.fetchall()
+    with closing(sqlite3.connect(db_name)) as conn, closing(conn.cursor()) as cur:
+        cur.execute("SELECT path from formats where path = ?", (puid,))
+        rows = cur.fetchall()
     return len(rows) > 0
 
 
@@ -52,24 +52,23 @@ def search(search_string):
         return prefix, int(num)
 
     db_name = os.getenv("DB_NAME", "indexes")
-    with closing(sqlite3.connect(db_name)) as conn:
-        with closing(conn.cursor()) as cur:
-            base_query = "select path, f.name, group_concat(e.name, ', ') from formats f join extensions e on e.format_id = f.id"
-            group_by = "group by path, f.name"
-            if search_string.startswith(".") and len(search_string) > 1:
-                cur.execute(
-                    f"{base_query} where id in (select format_id from extensions where name = ?) {group_by}",
-                    (search_string[1:],),
-                )
-            elif search_string.strip() == ".":
-                return []
-            else:
-                cur.execute(
-                    f"{base_query} where field like ? {group_by}",
-                    (f"%{search_string}%",),
-                )
-            rows = cur.fetchall()
-            rows.sort(key=sort_key)
+    with closing(sqlite3.connect(db_name)) as conn, closing(conn.cursor()) as cur:
+        base_query = "select path, f.name, group_concat(e.name, ', ') from formats f join extensions e on e.format_id = f.id"
+        group_by = "group by path, f.name"
+        if search_string.startswith(".") and len(search_string) > 1:
+            cur.execute(
+                f"{base_query} where id in (select format_id from extensions where name = ?) {group_by}",
+                (search_string[1:],),
+            )
+        elif search_string.strip() == ".":
+            return []
+        else:
+            cur.execute(
+                f"{base_query} where field like ? {group_by}",
+                (f"%{search_string}%",),
+            )
+        rows = cur.fetchall()
+        rows.sort(key=sort_key)
     return rows
 
 
