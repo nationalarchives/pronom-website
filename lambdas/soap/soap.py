@@ -51,7 +51,7 @@ def lambda_handler(event, context):
             "headers": {"Content-Type": "text/plain"},
         }
     if method == "GET":
-        if "queryStringParameters" in event and event["queryStringParameters"]:
+        if event.get("queryStringParameters"):
             query_params = {
                 key.lower(): value.lower()
                 for key, value in event["queryStringParameters"].items()

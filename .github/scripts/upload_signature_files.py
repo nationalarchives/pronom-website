@@ -1,5 +1,4 @@
 import sys
-from typing import Optional
 
 import boto3
 import requests
@@ -15,7 +14,7 @@ def github_headers() -> dict:
     return headers
 
 
-def parse_next_link(link_header: Optional[str]) -> Optional[str]:
+def parse_next_link(link_header: str | None) -> str | None:
     if not link_header:
         return None
 
@@ -49,8 +48,7 @@ def iter_releases(owner: str, repo: str):
         response = session.get(url)
         response.raise_for_status()
 
-        for release in response.json():
-            yield release
+        yield from response.json()
 
         url = parse_next_link(response.headers.get("Link"))
 
@@ -67,7 +65,7 @@ def stream_to_s3(
     key: str,
     session: requests.Session,
     s3_client,
-    content_type: Optional[str] = None,
+    content_type: str | None = None,
 ) -> None:
     with session.get(asset_url, stream=True) as response:
         response.raise_for_status()
