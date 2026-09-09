@@ -11,6 +11,7 @@ docker compose up -d --build
 docker compose cp nginx:/usr/share/nginx/html/ .
 docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
 docker compose cp app:/home/app/indexes .
+docker compose cp app:/home/app/pronom-signatures .
 
 LATEST_SIGNATURE_FILE=DROID_SignatureFile_$(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.name').xml
 docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
@@ -58,4 +59,6 @@ aws s3 mv $S3_URL/releases.html $S3_URL/releases
 aws s3 cp ../signature-file.xml $S3_URL/binary-signatures.xml
 aws s3 cp ../container-signatures.xml $S3_URL/container-signatures.xml
 
+cd pronom-signatures/signatures
+aws s3 sync . $S3_URL
 aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"
