@@ -56,8 +56,8 @@ aws s3 cp --content-type font/woff2 --cache-control max-age=31536000 assets/fa-b
 aws s3 sync --content-type text/html --cache-control max-age=2592000 --exclude "*.css" --exclude "*.js" --exclude "*.xml" --exclude "*.woff2" --exclude "*.ico" --exclude "*.png" --exclude "*.webp" --exclude "*.json" . $S3_URL
 aws s3 cp signatures.json $S3_URL
 aws s3 mv $S3_URL/releases.html $S3_URL/releases
-aws s3 cp ../signature-file.xml $S3_URL/binary-signatures.xml
-aws s3 cp ../container-signatures.xml $S3_URL/container-signatures.xml
+aws s3 cp ../signature-file.xml $S3_URL/binary-signature.xml
+aws s3 cp ../container-signatures.xml $S3_URL/container-signature.xml
 
 cd ../pronom-signatures/signatures
 aws s3 sync . $S3_URL
