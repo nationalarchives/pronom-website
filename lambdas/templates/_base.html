@@ -42,6 +42,9 @@
   <link rel="apple-touch-icon" sizes="512x512" href="/assets/icon-512x512.png">
   <link rel="apple-touch-icon" sizes="1024x1024" href="/assets/icon-1024x1024.png">
 
+  {% if environment == 'test' %}
+    <meta name="robots" content="noindex">
+  {% endif %}
   <meta property="og:logo" content="/icon-1024x1024.png">
   <meta name="apple-mobile-web-app-title" content="{{ siteTitle }}">
   <meta name="apple-mobile-web-app-capable" content="no">

@@ -10,6 +10,7 @@ services:
         SITE_ROOT: ${SITE_ROOT}
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - ENVIRONMENT=${ENVIRONMENT}
     ports:
       - 8081:80
     volumes:

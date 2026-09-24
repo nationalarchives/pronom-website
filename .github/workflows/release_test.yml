@@ -43,3 +43,4 @@ jobs:
           REGION: eu-west-2
           COOKIES_DOMAIN: test.pronom.nationalarchives.gov.uk
           SITE_ROOT: https://test.pronom.nationalarchives.gov.uk
+          ENVIRONMENT: test
