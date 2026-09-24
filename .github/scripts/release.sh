@@ -65,4 +65,11 @@ if [ $ENVIRONMENT = "test" ]; then
 fi
 cd ../pronom-signatures/signatures
 aws s3 sync . $S3_URL
-aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"
+
+if [[ "$ENVIRONMENT" == "test" ]]; then
+  CLOUDFRONT_ALIAS="test.pronom.nationalarchives.gov.uk"
+else
+  CLOUDFRONT_ALIAS="pronom.nationalarchives.gov.uk"
+fi
+
+aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items[0]=='${CLOUDFRONT_ALIAS}'].Id" --output text) --paths "/*"
