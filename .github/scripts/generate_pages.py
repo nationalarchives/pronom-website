@@ -128,9 +128,10 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         {
             "version": release[0],
             "date": release[1],
-            "status": "Added"
+            "status": "Added format"
             if puid in [sig["puid"] for sig in details["New Records"]]
-            or puid in [sig["puid"] for sig in details["New Signatures"]]
+
+            else "Added signature" if puid in [sig["puid"] for sig in details["New Signatures"]]
             else "Updated",
             "details": [
                 sig["description"]
