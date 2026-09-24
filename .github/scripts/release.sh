@@ -60,8 +60,7 @@ aws s3 cp ../signature-file.xml $S3_URL/binary-signatures.xml
 aws s3 cp ../container-signatures.xml $S3_URL/container-signatures.xml
 
 if [ $ENVIRONMENT = "test" ]; then
-  echo "Deleting sitemap"
-  aws s3 rm $S3_URL/sitemamp.xml
+  aws s3 rm $S3_URL/sitemap.xml
   aws s3 rm $S3_URL/assets/robots.txt
 fi
 cd ../pronom-signatures/signatures
