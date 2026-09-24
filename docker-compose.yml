@@ -8,9 +8,9 @@ services:
       args:
         COOKIES_DOMAIN: ${COOKIES_DOMAIN}
         SITE_ROOT: ${SITE_ROOT}
+        ENVIRONMENT: ${ENVIRONMENT}
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - ENVIRONMENT=${ENVIRONMENT}
     ports:
       - 8081:80
     volumes:
