@@ -27,6 +27,23 @@ test("page has valid HTML", async ({ page }) => {
   await validateHtml(page);
 });
 
+test("formats with more than one status within same release show both statuses correctly on the page", async ({
+  page,
+}) => {
+  await goToFormatPage(page, 875);
+  await validateHtml(page);
+
+  const version = page
+    .locator(".pronom-format-changelog__item")
+    .filter({ has: page.locator('h3 a[href="/releases/v123"]') });
+  const statusItems = version.locator("ul > li");
+  await expect(statusItems).toHaveCount(2);
+  await expect(statusItems.locator("h4")).toHaveText([
+    "Added signature",
+    "Updated",
+  ]);
+});
+
 test("page has an XML download button", async ({ page }) => {
   await goToFormatPage(page, 199);
   const downloadButton = await page.getByRole("link", { name: "Download XML" });
