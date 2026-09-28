@@ -156,21 +156,33 @@
           <dt>
             <span class="tna-dl__sticky-title">Source</span>
           </dt>
-          <dd><a href="/actor/{{ summary.source.actorId }}">{{ summary.source.name }}</a></dd>
+          <dd>
+              {% for source in summary.source %}
+                <a href="/actor/{{ source.actorId }}">{{ source.name }}</a>{% if not loop.last %}, {% endif %}
+              {% endfor %}
+          </dd>
         {%- endif %}
 
         {%- if summary.developedBy %}
           <dt>
             <span class="tna-dl__sticky-title">Developed by</span>
           </dt>
-          <dd><a href="/actor/{{ summary.developedBy.actorId }}">{{ summary.developedBy.name }}</a></dd>
+          <dd>
+              {% for developer in summary.developedBy %}
+                <a href="/actor/{{ developer.actorId }}">{{ developer.name }}</a>{% if not loop.last %}, {% endif %}
+              {% endfor %}
+          </dd>
         {%- endif %}
 
         {%- if summary.supportedBy %}
           <dt>
             <span class="tna-dl__sticky-title">Supported by</span>
           </dt>
-          <dd><a href="/actor/{{ summary.supportedBy.actorId }}">{{ summary.supportedBy.name }}</a></dd>
+          <dd>
+              {% for supporter in summary.supportedBy %}
+                <a href="/actor/{{ supporter.actorId }}">{{ supporter.name }}</a>{% if not loop.last %}, {% endif %}
+              {% endfor %}
+          </dd>
         {%- endif %}
       </dl>
 

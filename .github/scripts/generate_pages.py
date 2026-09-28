@@ -115,13 +115,13 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         "results": [summary],
         "relationships": get_relationships(json_data, json_by_id),
         "extensions": get_file_extensions(json_data),
-        "developedBy": (
-            all_actors[json_data["developedBy"]] if "developedBy" in json_data else None
-        ),
-        "supportedBy": (
-            all_actors[json_data["supportedBy"]] if "supportedBy" in json_data else None
-        ),
-        "source": all_actors[json_data["source"]] if "source" in json_data else None,
+        "developedBy": [
+            all_actors[actorId] for actorId in json_data.get("developedBy", [])
+        ],
+        "supportedBy": [
+            all_actors[actorId] for actorId in json_data.get("supportedBy", [])
+        ],
+        "source": [all_actors[actorId] for actorId in json_data.get("source", [])],
     }
     signatures = json_data["internalSignatures"]
     changelog = [
