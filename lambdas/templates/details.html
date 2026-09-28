@@ -293,17 +293,26 @@
       {%- if changelog %}
       <h2 class="tna-heading-l" id="changelog">Changelog</h2>
       <ul class="tna-ul tna-ul--plain tna-ul--spaced pronom-format-changelog">
-        {%- for release in changelog %}
+        {%- for version in changelog %}
           <li class="pronom-format-changelog__item">
-            <h3 class="tna-heading-s">{{ release.status|capitalize }} in <a href="/releases/{{ release.version|lower }}">{{ release.version }}</a></h3>
+            <h3 class="tna-heading-s"><a href="/releases/{{ version.version|lower }}">{{ version.version }}</a></h3>
+            {%- for release in version.releases %}
             <dl class="tna-dl-chips tna-dl-chips--plain tna-!--margin-top-xs tna-!--margin-bottom-s">
               <dt>Release date</dt>
               <dd>
                 <span class="tna-dl-chips__item">{{ release.date }}</span>
               </dd>
             </dl>
-            {%- for change in release.details %}
-            <p>{{ change }}</p>
+            <ul class="tna-ul tna-ul--plain tna-ul--spaced">
+              {%- for status in release.statuses %}
+              <li>
+                <h4 class="tna-heading-s">{{ status.status|capitalize }}</h4>
+                {%- for change in status.details %}
+                <p>{{ change }}</p>
+                {%- endfor %}
+              </li>
+              {%- endfor %}
+            </ul>
             {%- endfor %}
           </li>
         {%- endfor %}

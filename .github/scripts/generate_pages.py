@@ -124,35 +124,34 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         "source": all_actors[json_data["source"]] if "source" in json_data else None,
     }
     signatures = json_data["internalSignatures"]
-    changelog = [
-        {
-            "version": release[0],
-            "date": release[1],
-            "status": "Added format"
-            if puid in [sig["puid"] for sig in details["New Records"]]
-
-            else "Added signature" if puid in [sig["puid"] for sig in details["New Signatures"]]
-            else "Updated",
-            "details": [
-                sig["description"]
-                for sig in (
-                    details["Updated Records"]
-                    + details["New Signatures"]
-                    + details["New Records"]
-                )
-                if sig["puid"] == puid
-            ],
-        }
-        for release, details in releases.items()
-        if any(
-            sig["puid"] == puid
-            for sig in (
-                details["Updated Records"]
-                + details["New Signatures"]
-                + details["New Records"]
+    changelog_by_version = {}
+    status_categories = (
+        ("Added format", "New Records"),
+        ("Added signature", "New Signatures"),
+        ("Updated", "Updated Records"),
+    )
+    for (version, date), details in releases.items():
+        statuses = [
+            {
+                "status": status,
+                "details": [
+                    change["description"]
+                    for change in details[category]
+                    if change["puid"] == puid
+                ],
+            }
+            for status, category in status_categories
+            if any(change["puid"] == puid for change in details[category])
+        ]
+        if statuses:
+            version_changelog = changelog_by_version.setdefault(
+                version, {"version": version, "releases": []}
             )
-        )
-    ]
+            version_changelog["releases"].append(
+                {"date": date, "statuses": statuses}
+            )
+    changelog = list(changelog_by_version.values())
+
     return details_template.render(
         path=f"/{puid}",
         id=json_data.get("fileFormatID"),
