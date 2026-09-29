@@ -274,7 +274,7 @@ def get_releases():
                             version,
                             date,
                         )
-                    ][type_key].append({"puid": row[1], "description": row[2]})
+                    ][type_key].append({"puid": row[1], "description": row[2] + ": " + row[3]})
 
     sorted_releases = dict(
         sorted(
