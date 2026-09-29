@@ -1,0 +1,10 @@
+home:
+  meta_description: "An online database that provides clear, reliable information about digital file formats"
+  heading: "PRONOM"
+  lede: "PRONOM is an online database that provides clear, reliable information about digital file formats."
+  about_button: "About PRONOM"
+  about_button_aria: "Learn more about PRONOM"
+  search_heading: "Search"
+  search_hint: "Enter a file format name or file extension"
+  browse_releases_prefix: "Browse"
+  browse_releases_link_text: "PRONOM releases"

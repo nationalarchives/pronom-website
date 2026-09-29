@@ -10,6 +10,7 @@ from datetime import timezone
 from pathlib import Path
 from urllib.request import Request
 
+import yaml
 from jinja2 import (
     ChoiceLoader,
     Environment,
@@ -19,6 +20,16 @@ from jinja2 import (
 )
 from tna_utilities.datetime import pretty_date
 from tna_utilities.string import slugify
+
+translations = {}
+translations_dir = "lambdas/translations"
+for translation_file in os.listdir(translations_dir):
+    with open(f"{translations_dir}/{translation_file}") as translations_file:
+        code = translation_file.removesuffix(".yaml")
+        translations[code] = yaml.safe_load(translations_file)
+
+DEFAULT_LANGUAGE = "en"
+LANGUAGES = list(translations.keys())
 
 env = Environment(
     loader=ChoiceLoader(
@@ -194,8 +205,13 @@ def create_signature_section():
     return signature_template.render(position_types=position_type_select)
 
 
-def create_home():
-    return env.get_template("index.html").render(path="/")
+def create_home(lang=DEFAULT_LANGUAGE):
+    path_prefix = "" if lang == DEFAULT_LANGUAGE else f"/{lang}"
+    return env.get_template("index.html").render(
+        path=f"{path_prefix}/",
+        htmlLang=lang,
+        t=translations[lang]["home"],
+    )
 
 
 def create_search():
@@ -399,6 +415,13 @@ def run():
 
     with open("site/home", "w") as home:
         home.write(create_home())
+
+    for lang in LANGUAGES:
+        if lang == DEFAULT_LANGUAGE:
+            continue
+        os.makedirs(f"site/{lang}", exist_ok=True)
+        with open(f"site/{lang}/home", "w") as translated_home:
+            translated_home.write(create_home(lang))
 
     with open("site/accessibility-statement", "w") as accessibility:
         accessibility.write(create_accessibility())

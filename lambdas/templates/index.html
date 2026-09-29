@@ -7,9 +7,21 @@
 {%- set no_footer_margin = True -%}
 {%- set mainClasses = 'pronom-hero' -%}
 
+{%- set t = t or {
+  'meta_description': 'An online database that provides clear, reliable information about digital file formats',
+  'heading': 'PRONOM',
+  'lede': 'PRONOM is an online database that provides clear, reliable information about digital file formats.',
+  'about_button': 'About PRONOM',
+  'about_button_aria': 'Learn more about PRONOM',
+  'search_heading': 'Search',
+  'search_hint': 'Enter a file format name or file extension',
+  'browse_releases_prefix': 'Browse',
+  'browse_releases_link_text': 'PRONOM releases'
+} -%}
+
 {% block head %}
 {{ super() }}
-<meta name="description" content="An online database that provides clear, reliable information about digital file formats">
+<meta name="description" content="{{ t.meta_description }}">
 {% endblock %}
 
 {% block content %}
@@ -17,16 +29,16 @@
     <div class="tna-column tna-column--full tna-column--width-5-6-medium">
       <div class="pronom-hero__content">
         <div class="pronom-hero__content-inner tna-!--padding-vertical-m">
-          <h1 class="tna-heading-xl">PRONOM</h1>
-          <p class="tna-scene-setter">PRONOM is an online database that provides clear, reliable information about digital file formats.</p>
+          <h1 class="tna-heading-xl">{{ t.heading }}</h1>
+          <p class="tna-scene-setter">{{ t.lede }}</p>
           <div class="tna-button-group">
             {{ tnaButton({
-              'html': 'About PRONOM',
+              'html': t.about_button,
               'href': '/about',
               'icon': 'arrow-right',
               'rightAlignIcon': True,
               'attributes': {
-                'aria-label': 'Learn more about PRONOM'
+                'aria-label': t.about_button_aria
               }
             }) | indent(10) }}
           </div>
@@ -34,16 +46,16 @@
         <div class="pronom-hero__content-inner tna-!--padding-top-s tna-!--padding-bottom-m tna-background-accent-light">
           <form class="tna-!--margin-top-xs" action="/search" method="get" novalidate>
             {{ tnaSearchField({
-              'label': 'Search',
+              'label': t.search_heading,
               'headingLevel': 2,
               'headingSize': 'l',
               'id': 'search',
               'name': 'q',
-              'hint': 'Enter a file format name or file extension'
+              'hint': t.search_hint
             }) }}
           </form>
           <p class="tna-!--margin-top-xs">
-            <small>Browse <a href="/releases">PRONOM releases</a></small>
+            <small>{{ t.browse_releases_prefix }} <a href="/releases">{{ t.browse_releases_link_text }}</a></small>
           </p>
         </div>
       </div>

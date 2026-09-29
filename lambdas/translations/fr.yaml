@@ -1,0 +1,10 @@
+home:
+  meta_description: "Lorem ipsum dolor sit amet consectetur adipiscing elit"
+  heading: "Lorem Ipsum"
+  lede: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+  about_button: "Lorem ipsum dolor"
+  about_button_aria: "Ut enim ad minim veniam quis nostrud"
+  search_heading: "Quaerere"
+  search_hint: "Excepteur sint occaecat cupidatat non proident"
+  browse_releases_prefix: "Consectetur"
+  browse_releases_link_text: "Lorem ipsum releases"
