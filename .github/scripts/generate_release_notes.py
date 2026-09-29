@@ -50,6 +50,7 @@ New Signatures,fmt/951,Sonic Foundry WAVE 64: Signature developed through PRONOM
 Data from each row is used to populate name attribute of the release_outline as well as the puid, name and summary elements
 inside the format element
 """
+
 import csv
 import os
 import re
@@ -67,6 +68,7 @@ def create_ordinal_formatted_date(date_str):
     )
     return f"{day}{ordinal_suffix} {d.strftime('%B %Y')}"
 
+
 def create_format_element(puid, name, summary):
     format_elem = Element("format")
     puid_type, puid_value = puid.split("/", 1)
@@ -75,6 +77,7 @@ def create_format_element(puid, name, summary):
     SubElement(format_elem, "summary").text = summary
     return format_elem
 
+
 def create_release_outline_element(outline_name, all_rows):
     release_outline = Element("release_outline", name=outline_name)
     for row in all_rows:
@@ -82,6 +85,7 @@ def create_release_outline_element(outline_name, all_rows):
             outline_name, puid, name, summary = row
             release_outline.append(create_format_element(puid, name, summary))
     return release_outline
+
 
 def create_release_note_element(changelog_file_name, all_rows):
     release_note = Element("release_note")
@@ -95,9 +99,9 @@ def create_release_note_element(changelog_file_name, all_rows):
     SubElement(release_note, "signature_filename").text = droid_signature_file
 
     for outline_name in [
-        "New Records", 
-        "Updated Records", 
-        "Signatures", 
+        "New Records",
+        "Updated Records",
+        "Signatures",
         "New Signatures",
     ]:
         if any(row[0].strip() == outline_name for row in all_rows):
@@ -105,18 +109,22 @@ def create_release_note_element(changelog_file_name, all_rows):
 
     return release_note
 
+
 def create_release_notes_from_changelogs(path_to_changelog_files):
     release_notes = Element("release_notes")
     changelog_files = [
-        f for f in os.listdir(path_to_changelog_files)
+        f
+        for f in os.listdir(path_to_changelog_files)
         if re.match(r"^changelog-v\d+-\d{4}-\d{2}-\d{2}\.csv$", f)
     ]
 
     # Sort files in descending order based on the date in the filename
-    changelog_files.sort(key=lambda f: int(f.split("-")[1].removeprefix("v")), reverse=True)
+    changelog_files.sort(
+        key=lambda f: int(f.split("-")[1].removeprefix("v")), reverse=True
+    )
     for changelog_file in changelog_files:
         with open(
-                f"{path_to_changelog_files}/{changelog_file}", newline="", encoding="utf-8"
+            f"{path_to_changelog_files}/{changelog_file}", newline="", encoding="utf-8"
         ) as csvfile:
             reader = csv.reader(csvfile)
             all_rows = [row for row in reader if len(row) == 4]
@@ -135,6 +143,7 @@ def run():
     tree = ElementTree(release_notes)
     with open("site/release-notes.xml", "wb") as xmlfile:
         tree.write(xmlfile, encoding="utf-8", xml_declaration=True)
+
 
 if __name__ == "__main__":
     run()
