@@ -34,7 +34,7 @@ Generate the full Release Notes XML from the changelog. The structure of the rel
           </format>
        </release_outline>
     </release_note>
-    </release_notes>   
+    </release_notes>
 
 The file is written in such a way that the release_note elements are arranged in descending order of date, i.e. the newest
  release_note appears at the beginning of the file
@@ -54,16 +54,16 @@ import csv
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import date
 from pathlib import Path
-from xml.etree.ElementTree import Element, ElementTree, SubElement 
+from xml.etree.ElementTree import Element, ElementTree, SubElement
 
 
 def create_ordinal_formatted_date(date_str):
-    date = datetime.strptime(date_str, '%Y-%m-%d')
-    day = date.day
+    d = date.strptime(date_str, '%Y-%m-%d')
+    day = d.day
     ordinal_suffix = "th" if 11 <= day <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
-    return f"{day}{ordinal_suffix} {date.strftime('%B %Y')}"
+    return f"{day}{ordinal_suffix} {d.strftime('%B %Y')}"
 
 def create_format_element(puid, name, summary):
     format_elem = Element('format')
