@@ -15,8 +15,8 @@ Generate the full Release Notes XML from the changelog. The structure of the rel
           .
           .
           .
-       </release_outline>   
-       <release_outline name="Updated Records">f
+       </release_outline>
+       <release_outline name="Updated Records">
           <format>
              <puid type="fmt">45</puid>
              <name>Rich Text Format</name>
@@ -25,38 +25,39 @@ Generate the full Release Notes XML from the changelog. The structure of the rel
           .
           .
           .
-       </release_outline>   
+       </release_outline>
        <release_outline name="New Signatures">
           <format>
              <puid type="fmt">2105</puid>
              <name>ForTheRecord TRM Audio</name>
              <summary>Signature researched and samples provided by Preservica.</summary>
-          </format>      
+          </format>
        </release_outline>
     </release_note>
     </release_notes>   
 
 The file is written in such a way that the release_note elements are arranged in descending order of date, i.e. the newest
- release_note appears at the beginning of the file  
- 
- Expected name for each changelog file: changelog-vNNN-NNNN-NN-NN.csv, e.g. changelog-v88-2016-09-27.csv. Elements from the 
+ release_note appears at the beginning of the file
+
+ Expected name for each changelog file: changelog-vNNN-NNNN-NN-NN.csv, e.g. changelog-v88-2016-09-27.csv. Elements from the
  filename are used to populate release_date and signature_filename
- 
-Expected data in each changelog file is a 3 column CSV as shown below: 
+
+Expected data in each changelog file is a 3 column CSV as shown below:
 New Records,fmt/974,Notation Interchange File Format: Full entry added.
 Updated Records,fmt/6,Waveform Audio: Simplified signature at suggestion of National Library of New Zealand.
 New Signatures,fmt/951,Sonic Foundry WAVE 64: Signature developed through PRONOM Research.
- 
+
 Data from each row is used to populate name attribute of the release_outline as well as the puid, name and summary elements
-inside the format element  
+inside the format element
 """
+import csv
 import os
 import re
-import csv
 import sys
 from datetime import datetime
-from xml.etree.ElementTree import Element, SubElement, tostring, ElementTree
 from pathlib import Path
+from xml.etree.ElementTree import Element, ElementTree, SubElement 
+
 
 def create_ordinal_formatted_date(date_str):
     date = datetime.strptime(date_str, '%Y-%m-%d')
@@ -126,7 +127,7 @@ def run():
     release_notes = create_release_notes_from_changelogs(base_path)
 
     tree = ElementTree(release_notes)
-    with open(f"site/release-notes.xml", 'wb') as xmlfile:
+    with open("site/release-notes.xml", 'wb') as xmlfile:
         tree.write(xmlfile, encoding='utf-8', xml_declaration=True)
 
 if __name__ == "__main__":
