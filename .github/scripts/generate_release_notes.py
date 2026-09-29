@@ -60,21 +60,23 @@ from xml.etree.ElementTree import Element, ElementTree, SubElement
 
 
 def create_ordinal_formatted_date(date_str):
-    d = date.strptime(date_str, '%Y-%m-%d')
+    d = date.strptime(date_str, "%Y-%m-%d")
     day = d.day
-    ordinal_suffix = "th" if 11 <= day <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
+    ordinal_suffix = (
+        "th" if 11 <= day <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
+    )
     return f"{day}{ordinal_suffix} {d.strftime('%B %Y')}"
 
 def create_format_element(puid, name, summary):
-    format_elem = Element('format')
+    format_elem = Element("format")
     puid_type, puid_value = puid.split("/", 1)
     SubElement(format_elem, "puid", type=puid_type).text = puid_value
-    SubElement(format_elem, 'name').text = name
-    SubElement(format_elem, 'summary').text = summary
+    SubElement(format_elem, "name").text = name
+    SubElement(format_elem, "summary").text = summary
     return format_elem
 
 def create_release_outline_element(outline_name, all_rows):
-    release_outline = Element('release_outline', name=outline_name)
+    release_outline = Element("release_outline", name=outline_name)
     for row in all_rows:
         if row[0].strip() == outline_name:
             outline_name, puid, name, summary = row
@@ -82,38 +84,42 @@ def create_release_outline_element(outline_name, all_rows):
     return release_outline
 
 def create_release_note_element(changelog_file_name, all_rows):
-    release_note = Element('release_note')
+    release_note = Element("release_note")
 
     version = changelog_file_name.split("-", 2)[1][1:]
     date_str = changelog_file_name.split("-", 2)[2].removesuffix(".csv")
     release_date = create_ordinal_formatted_date(date_str)
-    droid_signature_file = f'DROID_SignatureFile_V{version}.xml'
+    droid_signature_file = f"DROID_SignatureFile_V{version}.xml"
 
-    SubElement(release_note, 'release_date').text = release_date
-    SubElement(release_note, 'signature_filename').text = droid_signature_file
+    SubElement(release_note, "release_date").text = release_date
+    SubElement(release_note, "signature_filename").text = droid_signature_file
 
-    for outline_name in ["New Records", "Updated Records", "Signatures", "New Signatures"]:
+    for outline_name in [
+        "New Records", 
+        "Updated Records", 
+        "Signatures", 
+        "New Signatures",
+    ]:
         if any(row[0].strip() == outline_name for row in all_rows):
             release_note.append(create_release_outline_element(outline_name, all_rows))
 
     return release_note
 
 def create_release_notes_from_changelogs(path_to_changelog_files):
-    release_notes = Element('release_notes')
+    release_notes = Element("release_notes")
     changelog_files = [
         f for f in os.listdir(path_to_changelog_files)
-        if re.match(r'^changelog-v\d+-\d{4}-\d{2}-\d{2}\.csv$', f)
+        if re.match(r"^changelog-v\d+-\d{4}-\d{2}-\d{2}\.csv$", f)
     ]
 
     # Sort files in descending order based on the date in the filename
     changelog_files.sort(key=lambda f: int(f.split("-")[1].removeprefix("v")), reverse=True)
     for changelog_file in changelog_files:
-        with open(f'{path_to_changelog_files}/{changelog_file}', newline='', encoding='utf-8') as csvfile:
+        with open(
+                f"{path_to_changelog_files}/{changelog_file}", newline="", encoding="utf-8"
+        ) as csvfile:
             reader = csv.reader(csvfile)
-            all_rows = [
-                row for row in reader
-                if len(row) == 4
-            ]
+            all_rows = [row for row in reader if len(row) == 4]
             release_notes.append(create_release_note_element(changelog_file, all_rows))
 
     return release_notes
@@ -127,8 +133,8 @@ def run():
     release_notes = create_release_notes_from_changelogs(base_path)
 
     tree = ElementTree(release_notes)
-    with open("site/release-notes.xml", 'wb') as xmlfile:
-        tree.write(xmlfile, encoding='utf-8', xml_declaration=True)
+    with open("site/release-notes.xml", "wb") as xmlfile:
+        tree.write(xmlfile, encoding="utf-8", xml_declaration=True)
 
 if __name__ == "__main__":
     run()

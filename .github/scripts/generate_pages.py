@@ -147,9 +147,7 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
             version_changelog = changelog_by_version.setdefault(
                 version, {"version": version, "releases": []}
             )
-            version_changelog["releases"].append(
-                {"date": date, "statuses": statuses}
-            )
+            version_changelog["releases"].append({"date": date, "statuses": statuses})
     changelog = list(changelog_by_version.values())
 
     return details_template.render(
