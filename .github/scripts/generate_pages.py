@@ -122,7 +122,9 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         "supportedBy": (
             all_actors[json_data["supportedBy"]] if "supportedBy" in json_data else None
         ),
-        "source": all_actors[json_data["source"]] if "source" in json_data else None,
+        "source": (
+            all_actors[json_data["source"]] if "source" in json_data else None
+        ),
     }
     signatures = json_data["internalSignatures"]
     changelog_by_version = {}
