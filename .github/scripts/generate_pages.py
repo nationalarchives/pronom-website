@@ -40,6 +40,7 @@ cache_buster = hashlib.md5(
 env.globals.update(
     {
         "cache_buster": cache_buster,
+        "environment": os.environ.get("ENVIRONMENT", "prod"),
         "cookies_domain": os.environ.get("COOKIES_DOMAIN", ".nationalarchives.gov.uk"),
         "site_root": os.environ.get(
             "SITE_ROOT", "https://pronom.nationalarchives.gov.uk"
