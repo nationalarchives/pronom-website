@@ -59,6 +59,17 @@ aws s3 mv $S3_URL/releases.html $S3_URL/releases
 aws s3 cp ../signature-file.xml $S3_URL/binary-signature.xml
 aws s3 cp ../container-signatures.xml $S3_URL/container-signature.xml
 
+if [ $ENVIRONMENT = "test" ]; then
+  aws s3 rm $S3_URL/sitemap.xml
+  aws s3 rm $S3_URL/assets/robots.txt
+fi
 cd ../pronom-signatures/signatures
 aws s3 sync . $S3_URL
-aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text) --paths "/*"
+
+if [[ "$ENVIRONMENT" == "test" ]]; then
+  CLOUDFRONT_ALIAS="test.pronom.nationalarchives.gov.uk"
+else
+  CLOUDFRONT_ALIAS="pronom.nationalarchives.gov.uk"
+fi
+
+aws cloudfront create-invalidation --distribution-id $(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items[0]=='${CLOUDFRONT_ALIAS}'].Id" --output text) --paths "/*"
