@@ -5,7 +5,7 @@ ARG SITE_ROOT=https://pronom.nationalarchives.gov.uk
 ARG ENVIRONMENT=prod
 COPY pyproject.toml poetry.lock package.json package-lock.json vite.config.js ./
 COPY src src
-RUN git clone https://github.com/nationalarchives/pronom-signatures/ /home/app/pronom-signatures
+RUN git clone https://github.com/nationalarchives/pronom /home/app/pronom-signatures
 RUN tna-build
 COPY . .
 RUN mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit site/assets
