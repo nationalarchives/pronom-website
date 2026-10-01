@@ -90,6 +90,35 @@ The Flask app is a single route for the search results page. It passes the local
 
 The service will be available at http://localhost:8081.
 
+If you would like the local website to run based on signatures on a branch other than `main`, open the `DockerFile.nginx` and change the line
+
+`RUN git clone https://github.com/nationalarchives/pronom /home/app/pronom-signatures`
+
+to
+
+`RUN git clone -b {branch name} https://github.com/nationalarchives/pronom /home/app/pronom-signatures`
+
+#### Troubleshooting
+
+1. If you get this error message...
+   `target app: failed to solve: error getting credentials - err: exec: "docker-credential-desktop": executable file not found in $PATH, out: `` `
+   ...you probably don't have Docker Desktop installed.
+
+   1. Open this file `~/.docker/config.json`
+   2. Delete this line `"credsStore": "desktop"` from the JSON
+
+2. GitHub Actions errors
+   1. If you get this error message when you push to GitHub `unformatted: File would be reformatted`, you need to install Ruff,
+      the Python formatter; you can do this by running `pip install ruff` and running `ruff format`
+   2. If you get this error when you push to GitHub
+      ```
+      Running prettier...
+      Using app config (/app/.prettierignore)
+      <file name>
+      Error: Process completed with exit code 1.
+      ```
+      then install Prettier and in the `pronom-website` directory, run `prettier . --write`
+
 ### Tests
 
 There are two suites of tests.
