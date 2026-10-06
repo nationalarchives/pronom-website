@@ -167,6 +167,11 @@ resource "aws_cloudfront_distribution" "site" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
 
     compress = true
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.lowercase_url.arn
+    }
   }
 
   ordered_cache_behavior {
@@ -234,4 +239,11 @@ resource "aws_cloudwatch_log_delivery" "access_logs_delivery" {
   region                   = local.us_east_1
   delivery_source_name     = aws_cloudwatch_log_delivery_source.access_logs_source.name
   delivery_destination_arn = aws_cloudwatch_log_delivery_destination.cloudfront_logs_destination.arn
+}
+
+resource "aws_cloudfront_function" "lowercase_url" {
+  name    = "lowercase-url"
+  runtime = "cloudfront-js-2.0"
+  publish = true
+  code    = file("${path.module}/lambda/index.js")
 }
