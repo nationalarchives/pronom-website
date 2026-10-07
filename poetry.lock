@@ -295,22 +295,22 @@ dev = ["llms-txt", "matplotlib", "nbclassic", "nbdev (>=3.3.2)", "numpy", "panda
 
 [[package]]
 name = "fastspec"
-version = "0.2.4"
+version = "0.2.5"
 description = "Dynamic OpenAPI, Discovery, and GraphQL spec client for Python — turn any API spec into a fully-typed async client with attribute chaining, streaming, and file uploads"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "fastspec-0.2.4-py3-none-any.whl", hash = "sha256:c0811499a3ad7beb5a337c3d1bed4209c65cfeacd1f99ecb1e7c693f6fdff3c6"},
-    {file = "fastspec-0.2.4.tar.gz", hash = "sha256:4a594a4abab4f715c801b2e2cba1045a4aa345830575343358186b15c98c21cb"},
+    {file = "fastspec-0.2.5-py3-none-any.whl", hash = "sha256:a08fc9eb30629221392f7df1474dfcd426f61364e7258b238e04b7af06120ce4"},
+    {file = "fastspec-0.2.5.tar.gz", hash = "sha256:a5d32aff8a2c9dfd7db333b94b1126f3ff7d0fe0c61ae54da3f2197392af3ffa"},
 ]
 
 [package.dependencies]
-fastcore = ">=2.2.1"
+fastcore = ">=2.2.23"
 fasttransport = ">=0.0.2"
 
 [package.extras]
-dev = ["pyskills (>=0.0.17)", "safepyrun (>=0.2.3)"]
+dev = ["pyskills (>=0.0.30)", "safepyrun (>=0.2.3)"]
 
 [[package]]
 name = "fasttransport"
@@ -357,23 +357,23 @@ dotenv = ["python-dotenv"]
 
 [[package]]
 name = "ghapi"
-version = "2.1.3"
+version = "2.1.4"
 description = "A python client for the GitHub API"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "ghapi-2.1.3-py3-none-any.whl", hash = "sha256:d4d4f037f488ad7d9ea3f7bbe94601030073ad7fc23da1cbb32d705dc07cc232"},
-    {file = "ghapi-2.1.3.tar.gz", hash = "sha256:bbdcf6c9c4cf75ada29b1279339660f7f05cecba7f4c8a0b6db743142df8a2a5"},
+    {file = "ghapi-2.1.4-py3-none-any.whl", hash = "sha256:a2256802663bab9f979cad38da194eb540221cb02e069b554b22ce0a0ddb7ddc"},
+    {file = "ghapi-2.1.4.tar.gz", hash = "sha256:100893f3ded361b2c063607d85b035ca74ad93e71e1788837c55a3972bdad733"},
 ]
 
 [package.dependencies]
-fastcore = ">=2.2.7"
-fastspec = ">=0.2.1"
+fastcore = ">=2.2.23"
+fastspec = ">=0.2.5"
 fasttransport = ">=0.0.2"
 
 [package.extras]
-dev = ["fastgit", "llms-txt (>=0.0.6)", "matplotlib", "nbclassic", "nbdev", "pyskills", "pysym2md (>=0.0.6)", "pyyaml"]
+dev = ["fastgit", "llms-txt (>=0.0.6)", "matplotlib", "nbclassic", "nbdev", "pyskills (>=0.0.30)", "pysym2md (>=0.0.6)", "pyyaml"]
 
 [[package]]
 name = "h11"
@@ -788,4 +788,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "3d08ab0c01549be353a3777a5fc8fdd8a46ea54302c76114fe3dd9b7fec12b38"
+content-hash = "af9a83fbb4d0070f1bd5e45712158dcb6a867f0b6533e81bd5365b1724e2fcd1"
