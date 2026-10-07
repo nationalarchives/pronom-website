@@ -42,9 +42,7 @@ def build_file_format_element(format_json: dict) -> Et.Element:
     add_text_element(
         file_format, "BinaryFileFormat", format_json.get("binaryFileFormat")
     )
-    add_text_element(file_format, "ByteOrders", format_json.get("byteOrders"))
     add_text_element(file_format, "ReleaseDate", format_json.get("releaseDate"))
-    add_text_element(file_format, "WithdrawnDate", format_json.get("withdrawnDate"))
     add_text_element(
         file_format, "ProvenanceSourceID", format_json.get("formatSourceID")
     )

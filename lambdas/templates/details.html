@@ -152,13 +152,14 @@
           </dd>
         {%- endif %}
 
-        {%- if summary.source is defined and summary.source is not none %}
+
+        {%- if summary.submittedBy %}
           <dt>
-            <span class="tna-dl__sticky-title">Source</span>
+            <span class="tna-dl__sticky-title">Submitted by</span>
           </dt>
           <dd>
-              {% for source in summary.source %}
-                <a href="/actor/{{ source.actorId }}">{{ source.name }}</a>{% if not loop.last %}, {% endif %}
+              {% for eachSubmittedBy in summary.submittedBy %}
+                <a href="/actor/{{ eachSubmittedBy.actorId }}">{{ eachSubmittedBy.name }}</a>{% if not loop.last %}, {% endif %}
               {% endfor %}
           </dd>
         {%- endif %}
@@ -210,7 +211,7 @@
           <div class="tna-aside tna-background-tint" id="internal-signatures-{{ signature.signatureID }}">
             <h3 class="tna-heading-m">{{ signature.name }}</h3>
 
-            {%- if signature.description or signature.note %}
+            {%- if signature.description or signature.note or signature.provenance %}
             <dl class="tna-dl tna-dl--stacked">
               {%- if signature.description %}
                 <dt id="signature-description-{{ signature.signatureID }}">Description</dt>
@@ -218,8 +219,12 @@
               {%- endif %}
 
               {%- if signature.note %}
-                <dt id="signature-note-{{ signature.signatureID }}">Note</dt>
+                <dt id="signature-note-{{ signature.signatureID }}">Description</dt>
                 <dd>{{ signature.note }}</dd>
+              {%- endif %}
+              {%- if signature.provenance %}
+                <dt id="signature-provenance-{{ signature.signatureID }}">Provenance</dt>
+                <dd>{{ signature.provenance }}</dd>
               {%- endif %}
             </dl>
             {%- endif %}
