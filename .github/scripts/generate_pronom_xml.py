@@ -49,12 +49,6 @@ def build_file_format_element(format_json: dict) -> Et.Element:
         file_format, "ProvenanceSourceID", format_json.get("formatSourceID")
     )
     add_text_element(
-        file_format, "ProvenanceName", format_json.get("provenanceCompoundName")
-    )
-    add_text_element(
-        file_format, "ProvenanceSourceDate", format_json.get("formatSourceDate")
-    )
-    add_text_element(
         file_format, "ProvenanceDescription", format_json.get("formatProvenance")
     )
     add_text_element(file_format, "LastUpdatedDate", format_json.get("lastUpdatedDate"))
