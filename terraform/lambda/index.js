@@ -6,8 +6,8 @@ function handler(event) {
     request.uri !== request.uri.toLowerCase()
   ) {
     return {
-      statusCode: 302,
-      statusDescription: "Found",
+      statusCode: 301,
+      statusDescription: "Moved Permanently",
       headers: {
         location: { value: request.uri.toLowerCase() },
       },
