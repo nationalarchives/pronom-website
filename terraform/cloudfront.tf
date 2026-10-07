@@ -242,7 +242,7 @@ resource "aws_cloudwatch_log_delivery" "access_logs_delivery" {
 }
 
 resource "aws_cloudfront_function" "lowercase_url" {
-  name    = "lowercase-url"
+  name    = "${var.environment}-lowercase-url"
   runtime = "cloudfront-js-2.0"
   publish = true
   code    = file("${path.module}/lambda/index.js")
