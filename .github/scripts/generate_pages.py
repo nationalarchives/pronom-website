@@ -123,7 +123,9 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         "supportedBy": [
             all_actors[actorId] for actorId in json_data.get("supportedBy", [])
         ],
-        "submittedBy": [all_actors[actorId] for actorId in json_data.get("submittedBy", [])],
+        "submittedBy": [
+            all_actors[actorId] for actorId in json_data.get("submittedBy", [])
+        ],
     }
     signatures = json_data["internalSignatures"]
     changelog_by_version = {}

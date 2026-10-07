@@ -97,10 +97,15 @@ describe("page shows the correct details", () => {
     await expect(fileExtensions[4]).toHaveText("f4a");
     await expect(fileExtensions[5]).toHaveText("m4b");
 
-    const submittedBy = await summary.locator("dt:has-text('Submitted by') + dd");
+    const submittedBy = await summary.locator(
+      "dt:has-text('Submitted by') + dd",
+    );
     await expect(await submittedBy.textContent()).not.toBeNull();
     await expect(submittedBy.locator("a")).toHaveCount(1);
-    await expect(submittedBy.locator("a")).toHaveAttribute("href", /actor\/(\d+)/);
+    await expect(submittedBy.locator("a")).toHaveAttribute(
+      "href",
+      /actor\/(\d+)/,
+    );
 
     await goToFormatPage(page, 1509);
 
