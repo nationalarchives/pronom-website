@@ -17,13 +17,13 @@ test("binary signature XML", { tag: ["@aws"] }, async ({ page }) => {
   await page.goto("/signature-list");
   await validateHtml(page);
   const firstBinarySignatureFile = await page
-      .locator("ul:near(:text('Binary signature files'))")
-      .locator("li")
-      .first()
-      .getByRole("link");
+    .locator("ul:near(:text('Binary signature files'))")
+    .locator("li")
+    .first()
+    .getByRole("link");
   const href = (await firstBinarySignatureFile.getAttribute("href")) || "";
   const expectedVersion = href.match(
-      /\/signatures\/DROID_SignatureFile_V(\d+)\.xml$/,
+    /\/signatures\/DROID_SignatureFile_V(\d+)\.xml$/,
   )?.[1];
   expect(expectedVersion).toBeDefined();
 
@@ -31,16 +31,16 @@ test("binary signature XML", { tag: ["@aws"] }, async ({ page }) => {
   const xmlContent = await response?.text();
   const xml = new DOMParser().parseFromString(xmlContent!, "application/xml");
   const version = xpath.select1(
-      "string(/*[local-name()='FFSignatureFile']/@Version)",
-      xml,
+    "string(/*[local-name()='FFSignatureFile']/@Version)",
+    xml,
   );
   expect(version).toBe(expectedVersion);
   const namespace = xpath.select1(
-      "namespace-uri(/*[local-name()='FFSignatureFile'])",
-      xml,
+    "namespace-uri(/*[local-name()='FFSignatureFile'])",
+    xml,
   );
   expect(namespace).toBe(
-      "http://www.nationalarchives.gov.uk/pronom/SignatureFile",
+    "http://www.nationalarchives.gov.uk/pronom/SignatureFile",
   );
 });
 
