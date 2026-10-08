@@ -9,10 +9,10 @@ resource "aws_wafv2_web_acl" "cloudfront" {
 
   rule {
     name     = "AntiDDOS"
-    priority = 2
+    priority = 3
 
     override_action {
-      count {}
+      none {}
     }
 
     statement {
@@ -40,7 +40,67 @@ resource "aws_wafv2_web_acl" "cloudfront" {
   }
 
   rule {
-    name     = "RateLimit"
+    name     = "HumanRateLimit"
+    priority = 2
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = local.human_rate_limit
+        aggregate_key_type = "IP"
+        scope_down_statement {
+          and_statement {
+            statement {
+              not_statement {
+                statement {
+                  byte_match_statement {
+                    field_to_match {
+                      uri_path {}
+                    }
+                    positional_constraint = "ENDS_WITH"
+                    search_string         = ".xml"
+                    text_transformation {
+                      priority = 0
+                      type     = "NONE"
+                    }
+                  }
+                }
+              }
+            }
+            statement {
+              not_statement {
+                statement {
+                  byte_match_statement {
+                    field_to_match {
+                      uri_path {}
+                    }
+                    positional_constraint = "ENDS_WITH"
+                    search_string         = ".json"
+                    text_transformation {
+                      priority = 0
+                      type     = "NONE"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "HumanRateLimit"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "MachineRateLimit"
     priority = 1
 
     action {
@@ -49,14 +109,44 @@ resource "aws_wafv2_web_acl" "cloudfront" {
 
     statement {
       rate_based_statement {
-        limit              = local.waf_rate_limit
+        limit              = local.machine_rate_limit
         aggregate_key_type = "IP"
+        scope_down_statement {
+          or_statement {
+            statement {
+              byte_match_statement {
+                field_to_match {
+                  uri_path {}
+                }
+                positional_constraint = "ENDS_WITH"
+                search_string         = ".xml"
+                text_transformation {
+                  priority = 0
+                  type     = "NONE"
+                }
+              }
+            }
+            statement {
+              byte_match_statement {
+                field_to_match {
+                  uri_path {}
+                }
+                positional_constraint = "ENDS_WITH"
+                search_string         = ".json"
+                text_transformation {
+                  priority = 0
+                  type     = "NONE"
+                }
+              }
+            }
+          }
+        }
       }
     }
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = "RateLimit"
+      metric_name                = "MachineRateLimit"
       sampled_requests_enabled   = true
     }
   }
