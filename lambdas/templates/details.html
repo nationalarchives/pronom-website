@@ -100,6 +100,11 @@
           'href': '/' ~ puid ~ '.xml',
           'icon': 'file-code'
         }) | indent(8) }}
+        {{ tnaButton({
+          'text': 'Download JSON',
+          'href': '/' ~ puid ~ '.json',
+          'icon': 'file-code'
+        }) | indent(8) }}
       </div>
       <h2 class="tna-heading-l" id="summary">Summary</h2>
       <dl class="tna-dl tna-dl--lined">

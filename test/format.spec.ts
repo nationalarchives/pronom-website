@@ -62,6 +62,24 @@ test("page has an XML download button", async ({ page }) => {
   );
 });
 
+test("page has a JSON download button", async ({ page }) => {
+  await goToFormatPage(page, 199);
+  const downloadButton = await page.getByRole("link", {
+    name: "Download JSON",
+  });
+  await expect(downloadButton).toBeVisible();
+  const href = (await downloadButton.getAttribute("href")) || "";
+  await expect(href).toMatch(/\/fmt\/(\d+)\.json$/);
+
+  const response = await page.goto(href);
+  const jsonStringContent = await response?.text();
+  const json = jsonStringContent ? JSON.parse(jsonStringContent) : "";
+  const fileFormatID = json["fileFormatID"];
+  const formatName = json["formatName"];
+  await expect(fileFormatID).toEqual(924);
+  await expect(formatName).toEqual("MPEG-4 Media File");
+});
+
 describe("page shows the correct details", () => {
   test("summary", async ({ page }) => {
     await goToFormatPage(page, 199);
