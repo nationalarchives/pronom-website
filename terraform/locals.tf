@@ -3,7 +3,8 @@ locals {
 
   permissions_policy_value = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
 
-  waf_rate_limit = 15000
+  machine_rate_limit = 20000
+  human_rate_limit   = 2000
 
   error_response_codes = [403, 404, 500, 502, 503, 504]
 
