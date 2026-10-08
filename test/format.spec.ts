@@ -97,10 +97,15 @@ describe("page shows the correct details", () => {
     await expect(fileExtensions[4]).toHaveText("f4a");
     await expect(fileExtensions[5]).toHaveText("m4b");
 
-    const source = await summary.locator("dt:has-text('Source') + dd");
-    await expect(await source.textContent()).not.toBeNull();
-    await expect(source.locator("a")).toHaveCount(1);
-    await expect(source.locator("a")).toHaveAttribute("href", /actor\/(\d+)/);
+    const submittedBy = await summary.locator(
+      "dt:has-text('Submitted by') + dd",
+    );
+    await expect(await submittedBy.textContent()).not.toBeNull();
+    await expect(submittedBy.locator("a")).toHaveCount(1);
+    await expect(submittedBy.locator("a")).toHaveAttribute(
+      "href",
+      /actor\/(\d+)/,
+    );
 
     await goToFormatPage(page, 1509);
 
@@ -173,8 +178,10 @@ describe("page shows the correct details", () => {
     await goToFormatPage(page, 199);
     await expect(page.locator(".tna-aside:near(:text('Internal signatures'))"))
       .toMatchAriaSnapshot(`- heading "MP4 Media File" [level=3]
-- term: Note
+- term: Description
 - definition: "Represents the following character sequence: \{4\}ftyp\{0-64\}\(mp42\|mp41\|isom\|iso2\)\*moov"
+- term: Provenance
+- definition: "DROID 5.0 research."
 - heading "Byte sequences" [level=4]
 - term: Min Frag Length
 - definition: Absolute from BOF

@@ -64,14 +64,16 @@ def get_summary(data):
     format_types = data.get("formatTypes", None)
 
     return {
-        "Name": data.get("formatName", None),
-        "Version": data.get("version", None),
+        "Name": data.get("formatName"),
+        "Version": data.get("version"),
         "Identifiers": identifiers,
         "Format Type": format_types.split(", ") if format_types else None,
-        "Family": data.get("formatFamilies", None),
-        "Disclosure": data.get("formatDisclosure", None),
-        "Description": data.get("formatDescription", None),
-        "Note": data.get("formatNote", None),
+        "Family": data.get("formatFamilies"),
+        "Disclosure": data.get("formatDisclosure"),
+        "Description": data.get("formatDescription"),
+        "Release date": data.get("releaseDate"),
+        "Format encoding": data.get("binaryFileFormat"),
+        "Note": data.get("formatNote"),
     }
 
 
@@ -121,7 +123,9 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         "supportedBy": [
             all_actors[actorId] for actorId in json_data.get("supportedBy", [])
         ],
-        "source": [all_actors[actorId] for actorId in json_data.get("source", [])],
+        "submittedBy": [
+            all_actors[actorId] for actorId in json_data.get("submittedBy", [])
+        ],
     }
     signatures = json_data["internalSignatures"]
     changelog_by_version = {}
@@ -163,17 +167,16 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
     )
 
 
-def create_actor(data):
-    source_date = data.get("sourceDate")
-
+def create_actor(data, all_actors):
+    source_date = data.get("submittedDate")
     return {
         "Address": data.get("address"),
         "Country": data.get("addressCountry"),
         "Support website": data.get("supportWebsite"),
         "Company website": data.get("companyWebsite"),
         "Contact": data.get("contact"),
-        "Source": data.get("source"),
-        "Source date": pretty_date(source_date) if source_date else None,
+        "Submitted by": all_actors.get(data.get("submittedBy"), {}).get("name"),
+        "Submitted date": pretty_date(source_date) if source_date else None,
     }
 
 
@@ -433,7 +436,7 @@ def run():
         view_path = f"site/actor/{actor_id}"
         with open(view_path, "w") as actor_page:
             actor_details_template = env.get_template("actor_details.html")
-            actor = create_actor(actor_json)
+            actor = create_actor(actor_json, all_actors)
             name = actor_json["name"]
             actor_details = actor_details_template.render(
                 path=f"/actor/{actor_id}", results=actor, name=name, actorId=actor_id
