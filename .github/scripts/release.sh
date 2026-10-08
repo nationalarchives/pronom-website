@@ -60,7 +60,7 @@ aws s3 cp ../signature-file.xml $S3_URL/binary-signature.xml
 aws s3 cp ../container-signatures.xml $S3_URL/container-signature.xml
 
 if [ $ENVIRONMENT = "test" ]; then
-  aws s3 rm $S3_URL/assets/robots.txt
+  aws s3 rm $S3_URL/robots.txt
 fi
 cd ../pronom-signatures/signatures
 aws s3 sync . $S3_URL
