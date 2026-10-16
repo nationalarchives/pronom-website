@@ -20,7 +20,6 @@ describe("landing page", () => {
     - text: This service is still in development.
     - link "Give us your feedback":
       - /url: https://www.smartsurvey.co.uk/s/pronom/
-    - text: .
   - link "The National Archives - PRONOM":
     - /url: /
     - text: PRONOM
