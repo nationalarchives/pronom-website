@@ -9,7 +9,9 @@ function handler(event) {
       statusCode: 301,
       statusDescription: "Moved Permanently",
       headers: {
-        location: { value: `/${request.uri.toLowerCase().replace(/^\/+/, "")}` },
+        location: {
+          value: `/${request.uri.toLowerCase().replace(/^\/+/, "")}`,
+        },
       },
     };
   } else {
