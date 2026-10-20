@@ -12,16 +12,18 @@ function redirect(uri) {
 }
 
 function handler(event) {
-  const { request } = event;
+  const request = event.request;
   if (
     !request.uri.includes("/signatures/") &&
     request.uri !== request.uri.toLowerCase()
   ) {
-    return redirect(`/${request.uri.toLowerCase().replace(/^\/+/, "")}`);
+    return redirect(`/${request.uri.toLowerCase().replace(/^\/+/, "")}`)
   } else if (request.uri.toLowerCase().includes("basicsearch")) {
-    return redirect("/search");
+    return redirect("/search")
+
   } else if (request.uri.toLowerCase().includes("default.aspx")) {
-    return redirect("/");
+    return redirect("/")
+  } else {
+    return request;
   }
-  return request;
 }
