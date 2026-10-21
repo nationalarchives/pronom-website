@@ -1,2 +1,2 @@
 **/*.html
-terraform/lambda/index.js
+terraform/cloudfront_functions/index.js
