@@ -1,1 +1,2 @@
 **/*.html
+terraform/cloudfront_functions/index.js

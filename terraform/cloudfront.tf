@@ -245,5 +245,5 @@ resource "aws_cloudfront_function" "lowercase_url" {
   name    = "${var.environment}-lowercase-url"
   runtime = "cloudfront-js-2.0"
   publish = true
-  code    = file("${path.module}/lambda/index.js")
+  code    = file("${path.module}/cloudfront_functions/index.js")
 }
