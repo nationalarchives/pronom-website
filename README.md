@@ -62,7 +62,7 @@ The script requires an environment name as its first argument and expects the `A
 
 ## Lambda code
 
-In the `lambdas/` directory, there are two AWS Lambda Functions. A third is defined in [`/terraform/lambda/`](./terraform/lambda/).
+In the `lambdas/` directory, there are two AWS Lambda Functions. A third is defined in [`/terraform/lambda/`](terraform/cloudfront_functions/).
 
 ### Results/Search
 
