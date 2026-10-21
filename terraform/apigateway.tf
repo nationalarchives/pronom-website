@@ -1,9 +1,9 @@
 module "soap_api_gateway" {
   source = "git::https://github.com/nationalarchives/da-terraform-modules.git//apigateway?ref=main"
 
-  api_name    = "${var.environment}-soap-api"
-  environment = var.environment
-
+  api_name               = "${var.environment}-soap-api"
+  environment            = var.environment
+  endpoint_configuration = { types = ["REGIONAL"] }
   api_definition = jsonencode({
     swagger = "2.0"
 
@@ -35,8 +35,11 @@ module "soap_api_gateway" {
 }
 
 resource "aws_api_gateway_domain_name" "soap_agw_domain" {
-  certificate_arn = aws_acm_certificate_validation.soap_cert.certificate_arn
-  domain_name     = local.soap_domain_name
+  regional_certificate_arn = aws_acm_certificate_validation.soap_cert.certificate_arn
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+  domain_name = local.soap_domain_name
 }
 
 resource "aws_api_gateway_base_path_mapping" "soap_mapping" {

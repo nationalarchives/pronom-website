@@ -12,7 +12,6 @@ resource "aws_acm_certificate" "cf" {
 }
 
 resource "aws_acm_certificate" "soap_cert" {
-  region            = "us-east-1"
   domain_name       = local.soap_domain_name
   validation_method = "DNS"
   lifecycle {
@@ -59,7 +58,6 @@ resource "aws_acm_certificate_validation" "cf" {
 }
 
 resource "aws_acm_certificate_validation" "soap_cert" {
-  region                  = "us-east-1"
   certificate_arn         = aws_acm_certificate.soap_cert.arn
   validation_record_fqdns = [for r in aws_route53_record.soap_cert_validation : r.fqdn]
 }
