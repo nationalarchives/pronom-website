@@ -33,3 +33,9 @@ module "soap_api_gateway" {
     }
   })
 }
+
+resource "aws_api_gateway_domain_name" "soap_agw_domain" {
+  regional_certificate_arn = aws_acm_certificate_validation.soap_cert.certificate_arn
+  endpoint_access_mode     = "BASIC"
+  domain_name              = local.soap_domain_name
+}
