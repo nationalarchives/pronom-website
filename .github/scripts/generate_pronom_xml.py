@@ -28,9 +28,15 @@ def add_text_element(parent: Et.Element, tag: str, value) -> Et.Element:
 def get_org_and_name(name: str):
     if " / " in name:
         return tuple(name.split(" / "))
-    return None, name,
+    return (
+        None,
+        name,
+    )
 
-def build_file_format_element(format_json: dict, actors_by_id: dict, signatures_by_id: dict) -> Et.Element:
+
+def build_file_format_element(
+    format_json: dict, actors_by_id: dict, signatures_by_id: dict
+) -> Et.Element:
     file_format = Et.Element(q("FileFormat"))
 
     add_text_element(file_format, "FormatID", format_json.get("fileFormatID"))
@@ -51,7 +57,9 @@ def build_file_format_element(format_json: dict, actors_by_id: dict, signatures_
     add_text_element(file_format, "ReleaseDate", format_json.get("releaseDate"))
     for submitted_by in format_json.get("submittedBy", [None]):
         add_text_element(file_format, "ProvenanceSourceID", submitted_by)
-        add_text_element(file_format, "ProvenanceName", actors_by_id[submitted_by].get("name"))
+        add_text_element(
+            file_format, "ProvenanceName", actors_by_id[submitted_by].get("name")
+        )
 
     add_text_element(
         file_format, "ProvenanceSourceDate", format_json.get("formatSourceDate")
@@ -164,15 +172,23 @@ def build_file_format_element(format_json: dict, actors_by_id: dict, signatures_
             "RelatedFormatName",
             relationship.get("relatedFormatName"),
         )
-        add_text_element(related_format_element, "RelatedFormatVersion", signatures_by_id[relationship["relatedFormatID"]].get("version"))
+        add_text_element(
+            related_format_element,
+            "RelatedFormatVersion",
+            signatures_by_id[relationship["relatedFormatID"]].get("version"),
+        )
 
     return file_format
 
 
-def convert_json_file(format_json, output_path: Path, actors_by_id: dict, signatures_by_id: dict) -> None:
+def convert_json_file(
+    format_json, output_path: Path, actors_by_id: dict, signatures_by_id: dict
+) -> None:
     root = Et.Element(q("PRONOM-Report"))
     report_format_detail = Et.SubElement(root, q("report_format_detail"))
-    report_format_detail.append(build_file_format_element(format_json, actors_by_id, signatures_by_id))
+    report_format_detail.append(
+        build_file_format_element(format_json, actors_by_id, signatures_by_id)
+    )
 
     Et.indent(root, space="  ")
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -198,9 +214,12 @@ def run() -> None:
                 signature_json = json.load(s)
                 signatures_by_id[signature_json["fileFormatID"]] = signature_json
 
-
     for signature_json in signatures_by_id.values():
-        puid = next(idf["identifierText"] for idf in signature_json["identifiers"] if idf["identifierType"] == "PUID")
+        puid = next(
+            idf["identifierText"]
+            for idf in signature_json["identifiers"]
+            if idf["identifierType"] == "PUID"
+        )
         xml_file = output_root / Path(f"{puid}.xml")
         convert_json_file(signature_json, xml_file, actors_by_id, signatures_by_id)
 
