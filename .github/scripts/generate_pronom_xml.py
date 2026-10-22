@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import xml.etree.ElementTree as Et
 from pathlib import Path
@@ -24,7 +25,12 @@ def add_text_element(parent: Et.Element, tag: str, value) -> Et.Element:
     return element
 
 
-def build_file_format_element(format_json: dict) -> Et.Element:
+def get_org_and_name(name: str):
+    if " / " in name:
+        return tuple(name.split(" / "))
+    return None, name,
+
+def build_file_format_element(format_json: dict, actors_by_id: dict, signatures_by_id: dict) -> Et.Element:
     file_format = Et.Element(q("FileFormat"))
 
     add_text_element(file_format, "FormatID", format_json.get("fileFormatID"))
@@ -43,8 +49,12 @@ def build_file_format_element(format_json: dict) -> Et.Element:
         file_format, "BinaryFileFormat", format_json.get("binaryFileFormat")
     )
     add_text_element(file_format, "ReleaseDate", format_json.get("releaseDate"))
+    for submitted_by in format_json.get("submittedBy", [None]):
+        add_text_element(file_format, "ProvenanceSourceID", submitted_by)
+        add_text_element(file_format, "ProvenanceName", actors_by_id[submitted_by].get("name"))
+
     add_text_element(
-        file_format, "ProvenanceSourceID", format_json.get("formatSourceID")
+        file_format, "ProvenanceSourceDate", format_json.get("formatSourceDate")
     )
     add_text_element(
         file_format, "ProvenanceDescription", format_json.get("formatProvenance")
@@ -60,9 +70,30 @@ def build_file_format_element(format_json: dict) -> Et.Element:
             identifier_element, "IdentifierType", identifier.get("identifierType")
         )
 
+    for developed_by in format_json.get("developedBy", []):
+        developed_element = Et.SubElement(file_format, q("Developers"))
+        add_text_element(developed_element, "DeveloperID", developed_by)
+
+        developed_by_name = actors_by_id[developed_by]["name"]
+        name, org = get_org_and_name(developed_by_name)
+        add_text_element(developed_element, "DeveloperName", name)
+        add_text_element(developed_element, "OrganisationName", org)
+        compound_name = f"{name} / {org}" if name else org
+        add_text_element(developed_element, "DeveloperCompoundName", compound_name)
+
+    for supported_by in format_json.get("supportedBy", []):
+        support_element = Et.SubElement(file_format, q("Support"))
+        add_text_element(support_element, "SupportID", supported_by)
+
+        support_name = actors_by_id[supported_by]["name"]
+        name, org = get_org_and_name(support_name)
+        add_text_element(support_element, "SupportName", name)
+        add_text_element(support_element, "OrganisationName", org)
+        compound_name = f"{name} / {org}" if name else org
+        add_text_element(support_element, "SupportCompoundName", compound_name)
+
     for external_signature in format_json.get("externalSignatures", []):
         external_signature_element = Et.SubElement(file_format, q("ExternalSignature"))
-        add_text_element(external_signature_element, "ExternalSignatureID", None)
         add_text_element(
             external_signature_element,
             "Signature",
@@ -133,39 +164,45 @@ def build_file_format_element(format_json: dict) -> Et.Element:
             "RelatedFormatName",
             relationship.get("relatedFormatName"),
         )
-        add_text_element(related_format_element, "RelatedFormatVersion", None)
+        add_text_element(related_format_element, "RelatedFormatVersion", signatures_by_id[relationship["relatedFormatID"]].get("version"))
 
     return file_format
 
 
-def convert_json_file(input_path: Path, output_path: Path) -> None:
-    with input_path.open("r", encoding="utf-8") as source_file:
-        format_json = json.load(source_file)
-
+def convert_json_file(format_json, output_path: Path, actors_by_id: dict, signatures_by_id: dict) -> None:
     root = Et.Element(q("PRONOM-Report"))
     report_format_detail = Et.SubElement(root, q("report_format_detail"))
-    report_format_detail.append(build_file_format_element(format_json))
+    report_format_detail.append(build_file_format_element(format_json, actors_by_id, signatures_by_id))
 
     Et.indent(root, space="  ")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     Et.ElementTree(root).write(output_path, encoding="utf-8", xml_declaration=True)
 
 
-def sorted_json_files(path: Path) -> list[Path]:
-    return sorted(path.glob("*.json"), key=lambda file_path: int(file_path.stem))
-
-
 def run() -> None:
     signatures_dir = Path(sys.argv[1])
     source_dirs = ["fmt", "x-fmt"]
     output_root = Path("site")
+    actors_by_id = {}
+    signatures_by_id = {}
+    actors_path = signatures_dir / "actors"
+    for actor in os.listdir(actors_path):
+        with open(actors_path / Path(actor)) as a:
+            actor_json = json.load(a)
+            actors_by_id[actor_json["actorId"]] = actor_json
 
     for source_dir in source_dirs:
         source_path = signatures_dir / "signatures" / source_dir
-        destination_path = output_root / source_dir
-        for json_file in sorted_json_files(source_path):
-            xml_file = destination_path / f"{json_file.stem}.xml"
-            convert_json_file(json_file, xml_file)
+        for file in os.listdir(source_path):
+            with open(source_path / Path(file)) as s:
+                signature_json = json.load(s)
+                signatures_by_id[signature_json["fileFormatID"]] = signature_json
+
+
+    for signature_json in signatures_by_id.values():
+        puid = next(idf["identifierText"] for idf in signature_json["identifiers"] if idf["identifierType"] == "PUID")
+        xml_file = output_root / Path(f"{puid}.xml")
+        convert_json_file(signature_json, xml_file, actors_by_id, signatures_by_id)
 
 
 if __name__ == "__main__":
