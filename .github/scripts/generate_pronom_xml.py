@@ -34,6 +34,25 @@ def get_org_and_name(name: str):
     )
 
 
+def create_concatenated_actor(actor_ids: list, actors_by_id: dict):
+    names = []
+    orgs = []
+    compound_names = []
+    for actor_id in actor_ids:
+        actor_name = actors_by_id[actor_id]["name"]
+        name, org = get_org_and_name(actor_name)
+        names.append(name)
+        orgs.append(org)
+        compound_name = f"{name} / {org}" if name else org
+        compound_names.append(compound_name)
+    return (
+        ",".join(str(i) for i in actor_ids),
+        ",".join(" " if not n else n for n in names),
+        ",".join(orgs),
+        ",".join(compound_names),
+    )
+
+
 def build_file_format_element(
     format_json: dict, actors_by_id: dict, signatures_by_id: dict
 ) -> Et.Element:
@@ -78,27 +97,31 @@ def build_file_format_element(
             identifier_element, "IdentifierType", identifier.get("identifierType")
         )
 
-    for developed_by in format_json.get("developedBy", []):
+    if format_json.get("developedBy"):
+        developer_id, developer_name, developer_org, developer_compound_name = (
+            create_concatenated_actor(format_json["developedBy"], actors_by_id)
+        )
         developed_element = Et.SubElement(file_format, q("Developers"))
-        add_text_element(developed_element, "DeveloperID", developed_by)
+        add_text_element(developed_element, "DeveloperID", developer_id)
 
-        developed_by_name = actors_by_id[developed_by]["name"]
-        name, org = get_org_and_name(developed_by_name)
-        add_text_element(developed_element, "DeveloperName", name)
-        add_text_element(developed_element, "OrganisationName", org)
-        compound_name = f"{name} / {org}" if name else org
-        add_text_element(developed_element, "DeveloperCompoundName", compound_name)
+        add_text_element(developed_element, "DeveloperName", developer_name)
+        add_text_element(developed_element, "OrganisationName", developer_org)
+        add_text_element(
+            developed_element, "DeveloperCompoundName", developer_compound_name
+        )
 
-    for supported_by in format_json.get("supportedBy", []):
-        support_element = Et.SubElement(file_format, q("Support"))
-        add_text_element(support_element, "SupportID", supported_by)
+    if format_json.get("supportedBy"):
+        supported_id, supported_name, supported_org, supported_compound_name = (
+            create_concatenated_actor(format_json["supportedBy"], actors_by_id)
+        )
+        supported_element = Et.SubElement(file_format, q("Support"))
+        add_text_element(supported_element, "SupportID", supported_id)
 
-        support_name = actors_by_id[supported_by]["name"]
-        name, org = get_org_and_name(support_name)
-        add_text_element(support_element, "SupportName", name)
-        add_text_element(support_element, "OrganisationName", org)
-        compound_name = f"{name} / {org}" if name else org
-        add_text_element(support_element, "SupportCompoundName", compound_name)
+        add_text_element(supported_element, "SupportName", supported_name)
+        add_text_element(supported_element, "OrganisationName", supported_org)
+        add_text_element(
+            supported_element, "SupportCompoundName", supported_compound_name
+        )
 
     for external_signature in format_json.get("externalSignatures", []):
         external_signature_element = Et.SubElement(file_format, q("ExternalSignature"))
