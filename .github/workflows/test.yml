@@ -11,13 +11,13 @@ jobs:
     name: Test changed files
     steps:
       - name: Provision runner
-        uses: nationalarchives/org-actions-provision-runner@5657f48ecd0fd31bfe857919149f1fdc690d53ed # v1.0.1
+        uses: nationalarchives/org-actions-provision-runner@8a7931f25ad0176bd4e4872ee83d21af94a48125 # v1.0.2
         with:
           wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@54337e0d02de9202d0948aaff36ad556375497b9
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
       - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
       - run: cd terraform && terraform fmt -check --recursive
       - name: Start application
@@ -43,7 +43,7 @@ jobs:
     name: Check formatting
     steps:
       - name: Provision runner
-        uses: nationalarchives/org-actions-provision-runner@5657f48ecd0fd31bfe857919149f1fdc690d53ed # v1.0.1
+        uses: nationalarchives/org-actions-provision-runner@8a7931f25ad0176bd4e4872ee83d21af94a48125 # v1.0.2
         with:
           wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
