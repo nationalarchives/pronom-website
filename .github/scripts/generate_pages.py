@@ -6,7 +6,6 @@ import os
 import re
 import sys
 import urllib
-from datetime import timezone
 from pathlib import Path
 from urllib.request import Request
 
@@ -35,7 +34,7 @@ env.filters["sortpuids"] = lambda puids: sorted(
     puids, key=lambda puid: int(re.sub(r"^(((x\-)?fmt)|sfw)\/", "", puid))
 )
 cache_buster = hashlib.md5(
-    datetime.datetime.now(timezone.utc).isoformat().encode(), usedforsecurity=False
+    datetime.datetime.now(datetime.UTC).isoformat().encode(), usedforsecurity=False
 ).hexdigest()[:8]
 env.globals.update(
     {
@@ -325,7 +324,7 @@ def release_date_to_iso(release_date):
     try:
         date = (
             datetime.datetime.strptime(release_date, "%d %B %Y")
-            .astimezone(timezone.utc)
+            .astimezone(datetime.UTC)
             .date()
             .isoformat()
         )
@@ -334,7 +333,7 @@ def release_date_to_iso(release_date):
         try:
             date = (
                 datetime.datetime.strptime(release_date, "%d %b %Y")
-                .astimezone(timezone.utc)
+                .astimezone(datetime.UTC)
                 .date()
                 .isoformat()
             )
@@ -375,7 +374,7 @@ def create_xml_sitemap(releases, actors, formats):
         urls.append({"loc": f"/actor/{actor_id}", "priority": 0.3})
     return env.get_template("sitemap.xml").render(
         urls=urls,
-        generated_date=datetime.datetime.now(timezone.utc).isoformat(),
+        generated_date=datetime.datetime.now(datetime.UTC).isoformat(),
     )
 
 
