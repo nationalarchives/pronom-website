@@ -143,7 +143,7 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   origin {
-    domain_name = replace(replace(module.soap_api_gateway.api_url, "https://", ""), "/${var.environment}", "")
+    domain_name = "${aws_api_gateway_rest_api.soap.id}.execute-api.${data.aws_region.current.region}.amazonaws.com"
     origin_id   = local.soap_origin_name
     origin_path = "/${var.environment}"
 
