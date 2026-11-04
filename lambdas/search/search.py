@@ -4,7 +4,6 @@ import os
 import re
 import sqlite3
 from contextlib import closing
-from datetime import timezone
 
 from jinja2 import (
     ChoiceLoader,
@@ -25,7 +24,7 @@ env = Environment(
 )
 env.filters["commafy"] = lambda number: f"{number:,d}"
 cache_buster = hashlib.md5(
-    datetime.datetime.now(timezone.utc).isoformat().encode(), usedforsecurity=False
+    datetime.datetime.now(datetime.UTC).isoformat().encode(), usedforsecurity=False
 ).hexdigest()[:8]
 env.globals.update(
     {
