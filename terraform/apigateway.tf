@@ -1,10 +1,11 @@
-module "soap_api_gateway" {
-  source = "git::https://github.com/nationalarchives/da-terraform-modules.git//apigateway?ref=main"
+resource "aws_api_gateway_rest_api" "soap" {
+  name = "${var.environment}-soap-api"
 
-  api_name               = "${var.environment}-soap-api"
-  environment            = var.environment
-  endpoint_configuration = { types = ["REGIONAL"] }
-  api_definition = jsonencode({
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+
+  body = jsonencode({
     swagger = "2.0"
 
 
@@ -34,6 +35,38 @@ module "soap_api_gateway" {
   })
 }
 
+resource "aws_api_gateway_deployment" "soap" {
+  rest_api_id = aws_api_gateway_rest_api.soap.id
+  triggers = {
+    redeployment = sha1(jsonencode(concat([aws_api_gateway_rest_api.soap.body], aws_api_gateway_rest_api.soap.endpoint_configuration, [])))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "soap" {
+  deployment_id = aws_api_gateway_deployment.soap.id
+  rest_api_id   = aws_api_gateway_rest_api.soap.id
+  stage_name    = var.environment
+}
+
+moved {
+  from = module.soap_api_gateway.aws_api_gateway_rest_api.rest_api
+  to   = aws_api_gateway_rest_api.soap
+}
+
+moved {
+  from = module.soap_api_gateway.aws_api_gateway_deployment.api_deployment
+  to   = aws_api_gateway_deployment.soap
+}
+
+moved {
+  from = module.soap_api_gateway.aws_api_gateway_stage.api_stage
+  to   = aws_api_gateway_stage.soap
+}
+
 resource "aws_api_gateway_domain_name" "soap_agw_domain" {
   regional_certificate_arn = aws_acm_certificate_validation.soap_cert.certificate_arn
   endpoint_configuration {
@@ -43,7 +76,7 @@ resource "aws_api_gateway_domain_name" "soap_agw_domain" {
 }
 
 resource "aws_api_gateway_base_path_mapping" "soap_mapping" {
-  api_id      = module.soap_api_gateway.rest_api.id
-  stage_name  = var.environment
+  api_id      = aws_api_gateway_rest_api.soap.id
+  stage_name  = aws_api_gateway_stage.soap.stage_name
   domain_name = aws_api_gateway_domain_name.soap_agw_domain.domain_name
 }

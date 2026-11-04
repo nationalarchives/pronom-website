@@ -74,7 +74,7 @@ resource "aws_lambda_permission" "soap_api_gateway" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.soap.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${module.soap_api_gateway.api_execution_arn}/*/${each.value}/service.asmx"
+  source_arn    = "${aws_api_gateway_rest_api.soap.execution_arn}/*/${each.value}/service.asmx"
 }
 
 
