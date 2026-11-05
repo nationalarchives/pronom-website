@@ -1,6 +1,7 @@
 resource "aws_api_gateway_rest_api" "soap" {
-  name = "${var.environment}-soap-api"
-
+  name                 = "${var.environment}-soap-api"
+  security_policy      = "SecurityPolicy_TLS13_1_2_2021_06"
+  endpoint_access_mode = "STRICT"
   endpoint_configuration {
     types = ["REGIONAL"]
   }
