@@ -1,6 +1,6 @@
 resource "aws_api_gateway_rest_api" "soap" {
   name                 = "${var.environment}-soap-api"
-  security_policy      = "SecurityPolicy_TLS13_1_2_2021_06"
+  security_policy      = "SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09"
   endpoint_access_mode = "STRICT"
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -70,6 +70,8 @@ moved {
 
 resource "aws_api_gateway_domain_name" "soap_agw_domain" {
   regional_certificate_arn = aws_acm_certificate_validation.soap_cert.certificate_arn
+  security_policy          = "SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09"
+  endpoint_access_mode     = "STRICT"
   endpoint_configuration {
     types = ["REGIONAL"]
   }
