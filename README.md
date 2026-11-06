@@ -46,6 +46,14 @@ This generates the static HTML for the site, using Jinja templates from [`lambda
 
 It writes the home, accessibility, error and signature list pages, a detail page for each PUID, and a page for each actor into the `site/` directory. During a release, the script is run inside the nginx container so the rendered pages are served directly by nginx and synced to S3 by `release.sh`.
 
+### generate_fdd_puid_mapping.py
+
+This fetches the Library of Congress [FDD/PUID/QID mapping page](https://www.loc.gov/preservation/digital/formats/fdd/fdd_puid_qid.shtml), selects the CSV with the newest date in its filename, and streams it to `s3://S3_BUCKET/loc-fdd/fdd_puid_mappings.json` with a `text/csv` content type. The fixed S3 object is overwritten only after the CSV downloads successfully; fetching or reading failures leave the existing object untouched.
+
+```sh
+python .github/scripts/generate_fdd_puid_mapping.py S3_BUCKET
+```
+
 ### release.sh
 
 This is a helper script for the release process. It orchestrates a full release. It:

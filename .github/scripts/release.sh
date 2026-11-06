@@ -41,6 +41,7 @@ terraform workspace select --or-create $ENVIRONMENT
 TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_signature_version=$LATEST_SIGNATURE_FILE terraform apply --auto-approve
 cd ..
 
+python .github/scripts/generate_fdd_puid_mapping.py $S3_BUCKET
 python .github/scripts/upload_signature_files.py $S3_BUCKET
 
 cd html
