@@ -77,7 +77,7 @@
 
       {%- if external_links %}
         {% do ns.sidebar_items.append({
-          'text': 'External Links',
+          'text': 'External links',
           'href': '#external-links'
         }) %}
       {%- endif %}
@@ -344,17 +344,12 @@
       {%- endif %}
       {%- if external_links %}
         <h2 class="tna-heading-l" id="external-links">External Links</h2>
-        <p><small>The National Archives is not responsible for the contents available at the following links</small></p>
+        <p><small>The National Archives is not responsible for the contents available at the following links.</small></p>
         <div class="tna-aside tna-background-tint">
-          <h3 class="tna-heading-s">Library Of Congress</h3>
           <ul class="tna-ul">
             {%- for link in external_links %}
               <li>
-                <a href="{{ link }}" target="_blank" rel="noopener noreferrer">
-                  {{ link }}
-                  <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" title="Opens in a new tab"></i>
-                  <span class="tna-visually-hidden"> (opens in a new tab)</span>
-                </a>
+                <a href="{{ link.Location }}">{{ link.Name }}</a>
               </li>
             {%- endfor %}
           </ul>

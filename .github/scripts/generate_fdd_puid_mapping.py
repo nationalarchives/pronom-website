@@ -12,20 +12,20 @@ It does it in following steps:
    object with the source URL of the CSV file.
 5. Generate a dictionary of PUIDs to FDDs from the uploaded mapping CSV and return it
     {
-        "fmt/6": {"fdd000001", "fdd000002"},
-        "x-fmt/135": {"fdd000002"},
+        "fmt/6": [{"Location": "https://www.loc.gov/preservation/digital/formats/fdd/fdd000001", "Name": "WAVE Audio File Format"}],
     }
-7. The dictionary is dumped to a JSON file in the current working directory.
-8. The JSON file is then copied to the site/loc directory so that it can be used by the PRONOM website 
-   to create hyperlinks to the FDDs.
+6. The dictionary is serialized to JSON and uploaded to loc/fdd_puid_mapping.json in S3
+   so that it can be used by the PRONOM website to create hyperlinks to the FDDs.
 """
 
 import csv
 import io
+import json
 import re
 import shutil
 import sys
 import tempfile
+from dataclasses import asdict, dataclass
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlsplit
 
@@ -37,7 +37,15 @@ import requests
 FDD_PUID_MAPPING_PAGE_URL = "https://www.loc.gov/preservation/digital/formats/fdd/fdd_puid_qid.shtml"
 FDD_URL_PREFIX = "https://www.loc.gov/preservation/digital/formats/fdd/"
 REQUEST_TIMEOUT = 60
-S3_MAPPING_FILE_KEY = "loc-fdd/fdd_puid_mapping.csv"
+FDD_MAPPING_SOURCE_FILE_KEY = "loc-fdd/fdd_puid_mapping.csv"
+FDD_PUID_MAPPING_JSON_KEY = "loc/fdd_puid_mapping.json"
+
+
+@dataclass(frozen=True, order=True)
+class FddMapping:
+    Location: str
+    Name: str
+
 
 class FddPuidMappingPageParser(HTMLParser):
     def __init__(self):
@@ -57,8 +65,8 @@ class FddPuidMappingPageParser(HTMLParser):
             if match:
                 self.links.append((match.group(1), url))
 
-def generate_fdd_mappings_dict(response) -> dict[str, set[str]]:
-    mappings: dict[str, set[str]] = {}
+def generate_fdd_mappings_dict(response) -> dict[str, set[FddMapping]]:
+    mappings: dict[str, set[FddMapping]] = {}
     puid_pattern = re.compile(
         r"https://www\.nationalarchives\.gov\.uk/PRONOM/\}?((?:x-)?fmt/\d+)\b"
     )
@@ -66,7 +74,9 @@ def generate_fdd_mappings_dict(response) -> dict[str, set[str]]:
         reader = csv.DictReader(csv_file)
         for row in reader:
             for puid in puid_pattern.findall(row["PRONOM_Note"]):
-                mappings.setdefault(puid, set()).add(row["LC_Unique_ID"])
+                mappings.setdefault(puid, set()).add(
+                    FddMapping(Location=f"{FDD_URL_PREFIX}{row['LC_Unique_ID']}", Name=row["LC_Long_Name"])
+                )
     return mappings
 
 def latest_mapping_url(html_page_as_string: str) -> str:
@@ -95,39 +105,46 @@ def update_latest_mappings_from_loc_to_s3(
                 response.raise_for_status()
                 response.raw.decode_content = True
                 shutil.copyfileobj(response.raw, csv_file)
-
+            print(f"Downloaded {csv_url} ({csv_file.tell()} bytes)")
             csv_file.seek(0)
-            print(f"Uploading {csv_url} -> s3://{bucket}/{S3_MAPPING_FILE_KEY}")
+            print(f"Uploading {csv_url} -> s3://{bucket}/{FDD_MAPPING_SOURCE_FILE_KEY}")
             s3_client.upload_fileobj(
-                csv_file, bucket, S3_MAPPING_FILE_KEY, ExtraArgs={"ContentType": "text/csv", "Tagging": f"source={csv_url}"}
+                csv_file, bucket, FDD_MAPPING_SOURCE_FILE_KEY, ExtraArgs={"ContentType": "text/csv", "Tagging": f"source={csv_url}"}
             )
     except Exception as error:
         print(
             f"Warning: Could not refresh the LOC mapping: {error}. "
-            f"Continuing with existing s3://{bucket}/{S3_MAPPING_FILE_KEY}.",
+            f"Continuing with existing s3://{bucket}/{FDD_MAPPING_SOURCE_FILE_KEY}.",
             file=sys.stderr,
         )
 
-    print(f"Uploaded s3://{bucket}/{S3_MAPPING_FILE_KEY}")
+    print(f"Uploaded s3://{bucket}/{FDD_MAPPING_SOURCE_FILE_KEY}")
 
 def generate_fdd_links_json(
         bucket: str, session: requests.Session, s3_client
-) -> dict[str, set[str]]:
+) -> dict[str, set[FddMapping]]:
     update_latest_mappings_from_loc_to_s3(bucket, session, s3_client)
-    response = s3_client.get_object(Bucket=bucket, Key=S3_MAPPING_FILE_KEY)
+    response = s3_client.get_object(Bucket=bucket, Key=FDD_MAPPING_SOURCE_FILE_KEY)
     return generate_fdd_mappings_dict(response)
 
 def main():
+    bucket = sys.argv[1]
+    s3_client = boto3.client("s3")
     with requests.Session() as session:
         puid_fdd_mappings = generate_fdd_links_json(
-            sys.argv[1], session, boto3.client("s3")
+            bucket, session, s3_client
         )
-    with open("fdd_puid_mapping.json", "w", encoding="utf-8") as json_file:
-        import json
-        json.dump(
-            {key: sorted(value) for key, value in puid_fdd_mappings.items()},
-            json_file,
+    s3_client.put_object(
+        Bucket=bucket,
+        Key=FDD_PUID_MAPPING_JSON_KEY,
+        Body=json.dumps(
+            {
+                key: [asdict(fdd) for fdd in sorted(value)]
+                for key, value in puid_fdd_mappings.items()
+            },
             indent=2
-        )
+        ).encode("utf-8"),
+        ContentType="application/json",
+    )
 if __name__ == "__main__":
     main()

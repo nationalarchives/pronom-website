@@ -9,7 +9,6 @@ RUN git clone https://github.com/nationalarchives/pronom /home/app/pronom-signat
 RUN tna-build
 COPY . .
 RUN mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit site/assets
-RUN mkdir -p site/loc && cp fdd_puid_mapping.json site/loc/
 RUN cp styles/* assets/* node_modules/@nationalarchives/frontend/nationalarchives/assets/fonts/* node_modules/@nationalarchives/frontend/nationalarchives/assets/images/* site/assets
 RUN cp -R /home/app/pronom-signatures/signatures/fmt/ site && cp -R /home/app/pronom-signatures/signatures/x-fmt/ site
 RUN mv site/assets/robots.txt site/
