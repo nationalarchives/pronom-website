@@ -382,8 +382,11 @@ def create_xml_sitemap(releases, actors, formats):
 
 
 def run():
-    with open("site/loc/fdd_puid_mapping.json", encoding="utf-8") as mapping_file:
-        fdd_puid_mapping = json.load(mapping_file)
+    if "--skip-fdd-mapping" in sys.argv[2:]:
+        fdd_puid_mapping = {}
+    else:
+        with open("site/loc/fdd_puid_mapping.json", encoding="utf-8") as mapping_file:
+            fdd_puid_mapping = json.load(mapping_file)
 
     releases, latest_release = get_releases()
 

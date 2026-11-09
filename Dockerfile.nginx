@@ -3,17 +3,28 @@ ENV NPM_BUILD_COMMAND=build
 ARG COOKIES_DOMAIN=.nationalarchives.gov.uk
 ARG SITE_ROOT=https://pronom.nationalarchives.gov.uk
 ARG ENVIRONMENT=prod
+ARG INCLUDE_FDD_MAPPING=false
 COPY pyproject.toml poetry.lock package.json package-lock.json vite.config.js ./
 COPY src src
 RUN git clone https://github.com/nationalarchives/pronom /home/app/pronom-signatures
 RUN tna-build
 COPY . .
 RUN mkdir -p site/fmt site/x-fmt site/actor site/edit/fmt site/edit/x-fmt site/actor/edit site/assets
+RUN if [ "$INCLUDE_FDD_MAPPING" = "true" ]; then \
+      mkdir -p site/loc && \
+      cp fdd_puid_mapping.json site/loc/; \
+    fi
 RUN cp styles/* assets/* node_modules/@nationalarchives/frontend/nationalarchives/assets/fonts/* node_modules/@nationalarchives/frontend/nationalarchives/assets/images/* site/assets
 RUN cp -R /home/app/pronom-signatures/signatures/fmt/ site && cp -R /home/app/pronom-signatures/signatures/x-fmt/ site
 RUN mv site/assets/robots.txt site/
-RUN --mount=type=secret,id=github_token GITHUB_TOKEN="$(cat /run/secrets/github_token)" poetry run python .github/scripts/generate_signature_json.py && \
-    poetry run python .github/scripts/generate_pages.py /home/app/pronom-signatures && \
+RUN --mount=type=secret,id=github_token \
+    export GITHUB_TOKEN="$(cat /run/secrets/github_token)" && \
+    poetry run python .github/scripts/generate_signature_json.py && \
+    if [ "$INCLUDE_FDD_MAPPING" = "true" ]; then \
+      poetry run python .github/scripts/generate_pages.py /home/app/pronom-signatures; \
+    else \
+      poetry run python .github/scripts/generate_pages.py /home/app/pronom-signatures --skip-fdd-mapping; \
+    fi && \
     poetry run python .github/scripts/generate_pronom_xml.py /home/app/pronom-signatures && \
     poetry run python .github/scripts/generate_release_notes.py /home/app/pronom-signatures
 
