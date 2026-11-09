@@ -130,9 +130,9 @@ def update_latest_mappings_from_loc_to_s3(
                 ExtraArgs={"ContentType": "text/csv", "Tagging": f"source={csv_url}"},
             )
     except (
-        requests.RequestException, 
-        S3UploadFailedError, 
-        BotoCoreError, 
+        requests.RequestException,
+        S3UploadFailedError,
+        BotoCoreError,
         ClientError
     ) as error:
         print(
