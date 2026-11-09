@@ -43,8 +43,8 @@ cd ..
 
 python .github/scripts/generate_fdd_puid_mapping.py "$S3_BUCKET"
 aws s3 cp "$S3_URL/loc/fdd_puid_mapping.json" ./fdd_puid_mapping.json
-INCLUDE_FDD_MAPPING=true docker-compose up -d --build --no-deps nginx
-docker-compose cp nginx:/usr/share/nginx/html/. ./html/
+INCLUDE_FDD_MAPPING=true docker compose up -d --build --no-deps nginx
+docker compose cp nginx:/usr/share/nginx/html/. ./html/
 
 python .github/scripts/upload_signature_files.py $S3_BUCKET
 
