@@ -18,20 +18,19 @@ It does it in following steps:
    so that it can be used by the PRONOM website to create hyperlinks to the FDDs.
 """
 
-import boto3
 import csv
 import io
 import json
 import re
-import requests
 import shutil
 import sys
 import tempfile
-from boto3.exceptions import S3UploadFailedError
-from botocore.exceptions import BotoCoreError, ClientError
 from dataclasses import asdict, dataclass
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlsplit
+
+import boto3
+import requests
 
 FDD_PUID_MAPPING_PAGE_URL = (
     "https://www.loc.gov/preservation/digital/formats/fdd/fdd_puid_qid.shtml"
@@ -129,7 +128,7 @@ def update_latest_mappings_from_loc_to_s3(
                 FDD_MAPPING_SOURCE_FILE_KEY,
                 ExtraArgs={"ContentType": "text/csv", "Tagging": f"source={csv_url}"},
             )
-    except Exception as error:
+    except (requests.RequestException, S3UploadFailedError, BotoCoreError, ClientError) as error:
         print(
             f"Warning: Could not refresh the LOC mapping: {error}. "
             f"Continuing with existing s3://{bucket}/{FDD_MAPPING_SOURCE_FILE_KEY}.",
