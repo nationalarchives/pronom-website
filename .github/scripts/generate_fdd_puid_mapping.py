@@ -129,7 +129,12 @@ def update_latest_mappings_from_loc_to_s3(
                 FDD_MAPPING_SOURCE_FILE_KEY,
                 ExtraArgs={"ContentType": "text/csv", "Tagging": f"source={csv_url}"},
             )
-    except (requests.RequestException, S3UploadFailedError, BotoCoreError, ClientError) as error:
+    except (
+        requests.RequestException, 
+        S3UploadFailedError, 
+        BotoCoreError, 
+        ClientError
+    ) as error:
         print(
             f"Warning: Could not refresh the LOC mapping: {error}. "
             f"Continuing with existing s3://{bucket}/{FDD_MAPPING_SOURCE_FILE_KEY}.",
