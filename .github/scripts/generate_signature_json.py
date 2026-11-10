@@ -2,7 +2,7 @@ import json
 import os
 import re
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from urllib.request import Request
 
 RELEASES_API_ENDPOINT = "https://api.github.com/repos/nationalarchives/pronom/releases"
@@ -64,7 +64,7 @@ def signature_key_to_name(key):
 
 def container_key_to_name(key):
     date_str = get_container_version(key)
-    date_obj = datetime.strptime(date_str, "%Y%m%d").astimezone(timezone.utc)
+    date_obj = datetime.strptime(date_str, "%Y%m%d").astimezone(UTC)
     return date_obj.strftime("%d %B %Y")
 
 

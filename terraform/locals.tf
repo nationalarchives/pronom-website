@@ -19,7 +19,7 @@ locals {
     "sha256-+kdjVO5gkyoIe/awdhMcIMR5SEDs3iQe3J5r/ptv10g="  # This is another sha that Chromium browsers use. They may no longer be using the previous one.
   ]
 
-  content_security_policy = "default-src 'self'; base-uri 'none'; object-src 'none'; font-src 'self' https://fonts.gstatic.com https://use.typekit.net; style-src 'self' https://www.nationalarchives.gov.uk https://fonts.googleapis.com https://p.typekit.net https://use.typekit.net '${join("' '", local.allowed_style_shas)}'; script-src 'self' https://www.nationalarchives.gov.uk; connect-src 'self' https://www.nationalarchives.gov.uk"
+  content_security_policy = "default-src 'self'; base-uri 'none'; object-src 'none'; font-src 'self' https://fonts.gstatic.com https://use.typekit.net; style-src 'self' https://www.nationalarchives.gov.uk https://fonts.googleapis.com https://p.typekit.net https://use.typekit.net '${join("' '", local.allowed_style_shas)}'; script-src 'self' https://www.nationalarchives.gov.uk; img-src 'self' https://www.nationalarchives.gov.uk; connect-src 'self' https://www.nationalarchives.gov.uk"
 
   python_runtime = "python3.13"
 
