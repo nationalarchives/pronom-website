@@ -133,7 +133,7 @@ def update_latest_mappings_from_loc_to_s3(
         requests.RequestException,
         S3UploadFailedError,
         BotoCoreError,
-        ClientError
+        ClientError,
     ) as error:
         print(
             f"Warning: Could not refresh the LOC mapping: {error}. "
