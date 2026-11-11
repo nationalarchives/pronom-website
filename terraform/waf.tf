@@ -1,3 +1,72 @@
+resource "aws_wafv2_web_acl" "api_gateway" {
+  name  = "${var.environment}-wafwebacl-soap-endpoint"
+  scope = "REGIONAL"
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "AntiDDOS"
+    priority = 1
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesAntiDDoSRuleSet"
+        vendor_name = "AWS"
+
+        managed_rule_group_configs {
+          aws_managed_rules_anti_ddos_rule_set {
+            client_side_action_config {
+              challenge {
+                usage_of_action = "DISABLED"
+              }
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AntiDDOS"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "SoapRateLimit"
+    priority = 2
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = local.machine_rate_limit
+        aggregate_key_type = "IP"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "SoapRateLimit"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "pronomSoapEndpoint"
+    sampled_requests_enabled   = true
+  }
+}
+
 resource "aws_wafv2_web_acl" "cloudfront" {
   region = local.us_east_1
   name   = "${var.environment}-wafwebacl-pronom-website"
@@ -35,6 +104,35 @@ resource "aws_wafv2_web_acl" "cloudfront" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AntiDDOS"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "BlockUserAgents"
+    priority = 4
+    action {
+      block {}
+    }
+
+    statement {
+      byte_match_statement {
+        positional_constraint = "CONTAINS"
+        search_string         = "Bytespider"
+        text_transformation {
+          priority = 0
+          type     = "NONE"
+        }
+        field_to_match {
+          single_header {
+            name = "user-agent"
+          }
+        }
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "BlockUserAgents"
       sampled_requests_enabled   = true
     }
   }

@@ -108,3 +108,53 @@ resource "aws_iam_role_policy" "scheduler_invoke_lambda" {
     }]
   })
 }
+
+resource "aws_api_gateway_account" "soap" {
+  cloudwatch_role_arn = aws_iam_role.cloudwatch.arn
+}
+
+data "aws_iam_policy_document" "api_gateway_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["apigateway.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "cloudwatch" {
+  name               = "${var.environment}-api-gateway-cloudwatch"
+  assume_role_policy = data.aws_iam_policy_document.api_gateway_assume_role.json
+}
+
+data "aws_iam_policy_document" "cloudwatch" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents",
+      "logs:GetLogEvents",
+      "logs:FilterLogEvents",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "cloudwatch" {
+  name   = "${var.environment}-api-gateway-cloudwatch"
+  policy = data.aws_iam_policy_document.cloudwatch.json
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch" {
+  policy_arn = aws_iam_policy.cloudwatch.arn
+  role       = aws_iam_role.cloudwatch.name
+}

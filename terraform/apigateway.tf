@@ -1,7 +1,8 @@
 resource "aws_api_gateway_rest_api" "soap" {
   name                 = "${var.environment}-soap-api"
-  security_policy      = "SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09"
-  endpoint_access_mode = "STRICT"
+  security_policy      = "SecurityPolicy_TLS13_1_2_FIPS_PFS_PQ_2025_09"
+  endpoint_access_mode = "BASIC"
+
   endpoint_configuration {
     types = ["REGIONAL"]
   }
@@ -51,6 +52,29 @@ resource "aws_api_gateway_stage" "soap" {
   deployment_id = aws_api_gateway_deployment.soap.id
   rest_api_id   = aws_api_gateway_rest_api.soap.id
   stage_name    = var.environment
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_access_logs.arn
+    format = jsonencode({
+      "requestId"         = "$context.requestId",
+      "extendedRequestId" = "$context.extendedRequestId",
+      "ip"                = "$context.identity.sourceIp",
+      "caller"            = "$context.identity.caller",
+      "user"              = "$context.identity.user",
+      "requestTime"       = "$context.requestTime",
+      "httpMethod"        = "$context.httpMethod",
+      "resourcePath"      = "$context.resourcePath",
+      "status"            = "$context.status",
+      "protocol"          = "$context.protocol",
+      "responseLength"    = "$context.responseLength"
+    })
+
+  }
+}
+
+resource "aws_cloudwatch_log_group" "api_access_logs" {
+  name              = "${var.environment}-soap-api-access-logs"
+  retention_in_days = 90
 }
 
 moved {
@@ -70,8 +94,8 @@ moved {
 
 resource "aws_api_gateway_domain_name" "soap_agw_domain" {
   regional_certificate_arn = aws_acm_certificate_validation.soap_cert.certificate_arn
-  security_policy          = "SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09"
-  endpoint_access_mode     = "STRICT"
+  security_policy          = "SecurityPolicy_TLS13_1_2_FIPS_PFS_PQ_2025_09"
+  endpoint_access_mode     = "BASIC"
   endpoint_configuration {
     types = ["REGIONAL"]
   }
@@ -82,4 +106,9 @@ resource "aws_api_gateway_base_path_mapping" "soap_mapping" {
   api_id      = aws_api_gateway_rest_api.soap.id
   stage_name  = aws_api_gateway_stage.soap.stage_name
   domain_name = aws_api_gateway_domain_name.soap_agw_domain.domain_name
+}
+
+resource "aws_wafv2_web_acl_association" "soap_acl_association" {
+  resource_arn = aws_api_gateway_stage.soap.arn
+  web_acl_arn  = aws_wafv2_web_acl.api_gateway.arn
 }

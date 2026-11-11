@@ -1,24 +1,27 @@
 locals {
   hosted_zone_arn = "arn:aws:route53:::hostedzone/${var.hosted_zone_id}"
+  shield_count    = var.environment == "prod" ? 1 : 0
 }
 resource "aws_shield_subscription" "subscription" {
-  count      = var.environment == "prod" ? 1 : 0
+  count      = local.shield_count
   auto_renew = "ENABLED"
 }
 
 resource "aws_shield_protection" "route53_shield_protection" {
-  count        = var.environment == "prod" ? 1 : 0
+  count        = local.shield_count
   name         = "${local.domain_name}."
   resource_arn = local.hosted_zone_arn
 }
 
 resource "aws_shield_protection" "cloudfront_shield_protection" {
+  count        = local.shield_count
   name         = "${var.environment}-cloudfront-shield-protection"
   resource_arn = aws_cloudfront_distribution.site.arn
 }
 
 resource "aws_iam_role" "shield_drt" {
-  name = "${var.environment}-shield-drt-role"
+  count = local.shield_count
+  name  = "${var.environment}-shield-drt-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -35,16 +38,18 @@ resource "aws_iam_role" "shield_drt" {
 }
 
 resource "aws_iam_role_policy_attachment" "shield_drt" {
-  role       = aws_iam_role.shield_drt.name
+  count      = local.shield_count
+  role       = aws_iam_role.shield_drt[count.index].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSShieldDRTAccessPolicy"
 }
 
 resource "aws_shield_drt_access_role_arn_association" "shield_drt" {
-  role_arn = aws_iam_role.shield_drt.arn
+  count    = local.shield_count
+  role_arn = aws_iam_role.shield_drt[count.index].arn
 }
 
 resource "aws_cloudwatch_metric_alarm" "alarms_shield_ddos_detected" {
-  for_each          = { hosted_zone_arn : local.hosted_zone_arn, distribution_arn : aws_cloudfront_distribution.site.arn }
+  for_each          = local.shield_count == 0 ? {} : { hosted_zone_arn : local.hosted_zone_arn, distribution_arn : aws_cloudfront_distribution.site.arn }
   alarm_description = "Indicates a DDoS event for a specific Amazon Resource Name (ARN)"
   alarm_name        = format("AWS/DDoSProtection DDoSDetected on Environment=%s, LB=%s", var.environment, each.key)
 
