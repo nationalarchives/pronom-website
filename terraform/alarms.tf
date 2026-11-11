@@ -32,7 +32,8 @@ resource "aws_cloudwatch_event_api_destination" "api_destination" {
 }
 
 resource "aws_cloudwatch_event_rule" "alarm_only_rule" {
-  name = local.rule_name
+  count = local.shield_count
+  name  = local.rule_name
   event_pattern = jsonencode({
     "source" = [
       "aws.cloudwatch"
@@ -40,7 +41,7 @@ resource "aws_cloudwatch_event_rule" "alarm_only_rule" {
     "detail-type" = [
       "CloudWatch Alarm State Change"
     ],
-    "resources" = values(aws_cloudwatch_metric_alarm.alarms_shield_ddos_detected)[*].arn
+    "resources" = values(aws_cloudwatch_metric_alarm.alarms_shield_ddos_detected[count.index])[*].arn
     "detail" = {
       "state" = {
         "value" = ["ALARM"]
@@ -52,11 +53,12 @@ resource "aws_cloudwatch_event_rule" "alarm_only_rule" {
 }
 
 resource "aws_cloudwatch_event_target" "target" {
+  count          = local.shield_count
   target_id      = local.rule_name
   event_bus_name = "default"
   arn            = aws_cloudwatch_event_api_destination.api_destination.arn
   role_arn       = aws_iam_role.api_destination_role.arn
-  rule           = aws_cloudwatch_event_rule.alarm_only_rule.name
+  rule           = aws_cloudwatch_event_rule.alarm_only_rule[count.index].name
   input_transformer {
     input_template = jsonencode(
       { "channel" = "C06EDJPF0VB", "text" : ":alert-noflash-slow: Cloudwatch alarm <alarmName> has entered state ALARM" }
