@@ -41,7 +41,7 @@ resource "aws_cloudwatch_event_rule" "alarm_only_rule" {
     "detail-type" = [
       "CloudWatch Alarm State Change"
     ],
-    "resources" = values(aws_cloudwatch_metric_alarm.alarms_shield_ddos_detected[count.index])[*].arn
+    "resources" = values(aws_cloudwatch_metric_alarm.alarms_shield_ddos_detected)[*].arn
     "detail" = {
       "state" = {
         "value" = ["ALARM"]
