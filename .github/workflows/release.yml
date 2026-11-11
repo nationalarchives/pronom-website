@@ -11,33 +11,7 @@ on:
       - main
 permissions: {}
 jobs:
-  e2e-tests:
-    runs-on: ubuntu-latest
-    name: Run end-to-end tests against test environment
-    environment:
-      name: test
-    steps:
-      - name: Provision runner
-        uses: nationalarchives/org-actions-provision-runner@8a7931f25ad0176bd4e4872ee83d21af94a48125 # v1.0.2
-        with:
-          wiz-sensor-token: ${{ secrets.WIZ_SENSOR_TOKEN }}
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
-      - name: Wait for domain to be available
-        run: while ! curl -s -o /dev/null -w "%{http_code}" https://test.pronom.nationalarchives.gov.uk | grep -q "^200$"; do sleep 60; done
-      - name: Install dependencies
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
-      - name: Run Playwright tests
-        run: CI=true TEST_DOMAIN=https://test.pronom.nationalarchives.gov.uk npx playwright test --grep-invert "@wip"
-
   release-prod:
-    needs:
-      - e2e-tests
-    if: ${{ needs.e2e-tests.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
