@@ -384,8 +384,12 @@ def run():
     if "--skip-fdd-mapping" in sys.argv[2:]:
         fdd_puid_mapping = {}
     else:
-        with open("site/loc/fdd_puid_mapping.json", encoding="utf-8") as mapping_file:
-            fdd_puid_mapping = json.load(mapping_file)
+        fdd_puid_mapping = {}
+        try:
+            with open("site/loc/fdd_puid_mapping.json", encoding="utf-8") as mapping_file:
+                fdd_puid_mapping = json.load(mapping_file)
+        except (FileNotFoundError, json.JSONDecodeError) as err:
+            print(f"WARNING: Library of congress links could not be added to the pages because {err}.")
 
     releases, latest_release = get_releases()
 
