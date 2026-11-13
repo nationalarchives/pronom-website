@@ -382,17 +382,19 @@ def create_xml_sitemap(releases, actors, formats):
 
 def run():
     fdd_puid_mapping = {}
-    if not "--skip-fdd-mapping" in sys.argv[2:]:
-        try:
-            with open(
-                "site/loc/fdd_puid_mapping.json", encoding="utf-8"
-            ) as mapping_file:
-                fdd_puid_mapping = json.load(mapping_file)
-        except (FileNotFoundError, json.JSONDecodeError) as err:
-            # if the mapping file is not found or cannot be decoded, log a warning and continue
-            print(
-                f"WARNING: Library of congress links could not be added to the pages because {err}."
-            )
+    # NOTE: The following block is commented out because it is not currently used in the code 
+    # Once we figure out the UI representation of external links, this will be used. 
+    # if not "--skip-fdd-mapping" in sys.argv[2:]:
+    #     try:
+    #         with open(
+    #             "site/loc/fdd_puid_mapping.json", encoding="utf-8"
+    #         ) as mapping_file:
+    #             fdd_puid_mapping = json.load(mapping_file)
+    #     except (FileNotFoundError, json.JSONDecodeError) as err:
+    #         # if the mapping file is not found or cannot be decoded, log a warning and continue
+    #         print(
+    #             f"WARNING: Library of congress links could not be added to the pages because {err}."
+    #         )
 
     releases, latest_release = get_releases()
 
