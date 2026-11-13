@@ -238,4 +238,74 @@ describe("page shows the correct details", () => {
 - term: Right fragment
 - definition: Max offset 6 Min offset 6 Position 1`);
   });
+
+  // NOTE: The following tests are commented out because the implementation is commented out.
+  // Once the pages have external links, we will uncomment these tests.  
+  // test(
+  //   "External links section should not appear when the page does not have external links",
+  //   { tag: ["@aws"] },
+  //   async ({ page }) => {
+  //     await goToFormatPage(page, 199);
+  //     await expect(page.locator("#external-links")).toHaveCount(0);
+  //   },
+  // );
+  //
+  // test(
+  //   "External links section should appear when the page has external links",
+  //   { tag: ["@aws"] },
+  //   async ({ page }) => {
+  //     await goToFormatPage(page, 479);
+  //     await expect(page.locator("#external-links")).toHaveCount(1);
+  //     await expect(page.locator("#external-links")).toHaveText(
+  //       "External links",
+  //     );
+  //     await expect(page.locator("#external-links + p")).toHaveText(
+  //       "The National Archives is not responsible for the contents available at the following links.",
+  //     );
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside"),
+  //     ).toHaveCount(1);
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside ul li"),
+  //     ).toHaveCount(1);
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside ul li a"),
+  //     ).toHaveCount(1);
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside ul li a"),
+  //     ).toHaveText(
+  //       "PDF/A-3, PDF for Long-term Preservation, Use of ISO 32000-1, With Embedded Files",
+  //     );
+  //   },
+  // );
+  //
+  // test(
+  //   "External links section should appear when the page has multiple external links",
+  //   { tag: ["@aws"] },
+  //   async ({ page }) => {
+  //     await goToFormatPage(page, 392);
+  //     await expect(page.locator("#external-links")).toHaveCount(1);
+  //     await expect(page.locator("#external-links")).toHaveText(
+  //       "External links",
+  //     );
+  //     await expect(page.locator("#external-links + p")).toHaveText(
+  //       "The National Archives is not responsible for the contents available at the following links.",
+  //     );
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside"),
+  //     ).toHaveCount(1);
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside ul li"),
+  //     ).toHaveCount(2);
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside ul li a"),
+  //     ).toHaveCount(2);
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside ul li a").first(),
+  //     ).toHaveText("MrSID Image Format, Generation 2");
+  //     await expect(
+  //       page.locator("#external-links + p + .tna-aside ul li a").nth(1),
+  //     ).toHaveText("MrSID Image Format, Generation 3");
+  //   },
+  // );
 });

@@ -46,17 +46,32 @@ This generates the static HTML for the site, using Jinja templates from [`lambda
 
 It writes the home, accessibility, error and signature list pages, a detail page for each PUID, and a page for each actor into the `site/` directory. During a release, the script is run inside the nginx container so the rendered pages are served directly by nginx and synced to S3 by `release.sh`.
 
+Page generation requires `site/loc/fdd_puid_mapping.json` to render the Library of Congress links. The explicit `--skip-fdd-mapping` option skips these links for bootstrap builds; normal generation fails if the mapping is missing.
+
+Local Docker builds skip the mapping by default. To include the links, download `loc/fdd_puid_mapping.json` from S3 to `fdd_puid_mapping.json` in the repository root, then run `INCLUDE_FDD_MAPPING=true docker compose up -d --build`. This generated file is ignored by Git but included in the Docker build context.
+
+### generate_fdd_puid_mapping.py
+
+This fetches the Library of Congress [FDD/PUID/QID mapping page](https://www.loc.gov/preservation/digital/formats/fdd/fdd_puid_qid.shtml), selects the CSV with the newest date in its filename, and uploads it to `s3://S3_BUCKET/loc-fdd/fdd_puid_mapping.csv` with a `text/csv` content type. The fixed S3 object is overwritten only after the CSV downloads successfully; fetching or reading failures leave the existing object untouched. The script reads the S3 CSV and publishes the derived JSON mapping to `loc/fdd_puid_mapping.json`.
+
+```sh
+python .github/scripts/generate_fdd_puid_mapping.py S3_BUCKET
+```
+
 ### release.sh
 
 This is a helper script for the release process. It orchestrates a full release. It:
 
-1. Builds the Docker services and copies the generated static HTML from nginx.
+1. Builds the Docker services without FDD mappings for bootstrapping the infrastructure.
 2. Runs `generate_index_file.py` and copies the resulting search index out of the container.
-3. Syncs the static assets to the S3 bucket, setting correct `Content-Type` headers for CSS, JavaScript, HTML and font files.
-4. Determines the latest PRONOM signature file version from S3 and runs `generate_version_file.py`.
-5. Packages the Search and SOAP Lambda Functions into zip archives.
-6. Runs `terraform apply` to deploy the infrastructure and Lambda packages.
-7. Creates a CloudFront invalidation to purge the CDN cache.
+3. Determines the latest PRONOM signature file version and runs `generate_version_file.py`.
+4. Packages the Search and SOAP Lambda Functions into zip archives.
+5. Runs `terraform apply` to deploy the infrastructure and Lambda packages.
+6. Generates the FDD mapping in S3, downloads its JSON, and rebuilds nginx with `INCLUDE_FDD_MAPPING=true` so the final pages contain static external links.
+7. Copies the final rendered site from nginx and uploads the static assets to S3 with the appropriate content types.
+8. Creates a CloudFront invalidation to purge the CDN cache.
+
+Mapping generation, download and final-build failures stop the release before the static pages are published.
 
 The script requires an environment name as its first argument and expects the `ACCOUNT_NUMBER` and `REGION` environment variables to be set, as well as credentials to the AWS account.
 

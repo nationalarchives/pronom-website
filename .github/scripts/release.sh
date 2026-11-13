@@ -7,14 +7,14 @@ ENVIRONMENT=$1
 S3_BUCKET="$ENVIRONMENT-pronom-site-$ACCOUNT_NUMBER-$REGION-an"
 S3_URL="s3://$S3_BUCKET"
 
-docker compose up -d --build
+INCLUDE_FDD_MAPPING=false docker-compose up -d --build
 docker compose cp nginx:/usr/share/nginx/html/ .
 docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
 docker compose cp app:/home/app/indexes .
 docker compose cp app:/home/app/pronom-signatures .
 
 LATEST_SIGNATURE_FILE=DROID_SignatureFile_$(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.name').xml
-docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
+docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE" 
 docker compose cp app:/app/version .
 
 cd lambdas/search
@@ -40,6 +40,11 @@ terraform init
 terraform workspace select --or-create $ENVIRONMENT
 TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_signature_version=$LATEST_SIGNATURE_FILE terraform apply --auto-approve
 cd ..
+
+python .github/scripts/generate_fdd_puid_mapping.py "$S3_BUCKET"
+aws s3 cp "$S3_URL/loc/fdd_puid_mapping.json" ./fdd_puid_mapping.json
+INCLUDE_FDD_MAPPING=true docker compose up -d --build --no-deps nginx
+docker compose cp nginx:/usr/share/nginx/html/. ./html/
 
 python .github/scripts/upload_signature_files.py $S3_BUCKET
 

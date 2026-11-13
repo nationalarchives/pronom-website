@@ -9,6 +9,7 @@ services:
         COOKIES_DOMAIN: ${COOKIES_DOMAIN}
         SITE_ROOT: ${SITE_ROOT}
         ENVIRONMENT: ${ENVIRONMENT}
+        INCLUDE_FDD_MAPPING: ${INCLUDE_FDD_MAPPING:-false}
     environment:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
     ports:

@@ -6,6 +6,7 @@ package-edit
 .idea
 .venv
 site/
+/fdd_puid_mapping.json
 indexes
 test_indexes
 test-results
