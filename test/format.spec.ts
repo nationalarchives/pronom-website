@@ -240,7 +240,7 @@ describe("page shows the correct details", () => {
   });
 
   // NOTE: The following tests are commented out because the implementation is commented out.
-  // Once the pages have external links, we will uncomment these tests.  
+  // Once the pages have external links, we will uncomment these tests.
   // test(
   //   "External links section should not appear when the page does not have external links",
   //   { tag: ["@aws"] },
