@@ -382,8 +382,8 @@ def create_xml_sitemap(releases, actors, formats):
 
 def run():
     fdd_puid_mapping = {}
-    # NOTE: The following block is commented out because it is not currently used in the code 
-    # Once we figure out the UI representation of external links, this will be used. 
+    # NOTE: The following block is commented out because it is not currently used in the code
+    # Once we figure out the UI representation of external links, this will be used.
     # if not "--skip-fdd-mapping" in sys.argv[2:]:
     #     try:
     #         with open(
