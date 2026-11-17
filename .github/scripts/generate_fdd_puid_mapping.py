@@ -31,7 +31,8 @@ from urllib.parse import urljoin, urlsplit
 
 import boto3
 import requests
-from boto3 import BotoCoreError, ClientError, S3UploadFailedError
+from botocore.exceptions import BotoCoreError, ClientError
+from boto3.exceptions import S3UploadFailedError
 
 FDD_PUID_MAPPING_PAGE_URL = (
     "https://www.loc.gov/preservation/digital/formats/fdd/fdd_puid_qid.shtml"
