@@ -285,7 +285,9 @@
     "PronomSitePersistentStorageBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "pronom-site-persistent-storage",
+        "BucketName": {
+          "Fn::Sub": "pronom-site-persistent-storage-${AWS::AccountId}-${AWS::Region}-an"
+        },
         "OwnershipControls": {
           "Rules": [
             {
@@ -329,10 +331,10 @@
               "Action": "s3:*",
               "Resource": [
                 {
-                  "Fn::Sub": "arn:${AWS::Partition}:s3:::pronom-site-persistent-storage"
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::${PronomSitePersistentStorageBucket}"
                 },
                 {
-                  "Fn::Sub": "arn:${AWS::Partition}:s3:::pronom-site-persistent-storage/*"
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::${PronomSitePersistentStorageBucket}/*"
                 }
               ],
               "Condition": {
