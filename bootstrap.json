@@ -285,6 +285,7 @@
     "PronomSitePersistentStorageBucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
+        "BucketNamespace": "account-regional",
         "BucketName": {
           "Fn::Sub": "pronom-site-persistent-storage-${AWS::AccountId}-${AWS::Region}-an"
         },
