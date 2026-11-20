@@ -37,7 +37,7 @@ class FddMapping:
 
 
 def generate_fdd_mappings_dict(
-        bucket: str, session: requests.Session, s3_client
+    bucket: str, session: requests.Session, s3_client
 ) -> dict[str, set[FddMapping]]:
     mappings: dict[str, set[FddMapping]] = {}
     puid_pattern = re.compile(
@@ -45,7 +45,7 @@ def generate_fdd_mappings_dict(
     )
     response = s3_client.get_object(Bucket=bucket, Key=FDD_MAPPING_SOURCE_FILE_KEY)
     with io.TextIOWrapper(
-            response["Body"], encoding="utf-8-sig", newline=""
+        response["Body"], encoding="utf-8-sig", newline=""
     ) as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
@@ -79,6 +79,7 @@ def main():
             output_file,
             indent=2,
         )
+
 
 if __name__ == "__main__":
     main()

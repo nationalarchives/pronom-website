@@ -431,7 +431,9 @@ def run():
     for puid, json_data in all_json_files.items():
         with open(f"site/{puid}", "w") as output:
             output.write(
-                create_detail(puid, json_data, all_actors, json_by_id, releases, fdd_puid_mapping)
+                create_detail(
+                    puid, json_data, all_actors, json_by_id, releases, fdd_puid_mapping
+                )
             )
 
     for actor_json in all_actors.values():
