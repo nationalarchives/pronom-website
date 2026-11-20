@@ -52,7 +52,7 @@ def search(search_string):
 
     db_name = os.getenv("DB_NAME", "indexes")
     with closing(sqlite3.connect(db_name)) as conn, closing(conn.cursor()) as cur:
-        base_query = "select path, f.name, group_concat(e.name, ', ') from formats f join extensions e on e.format_id = f.id"
+        base_query = "select path, f.name, ifnull(group_concat(e.name, ', '), '') from formats f left join extensions e on e.format_id = f.id"
         group_by = "group by path, f.name"
         if search_string.startswith(".") and len(search_string) > 1:
             cur.execute(
