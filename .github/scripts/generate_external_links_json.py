@@ -1,35 +1,28 @@
 """
-This script reads the s3://<bucket>/loc-fdd/fdd_puid_mapping.csv file and converts the data into a JSON file 
-that contains the necessary information for each puid to generate external links. This JSON is then fed to the 
-template engine to generate the external links section on the details page. It expects the bucket name to be 
+This script reads the s3://<bucket>/loc-fdd/fdd_puid_mapping.csv file and converts the data into a JSON file
+that contains the necessary information for each puid to generate external links. This JSON is then fed to the
+template engine to generate the external links section on the details page. It expects the bucket name to be
 passed as the first argument to the script.
 
 It does it in following steps:
 1. It reads the CSV file from s3://<bucket>/loc-fdd/fdd_puid_mapping.csv
-2. Parse the CSV and extract the necessary information for each puid and generate a dictionary with entries like 
+2. Parse the CSV and extract the necessary information for each puid and generate a dictionary with entries like
     {
         "fmt/6": [{"Location": "https://www.loc.gov/preservation/digital/formats/fdd/fdd000001", "Name": "WAVE Audio File Format"}],
     }
-3. Write the JSON file into the folder locally for consumption by the template engine. 
+3. Write the JSON file into the folder locally for consumption by the template engine.
 
 If there is an error anywhere in the process, that error is logged but the script does not fail.
 """
 
+import boto3
 import csv
 import io
 import json
 import re
-import shutil
-import sys
-import tempfile
-from dataclasses import asdict, dataclass
-from html.parser import HTMLParser
-from urllib.parse import urljoin, urlsplit
-
-import boto3
 import requests
-from botocore.exceptions import BotoCoreError, ClientError
-from boto3.exceptions import S3UploadFailedError
+import sys
+from dataclasses import asdict, dataclass
 
 REQUEST_TIMEOUT = 60
 FDD_MAPPING_SOURCE_FILE_KEY = "loc-fdd/fdd_puid_mapping.csv"
@@ -75,12 +68,12 @@ def main():
         puid_fdd_mappings = generate_fdd_mappings_dict(
             persistent_data_bucket, session, s3_client
         )
-        
+
     with open("fdd_puid_mapping.json", "w", encoding="utf-8") as output_file:
         json.dump(
             {
                 key: [asdict(fdd) for fdd in sorted(value)]
-                for key, value in puid_fdd_mappings.items() 
+                for key, value in puid_fdd_mappings.items()
             },
             output_file,
             indent=2,
