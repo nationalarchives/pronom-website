@@ -247,7 +247,7 @@ describe("page shows the correct details", () => {
       await expect(page.locator("#external-links")).toHaveCount(0);
     },
   );
-  
+
   test(
     "External links section should appear when the page has external links",
     { tag: ["@aws"] },
@@ -276,7 +276,7 @@ describe("page shows the correct details", () => {
       );
     },
   );
-  
+
   test(
     "External links section should appear when the page has multiple external links",
     { tag: ["@aws"] },
