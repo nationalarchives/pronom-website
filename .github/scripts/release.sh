@@ -5,7 +5,11 @@ set -e
 ENVIRONMENT=$1
 
 S3_BUCKET="$ENVIRONMENT-pronom-site-$ACCOUNT_NUMBER-$REGION-an"
+S3_PERSISTENT_DATA_BUCKET="pronom-site-persistent-storage-$ACCOUNT_NUMBER-$REGION-an"
 S3_URL="s3://$S3_BUCKET"
+
+python .github/scripts/upload_fdd_csv.py $S3_PERSISTENT_DATA_BUCKET
+python .github/scripts/generate_external_links_json.py $S3_PERSISTENT_DATA_BUCKET
 
 docker compose up -d --build
 docker compose cp nginx:/usr/share/nginx/html/ .

@@ -18,6 +18,9 @@ The website uses aggressive caching to reduce cost and request latency. All stat
 # Copy the example .env file
 cp .env.example .env
 
+# Generate external links data for the Docker build
+python3 .github/scripts/generate_external_links_json.py --local-csv test/fixtures/fdd_puid_mapping.csv
+
 # Start the Docker containers
 docker compose up -d
 
@@ -45,6 +48,30 @@ This generates the XML response from the SOAP API for `getSignatureFileVersionV1
 This generates the static HTML for the site, using Jinja templates from [`lambdas/templates/`](/lambdas/templates/) and the file format and actor JSON data from a local checkout of the [nationalarchives/pronom] repository (passed as the first argument).
 
 It writes the home, accessibility, error and signature list pages, a detail page for each PUID, and a page for each actor into the `site/` directory. During a release, the script is run inside the nginx container so the rendered pages are served directly by nginx and synced to S3 by `release.sh`.
+
+### upload_fdd_csv.py
+
+This script reads the FDD->PUID mapping CSV from the Library of Congress website and uploads it to the persistent data S3 bucket. It expects the bucket name to be passed as the first argument to the script.
+
+```shell
+python .github/scripts/upload_fdd_csv.py <persistent-data-s3-bucket-name>
+```
+
+### generate_external_links_json.py
+
+This script reads the FDD->PUID mapping CSV from the persistent data S3 bucket and generates a JSON file containing the necessary information for each PUID to generate external links. This JSON is then used by the template engine to generate the external links section on the details page.
+
+```shell
+python .github/scripts/generate_external_links_json.py <persistent-data-s3-bucket-name>
+```
+
+For local builds and tests without AWS access, generate the file from the test fixture:
+
+```shell
+python .github/scripts/generate_external_links_json.py --local-csv test/fixtures/fdd_puid_mapping.csv
+```
+
+The JSON is written to `fdd_puid_mapping.json` in the current directory and must exist before building the Docker images.
 
 ### release.sh
 
