@@ -18,6 +18,9 @@ The website uses aggressive caching to reduce cost and request latency. All stat
 # Copy the example .env file
 cp .env.example .env
 
+# Generate external links data for the Docker build
+python3 .github/scripts/generate_external_links_json.py --local-csv test/fixtures/fdd_puid_mapping.csv
+
 # Start the Docker containers
 docker compose up -d
 
@@ -61,6 +64,14 @@ This script reads the FDD->PUID mapping CSV from the persistent data S3 bucket a
 ```shell
 python .github/scripts/generate_external_links_json.py <persistent-data-s3-bucket-name>
 ```
+
+For local builds and tests without AWS access, generate the file from the test fixture:
+
+```shell
+python .github/scripts/generate_external_links_json.py --local-csv test/fixtures/fdd_puid_mapping.csv
+```
+
+The JSON is written to `fdd_puid_mapping.json` in the current directory and must exist before building the Docker images.
 
 ### release.sh
 
