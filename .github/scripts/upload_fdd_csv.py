@@ -12,16 +12,17 @@ It does it in following steps:
 If there is an error anywhere in the process, that error is logged but the script does not fail.
 """
 
-import boto3
 import re
-import requests
 import shutil
 import sys
 import tempfile
-from boto3.exceptions import S3UploadFailedError
-from botocore.exceptions import BotoCoreError, ClientError
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlsplit
+
+import boto3
+import requests
+from boto3.exceptions import S3UploadFailedError
+from botocore.exceptions import BotoCoreError, ClientError
 
 FDD_PUID_MAPPING_PAGE_URL = (
     "https://www.loc.gov/preservation/digital/formats/fdd/fdd_puid_qid.shtml"

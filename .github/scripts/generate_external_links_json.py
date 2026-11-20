@@ -15,14 +15,15 @@ It does it in following steps:
 If there is an error anywhere in the process, that error is logged but the script does not fail.
 """
 
-import boto3
 import csv
 import io
 import json
 import re
-import requests
 import sys
 from dataclasses import asdict, dataclass
+
+import boto3
+import requests
 
 REQUEST_TIMEOUT = 60
 FDD_MAPPING_SOURCE_FILE_KEY = "loc-fdd/fdd_puid_mapping.csv"
