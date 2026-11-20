@@ -8,15 +8,18 @@ S3_BUCKET="$ENVIRONMENT-pronom-site-$ACCOUNT_NUMBER-$REGION-an"
 S3_PERSISTENT_DATA_BUCKET="pronom-site-persistent-storage-$ACCOUNT_NUMBER-$REGION-an"
 S3_URL="s3://$S3_BUCKET"
 
-docker-compose up -d --build
-docker-compose cp nginx:/usr/share/nginx/html/ .
-docker-compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
-docker-compose cp app:/home/app/indexes .
-docker-compose cp app:/home/app/pronom-signatures .
+python .github/scripts/upload_fdd_csv.py $S3_PERSISTENT_DATA_BUCKET
+python .github/scripts/generate_external_links_json.py $S3_PERSISTENT_DATA_BUCKET
+
+docker compose up -d --build
+docker compose cp nginx:/usr/share/nginx/html/ .
+docker compose exec app poetry run python .github/scripts/generate_index_file.py /home/app/pronom-signatures
+docker compose cp app:/home/app/indexes .
+docker compose cp app:/home/app/pronom-signatures .
 
 LATEST_SIGNATURE_FILE=DROID_SignatureFile_$(gh api repos/nationalarchives/pronom/releases/latest | jq -r '.name').xml
-docker-compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
-docker-compose cp app:/app/version .
+docker compose exec app poetry run python .github/scripts/generate_version_file.py "$LATEST_SIGNATURE_FILE"
+docker compose cp app:/app/version .
 
 cd lambdas/search
 mkdir -p package
@@ -43,8 +46,6 @@ TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_signature_version=$LATEST_SIGNATUR
 cd ..
 
 python .github/scripts/upload_signature_files.py $S3_BUCKET
-python .github/scripts/upload_fdd_csv.py $S3_PERSISTENT_DATA_BUCKET
-python .github/scripts/generate_external_links_json.py $S3_PERSISTENT_DATA_BUCKET
 
 cd html
 aws s3 sync --content-type text/css --cache-control "public, max-age=86400, s-maxage=2592000" --exclude "*" --include "*.css" . $S3_URL
