@@ -109,9 +109,10 @@ def get_file_extensions(json_data):
     return [extension for extension in extension_names if extension]
 
 
-def create_detail(puid, json_data, all_actors, json_by_id, releases):
+def create_detail(puid, json_data, all_actors, json_by_id, releases, fdd_puid_mapping):
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
+    summary_puid = (summary["Identifiers"] or {}).get("PUID")
     summary_args = {
         "results": [summary],
         "relationships": get_relationships(json_data, json_by_id),
@@ -163,6 +164,7 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases):
         containers=json_data.get("containerSignatures", []),
         releases=releases,
         changelog=changelog,
+        external_links=fdd_puid_mapping.get(summary_puid, []),
     )
 
 
@@ -379,6 +381,8 @@ def create_xml_sitemap(releases, actors, formats):
 
 
 def run():
+    with open("site/loc/fdd_puid_mapping.json", encoding="utf-8") as mappings_file:
+        fdd_puid_mapping = json.load(mappings_file)
     releases, latest_release = get_releases()
 
     with open("site/about", "w") as about_page:
@@ -427,7 +431,7 @@ def run():
     for puid, json_data in all_json_files.items():
         with open(f"site/{puid}", "w") as output:
             output.write(
-                create_detail(puid, json_data, all_actors, json_by_id, releases)
+                create_detail(puid, json_data, all_actors, json_by_id, releases, fdd_puid_mapping)
             )
 
     for actor_json in all_actors.values():
