@@ -323,7 +323,7 @@ describe("page shows the correct details", () => {
       page.locator("#external-links + p + .tna-aside ul li"),
     ).toHaveCount(1);
     await expect(
-      page.locator("#external-links + p + .tna-aside ul li a").nth(1),
+      page.locator("#external-links + p + .tna-aside ul li a").first(),
     ).toHaveText("Long name of test format");
   });
 

@@ -14,13 +14,14 @@ It does it in following steps:
 """
 
 import argparse
-import boto3
 import csv
 import io
 import json
 import re
 from dataclasses import asdict, dataclass
 from typing import TextIO
+
+import boto3
 
 FDD_MAPPING_SOURCE_FILE_KEY = "loc-fdd/fdd_puid_mapping.csv"
 FDD_URL_PREFIX = "https://www.loc.gov/preservation/digital/formats/fdd/"
