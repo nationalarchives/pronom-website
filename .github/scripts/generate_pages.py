@@ -158,7 +158,7 @@ def create_detail(puid, json_data, all_actors, json_by_id, releases, fdd_puid_ma
         path=f"/{puid}",
         id=json_data.get("fileFormatID"),
         puid=puid,
-        name=summary["Name"],
+        name=summary["Name"] + (f" {summary['Version']}" if summary.get("Version") else ""),
         summary=summary_args,
         signatures=signatures,
         containers=json_data.get("containerSignatures", []),
