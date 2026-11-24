@@ -112,7 +112,7 @@ def get_file_extensions(json_data):
 def create_detail(puid, json_data, all_actors, json_by_id, releases, fdd_puid_mapping):
     details_template = env.get_template("details.html")
     summary = get_summary(json_data)
-    summary_puid = (summary["Identifiers"] or {}).get("PUID")
+    summary_puid = (summary.get("Identifiers") or {}).get("PUID")
     summary_args = {
         "results": [summary],
         "relationships": get_relationships(json_data, json_by_id),

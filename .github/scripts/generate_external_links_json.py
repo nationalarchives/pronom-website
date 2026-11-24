@@ -14,6 +14,7 @@ It does it in following steps:
 """
 
 import argparse
+import boto3
 import csv
 import io
 import json
@@ -48,9 +49,7 @@ def generate_fdd_mappings_from_csv(csv_file: TextIO) -> dict[str, set[FddMapping
     return mappings
 
 
-def generate_fdd_mappings_dict(
-    bucket: str, session, s3_client
-) -> dict[str, set[FddMapping]]:
+def generate_fdd_mappings_dict(bucket: str, s3_client) -> dict[str, set[FddMapping]]:
     response = s3_client.get_object(Bucket=bucket, Key=FDD_MAPPING_SOURCE_FILE_KEY)
     with io.TextIOWrapper(
         response["Body"], encoding="utf-8-sig", newline=""
@@ -73,17 +72,11 @@ def main():
         with open(args.local_csv, encoding="utf-8-sig", newline="") as csv_file:
             puid_fdd_mappings = generate_fdd_mappings_from_csv(csv_file)
     else:
-        import boto3
-        import requests
-
         print(
             f"Generating external links JSON from s3://{args.bucket}/{FDD_MAPPING_SOURCE_FILE_KEY}"
         )
         s3_client = boto3.client("s3")
-        with requests.Session() as session:
-            puid_fdd_mappings = generate_fdd_mappings_dict(
-                args.bucket, session, s3_client
-            )
+        puid_fdd_mappings = generate_fdd_mappings_dict(args.bucket, s3_client)
 
     with open("fdd_puid_mapping.json", "w", encoding="utf-8") as output_file:
         json.dump(
@@ -92,7 +85,6 @@ def main():
                 for key, value in puid_fdd_mappings.items()
             },
             output_file,
-            indent=2,
         )
 
 

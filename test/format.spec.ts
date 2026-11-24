@@ -307,6 +307,26 @@ describe("page shows the correct details", () => {
     },
   );
 
+  test("External format links should be generated for the test data in fdd mapping", async ({
+    page,
+  }) => {
+    await goToFormatPage(page, 6);
+    await expect(page.locator("#external-links")).toHaveCount(1);
+    await expect(page.locator("#external-links")).toHaveText("External links");
+    await expect(page.locator("#external-links + p")).toHaveText(
+      "The National Archives is not responsible for the contents available at the following links.",
+    );
+    await expect(page.locator("#external-links + p + .tna-aside")).toHaveCount(
+      1,
+    );
+    await expect(
+      page.locator("#external-links + p + .tna-aside ul li"),
+    ).toHaveCount(1);
+    await expect(
+      page.locator("#external-links + p + .tna-aside ul li a").nth(1),
+    ).toHaveText("Long name of test format");
+  });
+
   test(
     "Format title should include version when version is present",
     { tag: ["@aws"] },

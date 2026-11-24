@@ -75,7 +75,7 @@ def update_latest_mappings_from_loc_to_s3(
             response.raise_for_status()
             csv_url = latest_mapping_url(response.text)
 
-        print(f"Using latest CSV: {csv_url} to upload to pronom persistent bucket")
+        print(f"Using latest CSV: {csv_url} to upload to PRONOM persistent bucket")
 
         with tempfile.SpooledTemporaryFile(max_size=8 * 1024 * 1024) as csv_file:
             print(f"Downloading {csv_url}")
