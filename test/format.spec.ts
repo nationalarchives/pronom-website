@@ -306,4 +306,13 @@ describe("page shows the correct details", () => {
       ).toHaveText("MrSID Image Format, Generation 3");
     },
   );
+  
+  test(
+      "Format title should include version when version is present",
+      { tag: ["@aws"] },
+      async ({ page }) => {
+        await goToFormatPage(page, 558);
+        await expect(page.locator("h1")).toHaveText("Adobe Illustrator 9.0");
+      }
+  );
 });
