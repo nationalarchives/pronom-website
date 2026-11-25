@@ -172,6 +172,11 @@ resource "aws_cloudfront_distribution" "site" {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.lowercase_url.arn
     }
+
+    function_association {
+      event_type   = "viewer-response"
+      function_arn = aws_cloudfront_function.change_last_modified.arn
+    }
   }
 
   ordered_cache_behavior {
@@ -246,4 +251,11 @@ resource "aws_cloudfront_function" "lowercase_url" {
   runtime = "cloudfront-js-2.0"
   publish = true
   code    = file("${path.module}/cloudfront_functions/index.js")
+}
+
+resource "aws_cloudfront_function" "change_last_modified" {
+  name    = "${var.environment}-change-last-modified"
+  runtime = "cloudfront-js-2.0"
+  publish = true
+  code    = file("${path.module}/cloudfront_functions/change-last-modified.js")
 }
