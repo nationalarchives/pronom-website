@@ -38,7 +38,8 @@ cp ./*.zip terraform
 cd terraform || exit
 terraform init
 terraform workspace select --or-create $ENVIRONMENT
-TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_signature_version=$LATEST_SIGNATURE_FILE terraform apply --auto-approve
+LATEST_RELEASE_CREATED_DATE=$(gh api repos/nationalarchives/pronom/releases/latest | jq -r .created_at)
+TF_VAR_environment=$ENVIRONMENT TF_VAR_latest_release_date=$LATEST_RELEASE_CREATED_DATE terraform apply --auto-approve
 cd ..
 
 python .github/scripts/upload_signature_files.py $S3_BUCKET

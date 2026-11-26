@@ -1,2 +1,3 @@
 **/*.html
 terraform/cloudfront_functions/index.js
+terraform/cloudfront_functions/change-last-modified.js

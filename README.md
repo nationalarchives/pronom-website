@@ -62,7 +62,7 @@ The script requires an environment name as its first argument and expects the `A
 
 ## Lambda/CloudFront Functions code
 
-In the [lambdas](lambdas/) directory, there are two AWS Lambda Functions. A CloudFront Function is defined in [`/terraform/cloudfront_functions/`](terraform/cloudfront_functions/).
+In the [lambdas](lambdas/) directory, there are two AWS Lambda Functions. Two CloudFront Functions are defined in [`/terraform/cloudfront_functions/`](terraform/cloudfront_functions/).
 
 ### Results/Search
 
@@ -82,9 +82,11 @@ Requests to this Lambda Function are routed through API Gateway, which handles t
 
 To enable backwards compatibility, POST requests to the previous `www.` SOAP endpoint are reverse proxied to this Lambda. The reverse proxy targets a `soap.` subdomain that routes directly to the API Gateway; this was done as CloudFront prevents "stacked distributions" (two or more distributions within a chain of requests to the origin endpoint).
 
-### CloudFront Function
+### CloudFront Functions
 
 A CloudFront Function is used to redirect requests to lowercase URIs to match our S3 object keys. This function has been extended to redirect requests for resources within the previous PRONOM website, now resulting in a 404 error, to their respective new destinations.
+
+Another CloudFront Function is used to return a static Last-Modified header which is passed in as a terraform variable at build time. DROID uses the Last-Modified header to determine whether there are new container signatures so this needs to be static between PRONOM signature file releases.
 
 ## Developing PRONOM Website
 
