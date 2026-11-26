@@ -111,7 +111,7 @@ jobs:
           aws s3 rm s3://test-pronom-site-${{ secrets.ACCOUNT_ID }}-eu-west-2-an --recursive
           terraform init
           terraform workspace select test
-          LATEST_RELEASE_CREATED_DATE=$(gh api repos/nationalarchives/pronom/releases/latest | jq -r .created_at) terraform destroy --auto-approve
+          TF_VAR_latest_release_date=$(gh api repos/nationalarchives/pronom/releases/latest | jq -r .created_at) terraform destroy --auto-approve
         env:
           GITHUB_TOKEN: ${{ github.token }}
           TF_VAR_environment: test
