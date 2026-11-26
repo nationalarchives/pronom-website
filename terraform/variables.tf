@@ -10,5 +10,5 @@ variable "hosted_zone_id" {
 
 variable "latest_release_date" {
   description = "The date of the most recent PRONOM signature release."
-  type = string
+  type        = string
 }

@@ -86,7 +86,7 @@ To enable backwards compatibility, POST requests to the previous `www.` SOAP end
 
 A CloudFront Function is used to redirect requests to lowercase URIs to match our S3 object keys. This function has been extended to redirect requests for resources within the previous PRONOM website, now resulting in a 404 error, to their respective new destinations.
 
-Another CloudFront Function is used to return a static Last-Modified header which is passed in as a terraform variable at build time. DROID uses the Last-Modified header to determine whether there are new container signatures so this needs to be static between PRONOM signature file releases.  
+Another CloudFront Function is used to return a static Last-Modified header which is passed in as a terraform variable at build time. DROID uses the Last-Modified header to determine whether there are new container signatures so this needs to be static between PRONOM signature file releases.
 
 ## Developing PRONOM Website
 
