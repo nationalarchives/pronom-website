@@ -7,3 +7,7 @@ variable "hosted_zone_id" {
   type        = string
   default     = "Z0207922GVVLB5378323"
 }
+
+variable "latest_release_date" {
+  description = "The date of the most recent PRONOM signature release."
+}
