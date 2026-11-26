@@ -82,7 +82,7 @@ Requests to this Lambda Function are routed through API Gateway, which handles t
 
 To enable backwards compatibility, POST requests to the previous `www.` SOAP endpoint are reverse proxied to this Lambda. The reverse proxy targets a `soap.` subdomain that routes directly to the API Gateway; this was done as CloudFront prevents "stacked distributions" (two or more distributions within a chain of requests to the origin endpoint).
 
-### CloudFront Function
+### CloudFront Functions
 
 A CloudFront Function is used to redirect requests to lowercase URIs to match our S3 object keys. This function has been extended to redirect requests for resources within the previous PRONOM website, now resulting in a 404 error, to their respective new destinations.
 
