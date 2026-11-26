@@ -2,6 +2,8 @@ locals {
   search_origin_name = "search-url-origin"
   soap_origin_name   = "soap-url-origin"
   s3_origin_name     = "s3-origin"
+  pronom_start_date  = "2026-10-27T11:19:09Z"
+  last_modified      = timecmp(var.latest_release_date, local.pronom_start_date) == 1 ? var.latest_release_date : local.pronom_start_date
 }
 resource "aws_cloudfront_response_headers_policy" "security" {
   name    = "${title(var.environment)}-ResponseHeadersPolicy"
@@ -202,6 +204,23 @@ resource "aws_cloudfront_distribution" "site" {
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
   }
 
+  ordered_cache_behavior {
+    path_pattern           = "/container-signature.xml"
+    target_origin_id       = local.s3_origin_name
+    viewer_protocol_policy = "redirect-to-https"
+
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
+
+    cache_policy_id          = aws_cloudfront_cache_policy.cache_query_strings.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+
+    function_association {
+      event_type   = "viewer-response"
+      function_arn = aws_cloudfront_function.change_last_modified.arn
+    }
+  }
+
   dynamic "custom_error_response" {
     for_each = toset(local.error_response_codes)
     content {
@@ -246,4 +265,13 @@ resource "aws_cloudfront_function" "lowercase_url" {
   runtime = "cloudfront-js-2.0"
   publish = true
   code    = file("${path.module}/cloudfront_functions/index.js")
+}
+
+resource "aws_cloudfront_function" "change_last_modified" {
+  name    = "${var.environment}-change-last-modified"
+  runtime = "cloudfront-js-2.0"
+  publish = true
+  code = templatefile("${path.module}/cloudfront_functions/change-last-modified.js", {
+    last_modified_header_value = formatdate("EEE, DD MMM YYYY hh:mm:ss 'GMT'", local.last_modified)
+  })
 }
